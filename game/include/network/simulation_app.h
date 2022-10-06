@@ -1,11 +1,12 @@
 #pragma once
-#include "client.h"
+#include <SFML/Graphics/RenderTexture.hpp>
+
 #include "simulation_client.h"
 #include "simulation_server.h"
-#include "engine/app.h"
-#include "game/game_globals.h"
 
-#include <SFML/Graphics/RenderTexture.hpp>
+#include "engine/app.h"
+
+#include "game/game_globals.h"
 
 namespace game
 {
@@ -29,10 +30,10 @@ public:
 
     void OnEvent(const sf::Event& event) override;
 private:
-    std::array<std::unique_ptr<SimulationClient>, maxPlayerNmb> clients_;
-    std::array<sf::RenderTexture, maxPlayerNmb> clientsFramebuffers_;
-    SimulationServer server_;
-    sf::Sprite screenQuad_;
-    sf::Vector2u windowSize_;
+    std::array<std::unique_ptr<SimulationClient>, MAX_PLAYER_NMB> _clients;
+    std::array<sf::RenderTexture, MAX_PLAYER_NMB> _clientsFramebuffers;
+    SimulationServer _server;
+    sf::Sprite _screenQuad;
+    sf::Vector2u _windowSize;
 };
 }

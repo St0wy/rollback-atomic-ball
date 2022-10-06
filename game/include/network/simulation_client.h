@@ -1,6 +1,8 @@
 #pragma once
 #include <memory>
+
 #include <network/client.h>
+
 #include <SFML/System/Time.hpp>
 
 #include "debug_db.h"
@@ -15,28 +17,27 @@ class SimulationServer;
 class SimulationClient final : public Client
 {
 public:
-    explicit SimulationClient(SimulationServer& server);
+	explicit SimulationClient(SimulationServer& server);
 
-    void Begin() override;
-    void Update(sf::Time dt) override;
+	void Begin() override;
+	void Update(sf::Time dt) override;
 
-    void End() override;
-    void Draw(sf::RenderTarget& window) override;
+	void End() override;
+	void Draw(sf::RenderTarget& renderTarget) override;
 
 
-    void SendUnreliablePacket(std::unique_ptr<Packet> packet) override;
-    void SendReliablePacket(std::unique_ptr<Packet> packet) override;
+	void SendUnreliablePacket(std::unique_ptr<Packet> packet) override;
+	void SendReliablePacket(std::unique_ptr<Packet> packet) override;
 
-    void ReceivePacket(const Packet* packet) override;
-    
-    void DrawImGui() override;
-    void SetPlayerInput(PlayerInput input);
-    
+	void ReceivePacket(const Packet* packet) override;
+
+	void DrawImGui() override;
+	void SetPlayerInput(PlayerInput input);
+
 private:
-    SimulationServer& server_;
-#ifdef ENABLE_SQLITE
+	SimulationServer& _server;
+	#ifdef ENABLE_SQLITE
     DebugDatabase debugDb_;
-#endif
-
+	#endif
 };
 }

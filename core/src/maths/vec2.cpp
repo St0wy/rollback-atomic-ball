@@ -1,94 +1,93 @@
-#include <maths/vec2.h>
 #include <cmath>
+
+#include <maths/vec2.h>
 
 namespace core
 {
-Vec2f::Vec2f(sf::Vector2f v) : x(v.x), y(v.y)
+Vec2f::Vec2f(const sf::Vector2f v)
+	: x(v.x), y(v.y) {}
+
+
+Vec2f Vec2f::operator+(const Vec2f v) const
 {
+	return {x + v.x, y + v.y};
 }
 
-
-Vec2f Vec2f::operator+(Vec2f v) const
+Vec2f& Vec2f::operator+=(const Vec2f v)
 {
-    return {x + v.x, y + v.y};
+	x += v.x;
+	y += v.y;
+	return *this;
 }
 
-Vec2f& Vec2f::operator+=(Vec2f v)
+Vec2f Vec2f::operator-(const Vec2f v) const
 {
-    x += v.x;
-    y += v.y;
-    return *this;
+	return {x - v.x, y - v.y};
 }
 
-Vec2f Vec2f::operator-(Vec2f v) const
+Vec2f& Vec2f::operator-=(const Vec2f v)
 {
-    return {x - v.x, y - v.y};
+	x -= v.x;
+	y -= v.y;
+	return *this;
 }
 
-Vec2f& Vec2f::operator-=(Vec2f v)
+Vec2f Vec2f::operator*(const float f) const
 {
-    x -= v.x;
-    y -= v.y;
-    return *this;
+	return {x * f, y * f};
 }
 
-Vec2f Vec2f::operator*(float f) const
+Vec2f Vec2f::operator/(const float f) const
 {
-    return {x * f, y * f};
+	return {x / f, y / f};
 }
 
-Vec2f Vec2f::operator/(float f) const
+Vec2f operator*(const float f, const Vec2f v)
 {
-    return {x / f, y / f};
-}
-
-Vec2f operator*(float f, Vec2f v)
-{
-    return v*f;
+	return v * f;
 }
 
 float Vec2f::GetMagnitude() const
 {
-    return std::sqrt(GetSqrMagnitude());
+	return std::sqrt(GetSqrMagnitude());
 }
 
 void Vec2f::Normalize()
 {
-    const auto magnitude = GetMagnitude();
-    x /= magnitude;
-    y /= magnitude;
+	const auto magnitude = GetMagnitude();
+	x /= magnitude;
+	y /= magnitude;
 }
 
 Vec2f Vec2f::GetNormalized() const
 {
-    const auto magnitude = GetMagnitude();
-    return (*this) / magnitude;
+	const auto magnitude = GetMagnitude();
+	return (*this) / magnitude;
 }
 
 float Vec2f::GetSqrMagnitude() const
 {
-    return x * x + y * y;
+	return x * x + y * y;
 }
 
-Vec2f Vec2f::Rotate(Degree rotation) const
+Vec2f Vec2f::Rotate(const Degree rotation) const
 {
+	const auto cs = Cos(rotation);
+	const auto sn = Sin(rotation);
 
-    const auto cs = Cos(rotation);
-    const auto sn = Sin(rotation);
-
-    Vec2f v;
-    v.x = x * cs - y * sn;
-    v.y = x * sn + y * cs;
-    return v;
+	Vec2f v;
+	v.x = x * cs - y * sn;
+	v.y = x * sn + y * cs;
+	return v;
 }
 
-float Vec2f::Dot(Vec2f a, Vec2f b)
+float Vec2f::Dot(const Vec2f a, const Vec2f b)
 {
-    return a.x * b.x + a.y * b.y;
+	return a.x * b.x + a.y * b.y;
 }
 
-Vec2f Vec2f::Lerp(Vec2f a, Vec2f b, float t)
+Vec2f Vec2f::Lerp(const Vec2f a, const Vec2f b, const float t)
 {
-    return a + (b - a) * t;
+	return a + (b - a) * t;
 }
 }

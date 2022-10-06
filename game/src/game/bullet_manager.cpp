@@ -1,35 +1,37 @@
 #include "game/bullet_manager.h"
+
 #include "game/game_manager.h"
 
 #ifdef TRACY_ENABLE
 #include <Tracy.hpp>
 #endif
+
 namespace game
 {
 BulletManager::BulletManager(core::EntityManager& entityManager, GameManager& gameManager) :
-    ComponentManager(entityManager), gameManager_(gameManager)
+    ComponentManager(entityManager), _gameManager(gameManager)
 {
 }
 
-void BulletManager::FixedUpdate(sf::Time dt)
+void BulletManager::FixedUpdate(const sf::Time dt)
 {
 
 #ifdef TRACY_ENABLE
     ZoneScoped;
 #endif
-    for (core::Entity entity = 0; entity < entityManager_.GetEntitiesSize(); entity++)
+    for (core::Entity entity = 0; entity < _entityManager.GetEntitiesSize(); entity++)
     {
-        if(entityManager_.HasComponent(entity, static_cast<core::EntityMask>(ComponentType::DESTROYED)))
+        if(_entityManager.HasComponent(entity, static_cast<core::EntityMask>(ComponentType::Destroyed)))
         {
             continue;
         }
-        if (entityManager_.HasComponent(entity, static_cast<core::EntityMask>(ComponentType::BULLET)))
+        if (_entityManager.HasComponent(entity, static_cast<core::EntityMask>(ComponentType::Bullet)))
         {
-            auto& bullet = components_[entity];
-            bullet.remainingTime -= dt.asSeconds();
-            if (bullet.remainingTime < 0.0f)
+            auto& [remainingTime, playerNumber] = _components[entity];
+            remainingTime -= dt.asSeconds();
+            if (remainingTime < 0.0f)
             {
-                gameManager_.DestroyBullet(entity);
+                _gameManager.DestroyBullet(entity);
             }
         }
     }

@@ -12,13 +12,13 @@ namespace core
  * \param data is the array of bytes to be converted.
  * \return the converted data as T type.
  */
-template<typename T>
+template <typename T>
 T ConvertFromBinary(const std::array<std::uint8_t, sizeof(T)>& data)
 {
-    T result;
-    auto* resultPtr = reinterpret_cast<std::uint8_t*>(&result);
-    std::memcpy(resultPtr, data.data(), sizeof(T));
-    return result;
+	T result;
+	auto* resultPtr = reinterpret_cast<std::uint8_t*>(&result);
+	std::memcpy(resultPtr, data.data(), sizeof(T));
+	return result;
 }
 
 /**
@@ -27,13 +27,12 @@ T ConvertFromBinary(const std::array<std::uint8_t, sizeof(T)>& data)
  * \param data is the given type data to be converted.
  * \return an array of bytes converted from the given type T data.
  */
-template<typename T>
+template <typename T>
 std::array<std::uint8_t, sizeof(T)> ConvertToBinary(T data)
 {
-    std::array<std::uint8_t, sizeof(T)> result{};
-    const auto* dataPtr = reinterpret_cast<std::uint8_t*>(&data);
-    std::memcpy(result.data(), dataPtr, sizeof(T));
-    return result;
-
+	std::array<std::uint8_t, sizeof(T)> result{};
+	const auto* dataPtr = reinterpret_cast<std::uint8_t*>(&data);
+	std::memcpy(result.data(), dataPtr, sizeof(T));
+	return result;
 }
 } // namespace core

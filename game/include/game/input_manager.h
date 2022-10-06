@@ -9,5 +9,4 @@ namespace game
  * \return this frame current player input
  */
 PlayerInput GetPlayerInput(int index);
-
 }

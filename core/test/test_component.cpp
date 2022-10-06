@@ -1,12 +1,14 @@
 #include <cmath>
+
 #include <engine/entity.h>
+
 #include <gtest/gtest.h>
 
 #include "engine/component.h"
 
-constexpr core::EntityMask componentType = 2u;
+constexpr core::EntityMask COMPONENT_TYPE = 2u;
 
-class SimpleComponentManager : public core::ComponentManager<int, componentType>
+class SimpleComponentManager : public core::ComponentManager<int, COMPONENT_TYPE>
 {
     using ComponentManager::ComponentManager;
 };
@@ -17,11 +19,11 @@ TEST(Component, AddComponent)
     SimpleComponentManager componentManager(entityManager);
 
     const auto entity = entityManager.CreateEntity();
-    EXPECT_FALSE(entityManager.HasComponent(entity, componentType));
+    EXPECT_FALSE(entityManager.HasComponent(entity, COMPONENT_TYPE));
     componentManager.AddComponent(entity);
-    EXPECT_TRUE(entityManager.HasComponent(entity, componentType));
+    EXPECT_TRUE(entityManager.HasComponent(entity, COMPONENT_TYPE));
     componentManager.RemoveComponent(entity);
-    EXPECT_FALSE(entityManager.HasComponent(entity, componentType));
+    EXPECT_FALSE(entityManager.HasComponent(entity, COMPONENT_TYPE));
 
 }
 
@@ -70,11 +72,11 @@ TEST(Component, InternalArrayOverflow)
     core::EntityManager entityManager;
     SimpleComponentManager componentManager(entityManager);
 
-    for (std::size_t i = 0; i < core::entityInitNmb; i++)
+    for (std::size_t i = 0; i < core::ENTITY_INIT_NMB; i++)
     {
         entityManager.CreateEntity();
     }
     const auto entity = entityManager.CreateEntity();
     componentManager.AddComponent(entity);
-    EXPECT_LT(core::entityInitNmb, componentManager.GetAllComponents().size());
+    EXPECT_LT(core::ENTITY_INIT_NMB, componentManager.GetAllComponents().size());
 }

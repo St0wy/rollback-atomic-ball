@@ -2,7 +2,9 @@
 #include <memory>
 
 #include "packet_type.h"
+
 #include "engine/system.h"
+
 #include "game/game_globals.h"
 #include "game/game_manager.h"
 
@@ -23,9 +25,9 @@ protected:
     virtual void ReceivePacket(std::unique_ptr<Packet> packet);
 
     //Server game manager
-    GameManager gameManager_;
-    PlayerNumber lastPlayerNumber_ = 0;
-    std::array<ClientId, maxPlayerNmb> clientMap_{};
+    GameManager _gameManager;
+    PlayerNumber _lastPlayerNumber = 0;
+    std::array<ClientId, MAX_PLAYER_NMB> _clientMap{};
 
 };
 }

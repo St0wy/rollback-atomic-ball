@@ -8,33 +8,31 @@
 
 namespace core
 {
-
 /**
  * \brief Engine is a class that manages the layer between the system and the application and runs the game loop.
  */
 class Engine
 {
 public:
-    /**
-     * \brief Run is a method that runs the Engine game loop.
-     */
-    void Run();
+	/**
+	 * \brief Run is a method that runs the Engine game loop.
+	 */
+	void Run();
 
-    void RegisterApp(App* app);
-    void RegisterSystem(SystemInterface*);
-    void RegisterOnEvent(OnEventInterface*);
-    void RegisterDraw(DrawInterface*);
-    void RegisterDrawImGui(DrawImGuiInterface*);
+	void RegisterApp(App* app);
+	void RegisterSystem(SystemInterface*);
+	void RegisterOnEvent(OnEventInterface*);
+	void RegisterDraw(DrawInterface*);
+	void RegisterDrawImGui(DrawImGuiInterface*);
 protected:
-    void Init();
-    void Update(sf::Time dt) const;
-    void Destroy();
+	void Init();
+	void Update(sf::Time dt) const;
+	void Destroy();
 
-    std::vector<SystemInterface*> systems_;
-    std::vector<OnEventInterface*> eventInterfaces_;
-    std::vector<DrawInterface*> drawInterfaces_;
-    std::vector<DrawImGuiInterface*> drawImGuiInterfaces_;
-    std::unique_ptr<sf::RenderWindow> window_;
+	std::vector<SystemInterface*> _systems;
+	std::vector<OnEventInterface*> _eventInterfaces;
+	std::vector<DrawInterface*> _drawInterfaces;
+	std::vector<DrawImGuiInterface*> _drawImGuiInterfaces;
+	std::unique_ptr<sf::RenderWindow> _window;
 };
-
 } // namespace core

@@ -1,6 +1,10 @@
 #pragma once
-#include "network/network_client.h"
+
+#include <SFML/Window/Event.hpp>
+
 #include "engine/app.h"
+
+#include "network/network_client.h"
 
 namespace game
 {
@@ -22,11 +26,11 @@ public:
 
     void Draw(sf::RenderTarget& window) override
     {
-        client_.Draw(window);
+        _client.Draw(window);
     }
 
 private:
-    sf::Vector2u windowSize_;
-    NetworkClient client_;
+    sf::Vector2u _windowSize;
+    NetworkClient _client;
 };
 } // namespace game

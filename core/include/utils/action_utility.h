@@ -22,8 +22,8 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
  */
-#include <vector>
 #include <functional>
+#include <vector>
 
 namespace core
 {
@@ -41,7 +41,7 @@ public:
      */
     void RegisterCallback(const std::function<void(Ts ...)>& callback)
     {
-	    callbacks_.push_back(callback);
+	    _callbacks.push_back(callback);
     }
 
     /**
@@ -50,13 +50,13 @@ public:
      */
     void Execute(Ts ... args)
     {
-	    for(auto& callback : callbacks_)
+	    for(auto& callback : _callbacks)
 	    {
 	        callback(args...);
 	    }
     }
 
 private:
-	std::vector<std::function<void(Ts...)>> callbacks_;
+	std::vector<std::function<void(Ts...)>> _callbacks;
 };
 }

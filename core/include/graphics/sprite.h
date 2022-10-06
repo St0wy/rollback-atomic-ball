@@ -1,10 +1,11 @@
 #pragma once
 
-#include "engine/component.h"
-#include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/Sprite.hpp>
 
 #include "graphics.h"
+
+#include "engine/component.h"
 
 namespace core
 {
@@ -15,28 +16,24 @@ class TransformManager;
  * Positions are centered at the center of the render target and use pixelPerMeter from globals.h
  */
 class SpriteManager :
-    public ComponentManager<sf::Sprite, static_cast<Component>(ComponentType::SPRITE)>,
-    public DrawInterface
+	public ComponentManager<sf::Sprite, static_cast<Component>(ComponentType::Sprite)>,
+	public DrawInterface
 {
 public:
-    SpriteManager(EntityManager& entityManager, TransformManager& transformManager) :
-        ComponentManager(entityManager),
-        transformManager_(transformManager)
-    {
+	SpriteManager(EntityManager& entityManager, TransformManager& transformManager)
+		: ComponentManager(entityManager),
+		  _transformManager(transformManager) { }
 
-    }
-    void SetOrigin(Entity entity, sf::Vector2f origin);
-    void SetTexture(Entity entity, const sf::Texture& texture);
-    void SetCenter(sf::Vector2f center) { center_ = center; }
-    void SetWindowSize(sf::Vector2f newWindowSize) { windowSize_ = newWindowSize; }
-    void Draw(sf::RenderTarget& window) override;
-    void SetColor(Entity entity, sf::Color color);
+	void SetOrigin(Entity entity, sf::Vector2f origin);
+	void SetTexture(Entity entity, const sf::Texture& texture);
+	void SetCenter(const sf::Vector2f center) { _center = center; }
+	void SetWindowSize(const sf::Vector2f newWindowSize) { _windowSize = newWindowSize; }
+	void Draw(sf::RenderTarget& window) override;
+	void SetColor(Entity entity, sf::Color color);
 
 protected:
-    TransformManager& transformManager_;
-    sf::Vector2f center_{};
-    sf::Vector2f windowSize_{};
-
+	TransformManager& _transformManager;
+	sf::Vector2f _center{};
+	sf::Vector2f _windowSize{};
 };
-
 }

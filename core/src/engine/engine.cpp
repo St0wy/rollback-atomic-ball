@@ -1,16 +1,20 @@
 #include "engine/engine.h"
-#include "utils/log.h"
 
-#include "engine/system.h"
-#include "graphics/graphics.h"
+#include <imgui-SFML.h>
+#include <imgui.h>
+
+#include <SFML/Graphics/View.hpp>
+#include <SFML/System/Clock.hpp>
+#include <SFML/Window/Event.hpp>
+#include <SFML/Window/VideoMode.hpp>
 
 #include "engine/globals.h"
+#include "engine/system.h"
 
-#include <SFML/Window/Event.hpp>
-#include <imgui.h>
-#include <imgui-SFML.h>
+#include "graphics/graphics.h"
 
 #include "utils/assert.h"
+#include "utils/log.h"
 
 #ifdef TRACY_ENABLE
 #include <Tracy.hpp>
@@ -20,132 +24,139 @@ namespace core
 {
 void Engine::Run()
 {
-    Init();
-    sf::Clock clock;
-    while (window_->isOpen())
-    {
-        try
-        {
-            const auto dt = clock.restart();
-            Update(dt);
-#ifdef TRACY_ENABLE
-            FrameMark;
-#endif
-        }
-        catch ([[maybe_unused]] const AssertException& e)
-        {
-            LogError("Exit with exception");
-            window_->close();
-        }
-    }
-    Destroy();
+	Init();
+	sf::Clock clock;
+	while (_window->isOpen())
+	{
+		try
+		{
+			const auto dt = clock.restart();
+			Update(dt);
+			#ifdef TRACY_ENABLE
+			FrameMark;
+			#endif
+		}
+		catch ([[maybe_unused]] const AssertException& e)
+		{
+			LogError("Exit with exception");
+			_window->close();
+		}
+	}
+	Destroy();
 }
 
 void Engine::RegisterApp(App* app)
 {
-    RegisterSystem(app);
-    RegisterDraw(app);
-    RegisterOnEvent(app);
-    RegisterDrawImGui(app);
+	RegisterSystem(app);
+	RegisterDraw(app);
+	RegisterOnEvent(app);
+	RegisterDrawImGui(app);
 }
 
 void Engine::RegisterSystem(SystemInterface* system)
 {
-    systems_.push_back(system);
+	_systems.push_back(system);
 }
 
 void Engine::RegisterOnEvent(OnEventInterface* onEventInterface)
 {
-    eventInterfaces_.push_back(onEventInterface);
+	_eventInterfaces.push_back(onEventInterface);
 }
 
 void Engine::RegisterDraw(DrawInterface* drawInterface)
 {
-    drawInterfaces_.push_back(drawInterface);
+	_drawInterfaces.push_back(drawInterface);
 }
 
 void Engine::RegisterDrawImGui(DrawImGuiInterface* drawImGuiInterface)
 {
-    drawImGuiInterfaces_.push_back(drawImGuiInterface);
+	_drawImGuiInterfaces.push_back(drawImGuiInterface);
 }
 
 void Engine::Init()
 {
-
-#ifdef TRACY_ENABLE
-    ZoneScoped;
-#endif
-    window_ = std::make_unique<sf::RenderWindow>(sf::VideoMode(windowSize.x, windowSize.y), "Rollback Game");
-    const bool status = ImGui::SFML::Init(*window_);
-    if(!status)
-    {
-        LogError("Could not init ImGui-SFML");
-    }
-    for(auto* system : systems_)
-    {
-        system->Begin();
-    }
+	#ifdef TRACY_ENABLE
+	ZoneScoped;
+	#endif
+	_window = std::make_unique<sf::RenderWindow>(
+		sf::VideoMode(WINDOW_SIZE.x, WINDOW_SIZE.y),
+		"Rollback Game");
+	const bool status = ImGui::SFML::Init(*_window);
+	if (!status)
+	{
+		LogError("Could not init ImGui-SFML");
+	}
+	for (auto* system : _systems)
+	{
+		system->Begin();
+	}
 }
 
-void Engine::Update(sf::Time dt) const
+void Engine::Update(const sf::Time dt) const
 {
+	#ifdef TRACY_ENABLE
+	ZoneScoped;
+	#endif
+	sf::Event e{};
+	while (_window->pollEvent(e))
+	{
+		ImGui::SFML::ProcessEvent(e);
+		switch (e.type)
+		{
+		case sf::Event::Closed:
+			_window->close();
+			break;
+		case sf::Event::Resized:
+		{
+			const auto width = static_cast<float>(e.size.width);
+			const auto height = static_cast<float>(e.size.height);
+			sf::FloatRect visibleArea(0, 0, width, height);
+			_window->setView(sf::View(visibleArea));
+			break;
+		}
+		default:
+			break;
+		}
 
-#ifdef TRACY_ENABLE
-    ZoneScoped;
-#endif
-    sf::Event e{};
-    while (window_->pollEvent(e))
-    {
-        ImGui::SFML::ProcessEvent(e);
-        switch (e.type)
-        {
-        case sf::Event::Closed:
-            window_->close();
-            break;
-        case sf::Event::Resized:
-        {
-            sf::FloatRect visibleArea(0, 0, static_cast<float>(e.size.width), static_cast<float>(e.size.height));
-            window_->setView(sf::View(visibleArea));
-            break;
-        }
-        default:
-            break;
-        }
-        for(auto* eventInterface : eventInterfaces_)
-        {
-            eventInterface->OnEvent(e);
-        }
-    }
-    for(auto* system : systems_)
-    {
-        system->Update(dt);
-    }
-    ImGui::SFML::Update(*window_, dt);
-    window_->clear(sf::Color::Black);
+		for (auto* eventInterface : _eventInterfaces)
+		{
+			eventInterface->OnEvent(e);
+		}
+	}
 
-    for(auto* drawInterface : drawInterfaces_)
-    {
-        drawInterface->Draw(*window_);
-    }
-    for(auto* drawImGuiInterface : drawImGuiInterfaces_)
-    {
-        drawImGuiInterface->DrawImGui();
-    }
-    ImGui::SFML::Render(*window_);
+	for (auto* system : _systems)
+	{
+		system->Update(dt);
+	}
 
-    window_->display();
+	ImGui::SFML::Update(*_window, dt);
+	_window->clear(sf::Color::Black);
+
+	for (auto* drawInterface : _drawInterfaces)
+	{
+		drawInterface->Draw(*_window);
+	}
+
+	for (auto* drawImGuiInterface : _drawImGuiInterfaces)
+	{
+		drawImGuiInterface->DrawImGui();
+	}
+
+	ImGui::SFML::Render(*_window);
+
+	_window->display();
 }
 
 void Engine::Destroy()
 {
+	#ifdef TRACY_ENABLE
+	ZoneScoped;
+	#endif
+	for (auto* system : _systems)
+	{
+		system->End();
+	}
 
-#ifdef TRACY_ENABLE
-    ZoneScoped;
-#endif
-    for (auto* system : systems_)
-    {
-        system->End();
-    }
-    window_ = nullptr;
+	_window = nullptr;
 }
 } // namespace core

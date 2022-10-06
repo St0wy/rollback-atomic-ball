@@ -1,13 +1,14 @@
 #pragma once
-#include "game_globals.h"
+#include <SFML/System/Time.hpp>
+
 #include "engine/component.h"
 #include "engine/entity.h"
+
+#include "graphics/graphics.h"
+
 #include "maths/angle.h"
 #include "maths/vec2.h"
 
-#include <SFML/System/Time.hpp>
-
-#include "graphics/graphics.h"
 #include "utils/action_utility.h"
 
 namespace core
@@ -19,8 +20,8 @@ namespace game
 {
 enum class BodyType
 {
-    DYNAMIC,
-    STATIC
+	Dynamic,
+	Static
 };
 
 /**
@@ -28,11 +29,11 @@ enum class BodyType
  */
 struct Body
 {
-    core::Vec2f position = core::Vec2f::zero();
-    core::Vec2f velocity = core::Vec2f::zero();
-    core::Degree angularVelocity = core::Degree(0.0f);
-    core::Degree rotation = core::Degree(0.0f);
-    BodyType bodyType = BodyType::DYNAMIC;
+	core::Vec2f position = core::Vec2f::Zero();
+	core::Vec2f velocity = core::Vec2f::Zero();
+	core::Degree angularVelocity = core::Degree(0.0f);
+	core::Degree rotation = core::Degree(0.0f);
+	BodyType bodyType = BodyType::Dynamic;
 };
 
 /**
@@ -40,8 +41,8 @@ struct Body
  */
 struct Box
 {
-    core::Vec2f extends = core::Vec2f::one();
-    bool isTrigger = false;
+	core::Vec2f extends = core::Vec2f::One();
+	bool isTrigger = false;
 };
 
 /**
@@ -51,26 +52,26 @@ struct Box
 class OnTriggerInterface
 {
 public:
-    virtual ~OnTriggerInterface() = default;
-    virtual void OnTrigger(core::Entity entity1, core::Entity entity2) = 0;
+	virtual ~OnTriggerInterface() = default;
+	virtual void OnTrigger(core::Entity entity1, core::Entity entity2) = 0;
 };
 
 /**
  * \brief BodyManager is a ComponentManager that holds all the Body in the world.
  */
-class BodyManager : public core::ComponentManager<Body, static_cast<core::EntityMask>(core::ComponentType::BODY2D)>
+class BodyManager : public core::ComponentManager<Body, static_cast<core::EntityMask>(core::ComponentType::Body2D)>
 {
 public:
-    using ComponentManager::ComponentManager;
+	using ComponentManager::ComponentManager;
 };
 
 /**
  * \brief BoxManager is a ComponentManager that holds all the Box in the world.
  */
-class BoxManager : public core::ComponentManager<Box, static_cast<core::EntityMask>(core::ComponentType::BOX_COLLIDER2D)>
+class BoxManager : public core::ComponentManager<Box, static_cast<core::EntityMask>(core::ComponentType::BoxCollider2D)>
 {
 public:
-    using ComponentManager::ComponentManager;
+	using ComponentManager::ComponentManager;
 };
 
 /**
@@ -80,32 +81,32 @@ public:
 class PhysicsManager : public core::DrawInterface
 {
 public:
-    explicit PhysicsManager(core::EntityManager& entityManager);
-    void FixedUpdate(sf::Time dt);
-    [[nodiscard]] const Body& GetBody(core::Entity entity) const;
-    void SetBody(core::Entity entity, const Body& body);
-    void AddBody(core::Entity entity);
+	explicit PhysicsManager(core::EntityManager& entityManager);
+	void FixedUpdate(sf::Time dt);
+	[[nodiscard]] const Body& GetBody(core::Entity entity) const;
+	void SetBody(core::Entity entity, const Body& body);
+	void AddBody(core::Entity entity);
 
-    void AddBox(core::Entity entity);
-    void SetBox(core::Entity entity, const Box& box);
-    [[nodiscard]] const Box& GetBox(core::Entity entity) const;
-    /**
-     * \brief RegisterTriggerListener is a method that stores an OnTriggerInterface in the PhysicsManager that will call the OnTrigger method in case of a trigger.
-     * \param onTriggerInterface is the OnTriggerInterface to be called when a trigger occurs.
-     */
-    void RegisterTriggerListener(OnTriggerInterface& onTriggerInterface);
-    void CopyAllComponents(const PhysicsManager& physicsManager);
-    void Draw(sf::RenderTarget& renderTarget) override;
-    void SetCenter(sf::Vector2f center) { center_ = center; }
-    void SetWindowSize(sf::Vector2f newWindowSize) { windowSize_ = newWindowSize; }
+	void AddBox(core::Entity entity);
+	void SetBox(core::Entity entity, const Box& box);
+	[[nodiscard]] const Box& GetBox(core::Entity entity) const;
+
+	/**
+	 * \brief RegisterTriggerListener is a method that stores an OnTriggerInterface in the PhysicsManager that will call the OnTrigger method in case of a trigger.
+	 * \param onTriggerInterface is the OnTriggerInterface to be called when a trigger occurs.
+	 */
+	void RegisterTriggerListener(OnTriggerInterface& onTriggerInterface);
+	void CopyAllComponents(const PhysicsManager& physicsManager);
+	void Draw(sf::RenderTarget& renderTarget) override;
+	void SetCenter(const sf::Vector2f center) { _center = center; }
+	void SetWindowSize(const sf::Vector2f newWindowSize) { _windowSize = newWindowSize; }
 private:
-    core::EntityManager& entityManager_;
-    BodyManager bodyManager_;
-    BoxManager boxManager_;
-    core::Action<core::Entity, core::Entity> onTriggerAction_;
-    //Used for debug
-    sf::Vector2f center_{};
-    sf::Vector2f windowSize_{};
+	core::EntityManager& _entityManager;
+	BodyManager _bodyManager;
+	BoxManager _boxManager;
+	core::Action<core::Entity, core::Entity> _onTriggerAction;
+	//Used for debug
+	sf::Vector2f _center{};
+	sf::Vector2f _windowSize{};
 };
-
 }

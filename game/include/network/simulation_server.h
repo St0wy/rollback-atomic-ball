@@ -1,9 +1,11 @@
 #pragma once
 #include <memory>
+
 #include <SFML/System/Time.hpp>
 
 #include "debug_db.h"
 #include "server.h"
+
 #include "graphics/graphics.h"
 
 namespace game
@@ -16,6 +18,7 @@ struct DelayPacket
 	float currentTime = 0.0f;
 	std::unique_ptr<Packet> packet = nullptr;
 };
+
 class SimulationClient;
 
 /**
@@ -38,11 +41,11 @@ private:
 
 	void SpawnNewPlayer(ClientId clientId, PlayerNumber playerNumber) override;
 
-	std::vector<DelayPacket> receivedPackets_;
-	std::vector<DelayPacket> sentPackets_;
-	std::array<std::unique_ptr<SimulationClient>, maxPlayerNmb>& clients_;
-	float avgDelay_ = 0.25f;
-	float marginDelay_ = 0.1f;
-	float packetLoss_ = 0.0f;
+	std::vector<DelayPacket> _receivedPackets;
+	std::vector<DelayPacket> _sentPackets;
+	std::array<std::unique_ptr<SimulationClient>, MAX_PLAYER_NMB>& _clients;
+	float _avgDelay = 0.25f;
+	float _marginDelay = 0.1f;
+	float _packetLoss = 0.0f;
 };
 }

@@ -1,7 +1,9 @@
 #pragma once
-#include "client.h"
+#include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Network/TcpSocket.hpp>
 #include <SFML/Network/UdpSocket.hpp>
+
+#include "client.h"
 
 #ifdef ENABLE_SQLITE
 #include "network/debug_db.h"
@@ -17,18 +19,20 @@ class NetworkClient final : public Client
 public:
 	enum class State
 	{
-		NONE,
-		JOINING,
-		JOINED,
-		GAME_STARTING,
-		GAME
+		None,
+		Joining,
+		Joined,
+		GameStarting,
+		Game
 
 	};
+
 	enum class PacketSource
 	{
-		TCP,
-		UDP
+		Tcp,
+		Udp
 	};
+
 	void Begin() override;
 
 	void Update(sf::Time dt) override;
@@ -47,15 +51,15 @@ public:
 	void ReceivePacket(const Packet* packet) override;
 private:
 	void ReceiveNetPacket(sf::Packet& packet, PacketSource source);
-	sf::UdpSocket udpSocket_;
-	sf::TcpSocket tcpSocket_;
+	sf::UdpSocket _udpSocket;
+	sf::TcpSocket _tcpSocket;
 
-	std::string serverAddress_ = "localhost";
-	unsigned short serverTcpPort_ = 12345;
-	unsigned short serverUdpPort_ = 0;
+	std::string _serverAddress = "localhost";
+	unsigned short _serverTcpPort = 12345;
+	unsigned short _serverUdpPort = 0;
 
 
-	State currentState_ = State::NONE;
+	State _currentState = State::None;
 
 #ifdef ENABLE_SQLITE
 	DebugDatabase debugDb_;

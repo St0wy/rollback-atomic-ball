@@ -47,6 +47,4 @@ protected:
 
 template<class T, class TNull> TNull Locator<T, TNull>::nullService_;
 template<class T, class TNull> T* Locator<T, TNull>::service_ = &Locator<T, TNull>::nullService_;
-
-
 }

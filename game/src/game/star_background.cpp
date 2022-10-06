@@ -1,26 +1,30 @@
-#include <game/star_background.h>
+#include "game/star_background.h"
+
+#include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
+
+#include "engine/globals.h"
+
 #include "maths/basic.h"
-#include <engine/globals.h>
 
 namespace game
 {
 void StarBackground::Init()
 {
-    vertexArray_ = sf::VertexArray(sf::Points, starCount);
+    _vertexArray = sf::VertexArray(sf::Points, STAR_COUNT);
 
-    for (std::size_t i = 0; i < starCount; i++)
+    for (std::size_t i = 0; i < STAR_COUNT; i++)
     {
-        auto& vertex = vertexArray_[i];
+        auto& vertex = _vertexArray[i];
         vertex.color = sf::Color::White;
         vertex.position = sf::Vector2f(
-            core::RandomRange(-50.0f, 50.0f) * core::pixelPerMeter,
-            core::RandomRange(-50.0f, 50.0f) * core::pixelPerMeter);
+            core::RandomRange(-50.0f, 50.0f) * core::PIXEL_PER_METER,
+            core::RandomRange(-50.0f, 50.0f) * core::PIXEL_PER_METER);
     }
 }
 
 void StarBackground::Draw(sf::RenderTarget& renderTarget)
 {
-    renderTarget.draw(vertexArray_);
+    renderTarget.draw(_vertexArray);
 }
 }

@@ -3,12 +3,13 @@
  */
 
 #pragma once
-#include <SFML/Graphics/Color.hpp>
 #include <array>
 
 #include "engine/component.h"
 #include "engine/entity.h"
+
 #include "graphics/color.h"
+
 #include "maths/angle.h"
 #include "maths/vec2.h"
 
@@ -20,81 +21,85 @@ namespace game
  * Starting from 0 to maxPlayerNmb
  */
 using PlayerNumber = std::uint8_t;
+
 /**
  * \brief INVALID_PLAYER is an integer constant that defines an invalid player number.
  */
 constexpr auto INVALID_PLAYER = std::numeric_limits<PlayerNumber>::max();
+
 /**
  * \brief ClientId is a type used to define the client identification.
  * It is given by the server to clients.
  */
 enum class ClientId : std::uint16_t {};
-constexpr auto INVALID_CLIENT_ID = ClientId{ 0 };
+
+constexpr auto INVALID_CLIENT_ID = ClientId{0};
 using Frame = std::uint32_t;
+
 /**
- * \brief mmaxPlayerNmb is a integer constant that defines the maximum number of player per game
+ * \brief maxPlayerNmb is a integer constant that defines the maximum number of player per game
  */
-constexpr std::uint32_t maxPlayerNmb = 2;
-constexpr short playerHealth = 5;
-constexpr float playerSpeed = 1.0f;
-constexpr core::Degree playerAngularSpeed = core::Degree(90.0f);
-constexpr float playerShootingPeriod = 0.3f;
-constexpr float bulletSpeed = 2.0f;
-constexpr float bulletScale = 0.1f;
-constexpr float bulletPeriod = 3.0f;
-constexpr float playerInvincibilityPeriod = 1.5f;
-constexpr float invincibilityFlashPeriod = 0.5f;
+constexpr std::uint32_t MAX_PLAYER_NMB = 2;
+constexpr short PLAYER_HEALTH = 5;
+constexpr float PLAYER_SPEED = 1.0f;
+constexpr core::Degree PLAYER_ANGULAR_SPEED = core::Degree(90.0f);
+constexpr float PLAYER_SHOOTING_PERIOD = 0.3f;
+constexpr float BULLET_SPEED = 2.0f;
+constexpr float BULLET_SCALE = 0.1f;
+constexpr float BULLET_PERIOD = 3.0f;
+constexpr float PLAYER_INVINCIBILITY_PERIOD = 1.5f;
+constexpr float INVINCIBILITY_FLASH_PERIOD = 0.5f;
 
 /**
  * \brief windowBufferSize is the size of input stored by a client. 5 seconds of frame at 50 fps
  */
-constexpr std::size_t windowBufferSize = 5u * 50u;
+constexpr std::size_t WINDOW_BUFFER_SIZE = 5ull * 50ull;
 
 /**
  * \brief startDelay is the delay to wait before starting a game in milliseconds
  */
-constexpr long long startDelay = 3000;
+constexpr long long START_DELAY = 3000;
 /**
  * \brief maxInputNmb is the number of inputs stored into an PlayerInputPacket
  */
-constexpr std::size_t maxInputNmb = 50;
+constexpr std::size_t MAX_INPUT_NMB = 50;
 /**
  * \brief fixedPeriod is the period used in seconds to start a new FixedUpdate method in the game::GameManager
  */
-constexpr float fixedPeriod = 0.02f; //50fps
+constexpr float FIXED_PERIOD = 0.02f; //50fps
 
 
-constexpr std::array<core::Color, std::max(4u, maxPlayerNmb)> playerColors
+constexpr std::array PLAYER_COLORS
 {
-    core::Color::red(),
-    core::Color::blue(),
-    core::Color::yellow(),
-    core::Color::cyan()
+	core::Color::Red(),
+	core::Color::Blue(),
+	core::Color::Yellow(),
+	core::Color::Cyan()
 };
 
-constexpr std::array<core::Vec2f, std::max(4u, maxPlayerNmb)> spawnPositions
+constexpr std::array SPAWN_POSITIONS
 {
-    core::Vec2f(0,1),
-    core::Vec2f(0,-1),
-    core::Vec2f(1,0),
-    core::Vec2f(-1,0),
+	core::Vec2f(0, 1),
+	core::Vec2f(0, -1),
+	core::Vec2f(1, 0),
+	core::Vec2f(-1, 0),
 };
 
-constexpr std::array<core::Degree, std::max(4u, maxPlayerNmb)> spawnRotations
+constexpr std::array SPAWN_ROTATIONS
 {
-    core::Degree(0.0f),
-    core::Degree(180.0f),
-    core::Degree(-90.0f),
-    core::Degree(90.0f)
+	core::Degree(0.0f),
+	core::Degree(180.0f),
+	core::Degree(-90.0f),
+	core::Degree(90.0f)
 };
 
 enum class ComponentType : core::EntityMask
 {
-    PLAYER_CHARACTER = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE),
-    BULLET = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE) << 1u,
-    ASTEROID = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE) << 2u,
-    PLAYER_INPUT = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE) << 3u,
-    DESTROYED = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE) << 4u,
+	PlayerCharacter = static_cast<core::EntityMask>(core::ComponentType::OtherType),
+	Bullet = static_cast<core::EntityMask>(core::ComponentType::OtherType) << 1u,
+	Asteroid = static_cast<core::EntityMask>(core::ComponentType::OtherType) << 2u,
+	PlayerInput = static_cast<core::EntityMask>(core::ComponentType::OtherType) << 3u,
+	Destroyed = static_cast<core::EntityMask>(core::ComponentType::OtherType) << 4u,
 };
 
 /**
@@ -102,16 +107,16 @@ enum class ComponentType : core::EntityMask
  */
 using PlayerInput = std::uint8_t;
 
-namespace PlayerInputEnum
+namespace player_input_enum
 {
 enum PlayerInput : std::uint8_t
 {
-    NONE = 0u,
-    UP = 1u << 0u,
-    DOWN = 1u << 1u,
-    LEFT = 1u << 2u,
-    RIGHT = 1u << 3u,
-    SHOOT = 1u << 4u,
+	None = 0u,
+	Up = 1u << 0u,
+	Down = 1u << 1u,
+	Left = 1u << 2u,
+	Right = 1u << 3u,
+	Shoot = 1u << 4u,
 };
 }
 }

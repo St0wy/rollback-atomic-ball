@@ -1,14 +1,14 @@
-
 #include "game/game_manager.h"
 
-#include "utils/log.h"
-
-#include "maths/basic.h"
-#include "utils/conversion.h"
+#include <chrono>
+#include <imgui.h>
 
 #include <fmt/format.h>
-#include <imgui.h>
-#include <chrono>
+
+#include "maths/basic.h"
+
+#include "utils/conversion.h"
+#include "utils/log.h"
 
 
 #ifdef TRACY_ENABLE
@@ -17,495 +17,476 @@
 
 namespace game
 {
-
-GameManager::GameManager() :
-    transformManager_(entityManager_),
-    rollbackManager_(*this, entityManager_)
+GameManager::GameManager()
+	: _transformManager(_entityManager),
+	  _rollbackManager(*this, _entityManager)
 {
-    playerEntityMap_.fill(core::INVALID_ENTITY);
+	_playerEntityMap.fill(core::INVALID_ENTITY);
 }
 
-void GameManager::SpawnPlayer(PlayerNumber playerNumber, core::Vec2f position, core::Degree rotation)
+void GameManager::SpawnPlayer(const PlayerNumber playerNumber, const core::Vec2f position, const core::Degree rotation)
 {
-    if (GetEntityFromPlayerNumber(playerNumber) != core::INVALID_ENTITY)
-        return;
-    core::LogDebug("[GameManager] Spawning new player");
-    const auto entity = entityManager_.CreateEntity();
-    playerEntityMap_[playerNumber] = entity;
+	if (GetEntityFromPlayerNumber(playerNumber) != core::INVALID_ENTITY)
+		return;
+	core::LogDebug("[GameManager] Spawning new player");
+	const auto entity = _entityManager.CreateEntity();
+	_playerEntityMap[playerNumber] = entity;
 
-    transformManager_.AddComponent(entity);
-    transformManager_.SetPosition(entity, position);
-    transformManager_.SetRotation(entity, rotation);
-    rollbackManager_.SpawnPlayer(playerNumber, entity, position, rotation);
+	_transformManager.AddComponent(entity);
+	_transformManager.SetPosition(entity, position);
+	_transformManager.SetRotation(entity, rotation);
+	_rollbackManager.SpawnPlayer(playerNumber, entity, position, rotation);
 }
 
-core::Entity GameManager::GetEntityFromPlayerNumber(PlayerNumber playerNumber) const
+core::Entity GameManager::GetEntityFromPlayerNumber(const PlayerNumber playerNumber) const
 {
-    return playerEntityMap_[playerNumber];
+	return _playerEntityMap[playerNumber];
 }
 
 
-void GameManager::SetPlayerInput(PlayerNumber playerNumber, PlayerInput playerInput, std::uint32_t inputFrame)
+void GameManager::SetPlayerInput(const PlayerNumber playerNumber, const PlayerInput playerInput,
+								 const std::uint32_t inputFrame)
 {
-    if (playerNumber == INVALID_PLAYER)
-        return;
+	if (playerNumber == INVALID_PLAYER)
+		return;
 
-    rollbackManager_.SetPlayerInput(playerNumber, playerInput, inputFrame);
-
-}
-void GameManager::Validate(Frame newValidateFrame)
-{
-
-#ifdef TRACY_ENABLE
-    ZoneScoped;
-#endif
-    if (rollbackManager_.GetCurrentFrame() < newValidateFrame)
-    {
-        rollbackManager_.StartNewFrame(newValidateFrame);
-    }
-    rollbackManager_.ValidateFrame(newValidateFrame);
+	_rollbackManager.SetPlayerInput(playerNumber, playerInput, inputFrame);
 }
 
-core::Entity GameManager::SpawnBullet(PlayerNumber playerNumber, core::Vec2f position, core::Vec2f velocity)
+void GameManager::Validate(const Frame newValidateFrame)
 {
-    const core::Entity entity = entityManager_.CreateEntity();
-
-    transformManager_.AddComponent(entity);
-    transformManager_.SetPosition(entity, position);
-    transformManager_.SetScale(entity, core::Vec2f::one() * bulletScale);
-    transformManager_.SetRotation(entity, core::Degree(0.0f));
-    rollbackManager_.SpawnBullet(playerNumber, entity, position, velocity);
-    return entity;
+	#ifdef TRACY_ENABLE
+	ZoneScoped;
+	#endif
+	if (_rollbackManager.GetCurrentFrame() < newValidateFrame)
+	{
+		_rollbackManager.StartNewFrame(newValidateFrame);
+	}
+	_rollbackManager.ValidateFrame(newValidateFrame);
 }
 
-void GameManager::DestroyBullet(core::Entity entity)
+core::Entity GameManager::SpawnBullet(const PlayerNumber playerNumber, const core::Vec2f position,
+									  const core::Vec2f velocity)
 {
-    rollbackManager_.DestroyEntity(entity);
+	const core::Entity entity = _entityManager.CreateEntity();
+
+	_transformManager.AddComponent(entity);
+	_transformManager.SetPosition(entity, position);
+	_transformManager.SetScale(entity, core::Vec2f::One() * BULLET_SCALE);
+	_transformManager.SetRotation(entity, core::Degree(0.0f));
+	_rollbackManager.SpawnBullet(playerNumber, entity, position, velocity);
+	return entity;
+}
+
+void GameManager::DestroyBullet(const core::Entity entity)
+{
+	_rollbackManager.DestroyEntity(entity);
 }
 
 PlayerNumber GameManager::CheckWinner() const
 {
-    int alivePlayer = 0;
-    PlayerNumber winner = INVALID_PLAYER;
-    const auto& playerManager = rollbackManager_.GetPlayerCharacterManager();
-    for (core::Entity entity = 0; entity < entityManager_.GetEntitiesSize(); entity++)
-    {
-        if (!entityManager_.HasComponent(entity, static_cast<core::EntityMask>(ComponentType::PLAYER_CHARACTER)))
-            continue;
-        const auto& player = playerManager.GetComponent(entity);
-        if (player.health > 0)
-        {
-            alivePlayer++;
-            winner = player.playerNumber;
-        }
-    }
+	int alivePlayer = 0;
+	PlayerNumber winner = INVALID_PLAYER;
+	const auto& playerManager = _rollbackManager.GetPlayerCharacterManager();
+	for (core::Entity entity = 0; entity < _entityManager.GetEntitiesSize(); entity++)
+	{
+		if (!_entityManager.HasComponent(entity, static_cast<core::EntityMask>(ComponentType::PlayerCharacter)))
+			continue;
+		const auto& player = playerManager.GetComponent(entity);
+		if (player.health > 0)
+		{
+			alivePlayer++;
+			winner = player.playerNumber;
+		}
+	}
 
-    return alivePlayer == 1 ? winner : INVALID_PLAYER;
+	return alivePlayer == 1 ? winner : INVALID_PLAYER;
 }
 
-void GameManager::WinGame(PlayerNumber winner)
+void GameManager::WinGame(const PlayerNumber winner)
 {
-    winner_ = winner;
+	_winner = winner;
 }
 
-ClientGameManager::ClientGameManager(PacketSenderInterface& packetSenderInterface) :
-    GameManager(),
-    packetSenderInterface_(packetSenderInterface),
-    spriteManager_(entityManager_, transformManager_)
-{
-}
+ClientGameManager::ClientGameManager(PacketSenderInterface& packetSenderInterface)
+	: GameManager(),
+	  _packetSenderInterface(packetSenderInterface),
+	  _spriteManager(_entityManager, _transformManager) {}
 
 void ClientGameManager::Begin()
 {
-#ifdef TRACY_ENABLE
-    ZoneScoped;
-#endif
-    //load textures
-    if (!bulletTexture_.loadFromFile("data/sprites/bullet.png"))
-    {
-        core::LogError("Could not load bullet sprite");
-    }
-    if (!shipTexture_.loadFromFile("data/sprites/ship.png"))
-    {
-        core::LogError("Could not load ship sprite");
-    }
-    //load fonts
-    if (!font_.loadFromFile("data/fonts/8-bit-hud.ttf"))
-    {
-        core::LogError("Could not load font");
-    }
-    textRenderer_.setFont(font_);
-    starBackground_.Init();
+	#ifdef TRACY_ENABLE
+	ZoneScoped;
+	#endif
+	//load textures
+	if (!_bulletTexture.loadFromFile("data/sprites/bullet.png"))
+	{
+		core::LogError("Could not load bullet sprite");
+	}
+	if (!_shipTexture.loadFromFile("data/sprites/ship.png"))
+	{
+		core::LogError("Could not load ship sprite");
+	}
+	//load fonts
+	if (!_font.loadFromFile("data/fonts/8-bit-hud.ttf"))
+	{
+		core::LogError("Could not load font");
+	}
+	_textRenderer.setFont(_font);
+	_starBackground.Init();
 }
 
-void ClientGameManager::Update(sf::Time dt)
+void ClientGameManager::Update(const sf::Time dt)
 {
+	#ifdef TRACY_ENABLE
+	ZoneScoped;
+	#endif
+	if (_state & Started)
+	{
+		_rollbackManager.SimulateToCurrentFrame();
+		//Copy rollback transform position to our own
+		for (core::Entity entity = 0; entity < _entityManager.GetEntitiesSize(); entity++)
+		{
+			if (_entityManager.HasComponent(entity,
+				static_cast<core::EntityMask>(ComponentType::PlayerCharacter) |
+				static_cast<core::EntityMask>(core::ComponentType::Sprite)))
+			{
+				const auto& player = _rollbackManager.GetPlayerCharacterManager().GetComponent(entity);
 
-#ifdef TRACY_ENABLE
-    ZoneScoped;
-#endif
-    if (state_ & STARTED)
-    {
-        rollbackManager_.SimulateToCurrentFrame();
-        //Copy rollback transform position to our own
-        for (core::Entity entity = 0; entity < entityManager_.GetEntitiesSize(); entity++)
-        {
-            if (entityManager_.HasComponent(entity,
-                static_cast<core::EntityMask>(ComponentType::PLAYER_CHARACTER) |
-                static_cast<core::EntityMask>(core::ComponentType::SPRITE)))
-            {
-                const auto& player = rollbackManager_.GetPlayerCharacterManager().GetComponent(entity);
-                /*
-                if (player.invincibilityTime > 0.0f)
-                {
-                    //auto leftV = std::fmod(player.invincibilityTime, invincibilityFlashPeriod);
-                    //auto rightV = invincibilityFlashPeriod / 2.0f;
-                    //core::LogDebug(fmt::format("Comparing {} and {} with time: {}", leftV, rightV, player.invincibilityTime));
-                }
-                */
-                if (player.invincibilityTime > 0.0f &&
-                    std::fmod(player.invincibilityTime, invincibilityFlashPeriod) > invincibilityFlashPeriod / 2.0f)
-                {
-                    spriteManager_.SetColor(entity, sf::Color::Black);
-                }
-                else
-                {
-                    spriteManager_.SetColor(entity, playerColors[player.playerNumber]);
-                }
-            }
+				if (player.invincibilityTime > 0.0f &&
+					std::fmod(player.invincibilityTime, INVINCIBILITY_FLASH_PERIOD) > INVINCIBILITY_FLASH_PERIOD / 2.0f)
+				{
+					_spriteManager.SetColor(entity, sf::Color::Black);
+				}
+				else
+				{
+					_spriteManager.SetColor(entity, PLAYER_COLORS[player.playerNumber]);
+				}
+			}
 
-            if (entityManager_.HasComponent(entity, static_cast<core::EntityMask>(core::ComponentType::TRANSFORM)))
-            {
-                transformManager_.SetPosition(entity, rollbackManager_.GetTransformManager().GetPosition(entity));
-                transformManager_.SetScale(entity, rollbackManager_.GetTransformManager().GetScale(entity));
-                transformManager_.SetRotation(entity, rollbackManager_.GetTransformManager().GetRotation(entity));
-            }
-        }
-    }
-    fixedTimer_ += dt.asSeconds();
-    while (fixedTimer_ > fixedPeriod)
-    {
-        FixedUpdate();
-        fixedTimer_ -= fixedPeriod;
-
-    }
-
-
-
+			if (_entityManager.HasComponent(entity, static_cast<core::EntityMask>(core::ComponentType::Transform)))
+			{
+				_transformManager.SetPosition(entity, _rollbackManager.GetTransformManager().GetPosition(entity));
+				_transformManager.SetScale(entity, _rollbackManager.GetTransformManager().GetScale(entity));
+				_transformManager.SetRotation(entity, _rollbackManager.GetTransformManager().GetRotation(entity));
+			}
+		}
+	}
+	_fixedTimer += dt.asSeconds();
+	while (_fixedTimer > FIXED_PERIOD)
+	{
+		FixedUpdate();
+		_fixedTimer -= FIXED_PERIOD;
+	}
 }
 
-void ClientGameManager::End()
-{
-}
+void ClientGameManager::End() {}
 
-void ClientGameManager::SetWindowSize(sf::Vector2u windowsSize)
+void ClientGameManager::SetWindowSize(const sf::Vector2u windowsSize)
 {
-    windowSize_ = windowsSize;
-    const sf::FloatRect visibleArea(0.0f, 0.0f,
-        static_cast<float>(windowSize_.x),
-        static_cast<float>(windowSize_.y));
-    originalView_ = sf::View(visibleArea);
-    spriteManager_.SetWindowSize(sf::Vector2f(windowsSize));
-    spriteManager_.SetCenter(sf::Vector2f(windowsSize) / 2.0f);
-    auto& currentPhysicsManager = rollbackManager_.GetCurrentPhysicsManager();
-    currentPhysicsManager.SetCenter(sf::Vector2f(windowsSize) / 2.0f);
-    currentPhysicsManager.SetWindowSize(sf::Vector2f(windowsSize));
+	_windowSize = windowsSize;
+	const auto width = static_cast<float>(_windowSize.x);
+	const auto height = static_cast<float>(_windowSize.y);
+	const sf::FloatRect visibleArea(0.0f, 0.0f, width, height);
+	_originalView = sf::View(visibleArea);
+	_spriteManager.SetWindowSize(sf::Vector2f(windowsSize));
+	_spriteManager.SetCenter(sf::Vector2f(windowsSize) / 2.0f);
+	auto& currentPhysicsManager = _rollbackManager.GetCurrentPhysicsManager();
+	currentPhysicsManager.SetCenter(sf::Vector2f(windowsSize) / 2.0f);
+	currentPhysicsManager.SetWindowSize(sf::Vector2f(windowsSize));
 }
 
 void ClientGameManager::Draw(sf::RenderTarget& target)
 {
+	#ifdef TRACY_ENABLE
+	ZoneScoped;
+	#endif
+	UpdateCameraView();
+	target.setView(_cameraView);
 
-#ifdef TRACY_ENABLE
-    ZoneScoped;
-#endif
-    UpdateCameraView();
-    target.setView(cameraView_);
+	_starBackground.Draw(target);
+	_spriteManager.Draw(target);
 
-    starBackground_.Draw(target);
-    spriteManager_.Draw(target);
+	if (_drawPhysics)
+	{
+		auto& currentPhysicsManager = _rollbackManager.GetCurrentPhysicsManager();
+		currentPhysicsManager.Draw(target);
+	}
 
-    if(drawPhysics_)
-    {
-        auto& currentPhysicsManager = rollbackManager_.GetCurrentPhysicsManager();
-        currentPhysicsManager.Draw(target);
-    }
-
-    // Draw texts on screen
-    target.setView(originalView_);
-    if (state_ & FINISHED)
-    {
-        if (winner_ == GetPlayerNumber())
-        {
-            const std::string winnerText = fmt::format("You won!");
-            textRenderer_.setFillColor(sf::Color::White);
-            textRenderer_.setString(winnerText);
-            textRenderer_.setCharacterSize(32);
-            const auto textBounds = textRenderer_.getLocalBounds();
-            textRenderer_.setPosition(static_cast<float>(windowSize_.x) / 2.0f - textBounds.width / 2.0f,
-                static_cast<float>(windowSize_.y) / 2.0f - textBounds.height / 2.0f);
-            target.draw(textRenderer_);
-        }
-        else if (winner_ != INVALID_PLAYER)
-        {
-            const std::string winnerText = fmt::format("P{} won!", winner_ + 1);
-            textRenderer_.setFillColor(sf::Color::White);
-            textRenderer_.setString(winnerText);
-            textRenderer_.setCharacterSize(32);
-            const auto textBounds = textRenderer_.getLocalBounds();
-            textRenderer_.setPosition(static_cast<float>(windowSize_.x) / 2.0f - textBounds.width / 2.0f,
-                static_cast<float>(windowSize_.y) / 2.0f - textBounds.height / 2.0f);
-            target.draw(textRenderer_);
-        }
-        else
-        {
-            const std::string errorMessage = fmt::format("Error with other players");
-            textRenderer_.setFillColor(sf::Color::Red);
-            textRenderer_.setString(errorMessage);
-            textRenderer_.setCharacterSize(32);
-            const auto textBounds = textRenderer_.getLocalBounds();
-            textRenderer_.setPosition(static_cast<float>(windowSize_.x) / 2.0f - textBounds.width / 2.0f,
-                static_cast<float>(windowSize_.y) / 2.0f - textBounds.height / 2.0f);
-            target.draw(textRenderer_);
-        }
-    }
-    if (!(state_ & STARTED))
-    {
-        if (startingTime_ != 0)
-        {
-            using namespace std::chrono;
-            unsigned long long ms = duration_cast<milliseconds>(
-                system_clock::now().time_since_epoch()
-                ).count();
-            if (ms < startingTime_)
-            {
-                const std::string countDownText = fmt::format("Starts in {}", ((startingTime_ - ms) / 1000 + 1));
-                textRenderer_.setFillColor(sf::Color::White);
-                textRenderer_.setString(countDownText);
-                textRenderer_.setCharacterSize(32);
-                const auto textBounds = textRenderer_.getLocalBounds();
-                textRenderer_.setPosition(static_cast<float>(windowSize_.x) / 2.0f - textBounds.width / 2.0f,
-                    static_cast<float>(windowSize_.y) / 2.0f - textBounds.height / 2.0f);
-                target.draw(textRenderer_);
-            }
-        }
-    }
-    else
-    {
-        std::string health;
-        const auto& playerManager = rollbackManager_.GetPlayerCharacterManager();
-        for (PlayerNumber playerNumber = 0; playerNumber < maxPlayerNmb; playerNumber++)
-        {
-            const auto playerEntity = GetEntityFromPlayerNumber(playerNumber);
-            if (playerEntity == core::INVALID_ENTITY)
-            {
-                continue;
-            }
-            health += fmt::format("P{} health: {} ", playerNumber + 1, playerManager.GetComponent(playerEntity).health);
-        }
-        textRenderer_.setFillColor(sf::Color::White);
-        textRenderer_.setString(health);
-        textRenderer_.setPosition(10, 10);
-        textRenderer_.setCharacterSize(20);
-        target.draw(textRenderer_);
-    }
-
+	// Draw texts on screen
+	target.setView(_originalView);
+	if (_state & Finished)
+	{
+		if (_winner == GetPlayerNumber())
+		{
+			const std::string winnerText = fmt::format("You won!");
+			_textRenderer.setFillColor(sf::Color::White);
+			_textRenderer.setString(winnerText);
+			_textRenderer.setCharacterSize(32);
+			const auto textBounds = _textRenderer.getLocalBounds();
+			_textRenderer.setPosition(static_cast<float>(_windowSize.x) / 2.0f - textBounds.width / 2.0f,
+				static_cast<float>(_windowSize.y) / 2.0f - textBounds.height / 2.0f);
+			target.draw(_textRenderer);
+		}
+		else if (_winner != INVALID_PLAYER)
+		{
+			const std::string winnerText = fmt::format("P{} won!", _winner + 1);
+			_textRenderer.setFillColor(sf::Color::White);
+			_textRenderer.setString(winnerText);
+			_textRenderer.setCharacterSize(32);
+			const auto textBounds = _textRenderer.getLocalBounds();
+			_textRenderer.setPosition(static_cast<float>(_windowSize.x) / 2.0f - textBounds.width / 2.0f,
+				static_cast<float>(_windowSize.y) / 2.0f - textBounds.height / 2.0f);
+			target.draw(_textRenderer);
+		}
+		else
+		{
+			const std::string errorMessage = fmt::format("Error with other players");
+			_textRenderer.setFillColor(sf::Color::Red);
+			_textRenderer.setString(errorMessage);
+			_textRenderer.setCharacterSize(32);
+			const auto textBounds = _textRenderer.getLocalBounds();
+			_textRenderer.setPosition(static_cast<float>(_windowSize.x) / 2.0f - textBounds.width / 2.0f,
+				static_cast<float>(_windowSize.y) / 2.0f - textBounds.height / 2.0f);
+			target.draw(_textRenderer);
+		}
+	}
+	if (!(_state & Started))
+	{
+		if (_startingTime != 0)
+		{
+			using namespace std::chrono;
+			const unsigned long long ms = duration_cast<milliseconds>(
+				system_clock::now().time_since_epoch()
+			).count();
+			if (ms < _startingTime)
+			{
+				const std::string countDownText = fmt::format("Starts in {}", ((_startingTime - ms) / 1000 + 1));
+				_textRenderer.setFillColor(sf::Color::White);
+				_textRenderer.setString(countDownText);
+				_textRenderer.setCharacterSize(32);
+				const auto textBounds = _textRenderer.getLocalBounds();
+				_textRenderer.setPosition(static_cast<float>(_windowSize.x) / 2.0f - textBounds.width / 2.0f,
+					static_cast<float>(_windowSize.y) / 2.0f - textBounds.height / 2.0f);
+				target.draw(_textRenderer);
+			}
+		}
+	}
+	else
+	{
+		std::string health;
+		const auto& playerManager = _rollbackManager.GetPlayerCharacterManager();
+		for (PlayerNumber playerNumber = 0; playerNumber < MAX_PLAYER_NMB; playerNumber++)
+		{
+			const auto playerEntity = GetEntityFromPlayerNumber(playerNumber);
+			if (playerEntity == core::INVALID_ENTITY)
+			{
+				continue;
+			}
+			health += fmt::format("P{} health: {} ", playerNumber + 1, playerManager.GetComponent(playerEntity).health);
+		}
+		_textRenderer.setFillColor(sf::Color::White);
+		_textRenderer.setString(health);
+		_textRenderer.setPosition(10, 10);
+		_textRenderer.setCharacterSize(20);
+		target.draw(_textRenderer);
+	}
 }
 
-void ClientGameManager::SetClientPlayer(PlayerNumber clientPlayer)
+void ClientGameManager::SetClientPlayer(const PlayerNumber clientPlayer)
 {
-    clientPlayer_ = clientPlayer;
+	_clientPlayer = clientPlayer;
 }
 
-void ClientGameManager::SpawnPlayer(PlayerNumber playerNumber, core::Vec2f position, core::Degree rotation)
+void ClientGameManager::SpawnPlayer(PlayerNumber playerNumber, const core::Vec2f position, const core::Degree rotation)
 {
-    core::LogDebug(fmt::format("Spawn player: {}", playerNumber));
+	core::LogDebug(fmt::format("Spawn player: {}", playerNumber));
 
-    GameManager::SpawnPlayer(playerNumber, position, rotation);
-    const auto entity = GetEntityFromPlayerNumber(playerNumber);
-    spriteManager_.AddComponent(entity);
-    spriteManager_.SetTexture(entity, shipTexture_);
-    spriteManager_.SetOrigin(entity, sf::Vector2f(shipTexture_.getSize()) / 2.0f);
-    spriteManager_.SetColor(entity, playerColors[playerNumber]);
-
+	GameManager::SpawnPlayer(playerNumber, position, rotation);
+	const auto entity = GetEntityFromPlayerNumber(playerNumber);
+	_spriteManager.AddComponent(entity);
+	_spriteManager.SetTexture(entity, _shipTexture);
+	_spriteManager.SetOrigin(entity, sf::Vector2f(_shipTexture.getSize()) / 2.0f);
+	_spriteManager.SetColor(entity, PLAYER_COLORS[playerNumber]);
 }
 
-core::Entity ClientGameManager::SpawnBullet(PlayerNumber playerNumber, core::Vec2f position, core::Vec2f velocity)
+core::Entity ClientGameManager::SpawnBullet(const PlayerNumber playerNumber, const core::Vec2f position,
+											const core::Vec2f velocity)
 {
-    const auto entity = GameManager::SpawnBullet(playerNumber, position, velocity);
+	const auto entity = GameManager::SpawnBullet(playerNumber, position, velocity);
 
-    spriteManager_.AddComponent(entity);
-    spriteManager_.SetTexture(entity, bulletTexture_);
-    spriteManager_.SetOrigin(entity, sf::Vector2f(bulletTexture_.getSize()) / 2.0f);
-    spriteManager_.SetColor(entity, playerColors[playerNumber]);
+	_spriteManager.AddComponent(entity);
+	_spriteManager.SetTexture(entity, _bulletTexture);
+	_spriteManager.SetOrigin(entity, sf::Vector2f(_bulletTexture.getSize()) / 2.0f);
+	_spriteManager.SetColor(entity, PLAYER_COLORS[playerNumber]);
 
-    return entity;
+	return entity;
 }
 
 
 void ClientGameManager::FixedUpdate()
 {
+	#ifdef TRACY_ENABLE
+	ZoneScoped;
+	#endif
+	if (!(_state & Started))
+	{
+		if (_startingTime != 0)
+		{
+			using namespace std::chrono;
+			const auto ms = duration_cast<duration<unsigned long long, std::milli>>(
+				system_clock::now().time_since_epoch()
+			).count();
+			if (ms > _startingTime)
+			{
+				_state = _state | Started;
+			}
+			else
+			{
+				return;
+			}
+		}
+		else
+		{
+			return;
+		}
+	}
+	if (_state & Finished)
+	{
+		return;
+	}
 
-#ifdef TRACY_ENABLE
-    ZoneScoped;
-#endif
-    if (!(state_ & STARTED))
-    {
-        if (startingTime_ != 0)
-        {
-            using namespace std::chrono;
-            const auto ms = duration_cast<duration<unsigned long long, std::milli>>(
-                system_clock::now().time_since_epoch()
-                ).count();
-            if (ms > startingTime_)
-            {
-                state_ = state_ | STARTED;
-            }
-            else
-            {
+	//We send the player inputs when the game started
+	const auto playerNumber = GetPlayerNumber();
+	if (playerNumber == INVALID_PLAYER)
+	{
+		//We still did not receive the spawn player packet, but receive the start game packet
+		core::LogWarning(fmt::format("Invalid Player Entity in {}:line {}", __FILE__, __LINE__));
+		return;
+	}
 
-                return;
-            }
-        }
-        else
-        {
-            return;
-        }
-    }
-    if (state_ & FINISHED)
-    {
-        return;
-    }
+	const auto& inputs = _rollbackManager.GetInputs(playerNumber);
+	auto playerInputPacket = std::make_unique<PlayerInputPacket>();
+	playerInputPacket->playerNumber = playerNumber;
+	playerInputPacket->currentFrame = core::ConvertToBinary(_currentFrame);
+	for (size_t i = 0; i < playerInputPacket->inputs.size(); i++)
+	{
+		if (i > _currentFrame)
+		{
+			break;
+		}
 
-    //We send the player inputs when the game started
-    const auto playerNumber = GetPlayerNumber();
-    if (playerNumber == INVALID_PLAYER)
-    {
-        //We still did not receive the spawn player packet, but receive the start game packet
-        core::LogWarning(fmt::format("Invalid Player Entity in {}:line {}", __FILE__, __LINE__));
-        return;
-    }
-    const auto& inputs = rollbackManager_.GetInputs(playerNumber);
-    auto playerInputPacket = std::make_unique<PlayerInputPacket>();
-    playerInputPacket->playerNumber = playerNumber;
-    playerInputPacket->currentFrame = core::ConvertToBinary(currentFrame_);
-    for (size_t i = 0; i < playerInputPacket->inputs.size(); i++)
-    {
-        if (i > currentFrame_)
-        {
-            break;
-        }
-
-        playerInputPacket->inputs[i] = inputs[i];
-    }
-    packetSenderInterface_.SendUnreliablePacket(std::move(playerInputPacket));
+		playerInputPacket->inputs[i] = inputs[i];
+	}
+	_packetSenderInterface.SendUnreliablePacket(std::move(playerInputPacket));
 
 
-    currentFrame_++;
-    rollbackManager_.StartNewFrame(currentFrame_);
+	_currentFrame++;
+	_rollbackManager.StartNewFrame(_currentFrame);
 }
 
 
-void ClientGameManager::SetPlayerInput(PlayerNumber playerNumber, PlayerInput playerInput, std::uint32_t inputFrame)
+void ClientGameManager::SetPlayerInput(const PlayerNumber playerNumber, const PlayerInput playerInput,
+									   const std::uint32_t inputFrame)
 {
-    if (playerNumber == INVALID_PLAYER)
-        return;
-    GameManager::SetPlayerInput(playerNumber, playerInput, inputFrame);
+	if (playerNumber == INVALID_PLAYER)
+		return;
+	GameManager::SetPlayerInput(playerNumber, playerInput, inputFrame);
 }
 
 void ClientGameManager::StartGame(unsigned long long int startingTime)
 {
-    core::LogDebug(fmt::format("Start game at starting time: {}", startingTime));
-    startingTime_ = startingTime;
+	core::LogDebug(fmt::format("Start game at starting time: {}", startingTime));
+	_startingTime = startingTime;
 }
 
 void ClientGameManager::DrawImGui()
 {
-    ImGui::Text(state_ & STARTED ? "Game has started" : "Game has not started");
-    if (startingTime_ != 0)
-    {
-        ImGui::Text("Starting Time: %llu", startingTime_);
-        using namespace std::chrono;
-        unsigned long long ms = duration_cast<milliseconds>(
-            system_clock::now().time_since_epoch()
-            ).count();
-        ImGui::Text("Current Time: %llu", ms);
-    }
-    ImGui::Checkbox("Draw Physics", &drawPhysics_);
+	ImGui::Text(_state & Started ? "Game has started" : "Game has not started");
+	if (_startingTime != 0)
+	{
+		ImGui::Text("Starting Time: %llu", _startingTime);
+		using namespace std::chrono;
+		const unsigned long long ms = duration_cast<milliseconds>(
+			system_clock::now().time_since_epoch()
+		).count();
+		ImGui::Text("Current Time: %llu", ms);
+	}
+	ImGui::Checkbox("Draw Physics", &_drawPhysics);
 }
 
 void ClientGameManager::ConfirmValidateFrame(Frame newValidateFrame,
-    const std::array<PhysicsState, maxPlayerNmb>& physicsStates)
+											 const std::array<PhysicsState, MAX_PLAYER_NMB>& physicsStates)
 {
-    if (newValidateFrame < rollbackManager_.GetLastValidateFrame())
-    {
-        core::LogWarning(fmt::format("New validate frame is too old"));
-        return;
-    }
-    for (PlayerNumber playerNumber = 0; playerNumber < maxPlayerNmb; playerNumber++)
-    {
-        if (rollbackManager_.GetLastReceivedFrame(playerNumber) < newValidateFrame)
-        {
-            
-            core::LogWarning(fmt::format("Trying to validate frame {} while playerNumber {} is at input frame {}, client player {}",
-                newValidateFrame,
-                playerNumber + 1,
-                rollbackManager_.GetLastReceivedFrame(playerNumber),
-                GetPlayerNumber()+1));
-            
+	if (newValidateFrame < _rollbackManager.GetLastValidateFrame())
+	{
+		core::LogWarning(fmt::format("New validate frame is too old"));
+		return;
+	}
+	for (PlayerNumber playerNumber = 0; playerNumber < MAX_PLAYER_NMB; playerNumber++)
+	{
+		if (_rollbackManager.GetLastReceivedFrame(playerNumber) < newValidateFrame)
+		{
+			core::LogWarning(fmt::format(
+				"Trying to validate frame {} while playerNumber {} is at input frame {}, client player {}",
+				newValidateFrame,
+				playerNumber + 1,
+				_rollbackManager.GetLastReceivedFrame(playerNumber),
+				GetPlayerNumber() + 1));
 
-            return;
-        }
-    }
-    rollbackManager_.ConfirmFrame(newValidateFrame, physicsStates);
+
+			return;
+		}
+	}
+	_rollbackManager.ConfirmFrame(newValidateFrame, physicsStates);
 }
 
-void ClientGameManager::WinGame(PlayerNumber winner)
+void ClientGameManager::WinGame(const PlayerNumber winner)
 {
-    GameManager::WinGame(winner);
-    state_ = state_ | FINISHED;
+	GameManager::WinGame(winner);
+	_state = _state | Finished;
 }
 
 void ClientGameManager::UpdateCameraView()
 {
-    if ((state_ & STARTED) != STARTED)
-    {
-        cameraView_ = originalView_;
-        return;
-    }
+	if ((_state & Started) != Started)
+	{
+		_cameraView = _originalView;
+		return;
+	}
 
-    cameraView_ = originalView_;
-    const sf::Vector2f extends{ cameraView_.getSize() / 2.0f / core::pixelPerMeter };
-    float currentZoom = 1.0f;
-    constexpr float margin = 1.0f;
-    for (PlayerNumber playerNumber = 0; playerNumber < maxPlayerNmb; playerNumber++)
-    {
-        const auto playerEntity = GetEntityFromPlayerNumber(playerNumber);
-        if (playerEntity == core::INVALID_ENTITY)
-        {
-            continue;
-        }
-        if (entityManager_.HasComponent(playerEntity, static_cast<core::EntityMask>(core::ComponentType::POSITION)))
-        {
-            const auto position = transformManager_.GetPosition(playerEntity);
-            if (core::Abs(position.x) + margin > extends.x)
-            {
-                const auto ratio = (std::abs(position.x) + margin) / extends.x;
-                if (ratio > currentZoom)
-                {
-                    currentZoom = ratio;
-                }
-            }
-            if (core::Abs(position.y) + margin > extends.y)
-            {
-                const auto ratio = (std::abs(position.y) + margin) / extends.y;
-                if (ratio > currentZoom)
-                {
-                    currentZoom = ratio;
-                }
-            }
-        }
-    }
-    cameraView_.zoom(currentZoom);
-
+	_cameraView = _originalView;
+	const sf::Vector2f extends{_cameraView.getSize() / 2.0f / core::PIXEL_PER_METER};
+	float currentZoom = 1.0f;
+	for (PlayerNumber playerNumber = 0; playerNumber < MAX_PLAYER_NMB; playerNumber++)
+	{
+		const auto playerEntity = GetEntityFromPlayerNumber(playerNumber);
+		if (playerEntity == core::INVALID_ENTITY)
+		{
+			continue;
+		}
+		if (_entityManager.HasComponent(playerEntity, static_cast<core::EntityMask>(core::ComponentType::Position)))
+		{
+			constexpr float margin = 1.0f;
+			const auto position = _transformManager.GetPosition(playerEntity);
+			if (core::Abs(position.x) + margin > extends.x)
+			{
+				const auto ratio = (std::abs(position.x) + margin) / extends.x;
+				if (ratio > currentZoom)
+				{
+					currentZoom = ratio;
+				}
+			}
+			if (core::Abs(position.y) + margin > extends.y)
+			{
+				const auto ratio = (std::abs(position.y) + margin) / extends.y;
+				if (ratio > currentZoom)
+				{
+					currentZoom = ratio;
+				}
+			}
+		}
+	}
+	_cameraView.zoom(currentZoom);
 }
 }

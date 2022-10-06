@@ -1,6 +1,7 @@
 #include "network/client_app.h"
 
 #include "engine/globals.h"
+
 #include "game/input_manager.h"
 
 #ifdef TRACY_ENABLE
@@ -11,50 +12,47 @@ namespace game
 {
 void ClientApp::Begin()
 {
-
-#ifdef TRACY_ENABLE
+	#ifdef TRACY_ENABLE
     ZoneScoped;
-#endif
-    windowSize_ = core::windowSize;
-    client_.SetWindowSize(windowSize_);
-    client_.Begin();
+	#endif
+	_windowSize = core::WINDOW_SIZE;
+	_client.SetWindowSize(_windowSize);
+	_client.Begin();
 }
 
-void ClientApp::Update(sf::Time dt)
+void ClientApp::Update(const sf::Time dt)
 {
-
-#ifdef TRACY_ENABLE
+	#ifdef TRACY_ENABLE
     ZoneScoped;
-#endif
-    client_.SetPlayerInput(GetPlayerInput(0));
-    client_.Update(dt);
+	#endif
+	_client.SetPlayerInput(GetPlayerInput(0));
+	_client.Update(dt);
 }
 
 void ClientApp::End()
 {
-
-#ifdef TRACY_ENABLE
+	#ifdef TRACY_ENABLE
     ZoneScoped;
-#endif
-    client_.End();
+	#endif
+	_client.End();
 }
 
 void ClientApp::DrawImGui()
 {
-    client_.DrawImGui();
+	_client.DrawImGui();
 }
 
 void ClientApp::OnEvent(const sf::Event& event)
 {
-    switch (event.type)
-    {
-    case sf::Event::Resized:
-    {
-        windowSize_ = sf::Vector2u(event.size.width, event.size.height);
-        client_.SetWindowSize(windowSize_);
-        break;
-    }
-    default:;
-    }
+	switch (event.type)
+	{
+	case sf::Event::Resized:
+	{
+		_windowSize = sf::Vector2u(event.size.width, event.size.height);
+		_client.SetWindowSize(_windowSize);
+		break;
+	}
+	default: ;
+	}
 }
 } // namespace game

@@ -1,7 +1,10 @@
-#include <network/simulation_server.h>
-#include <network/simulation_client.h>
 #include <imgui.h>
+
 #include <maths/basic.h>
+
+#include <network/simulation_client.h>
+#include <network/simulation_server.h>
+
 #include <utils/conversion.h>
 #include <utils/log.h>
 
@@ -11,7 +14,7 @@
 
 namespace game
 {
-SimulationServer::SimulationServer(std::array<std::unique_ptr<SimulationClient>, 2>& clients) : clients_(clients)
+SimulationServer::SimulationServer(std::array<std::unique_ptr<SimulationClient>, 2>& clients) : _clients(clients)
 {
 }
 
@@ -20,21 +23,21 @@ void SimulationServer::Begin()
 
 }
 
-void SimulationServer::Update(sf::Time dt)
+void SimulationServer::Update(const sf::Time dt)
 {
 
 #ifdef TRACY_ENABLE
     ZoneScoped;
 #endif
-    auto packetIt = receivedPackets_.begin();
-    while (packetIt != receivedPackets_.end())
+    auto packetIt = _receivedPackets.begin();
+    while (packetIt != _receivedPackets.end())
     {
         packetIt->currentTime -= dt.asSeconds();
         if (packetIt->currentTime <= 0.0f)
         {
             ProcessReceivePacket(std::move(packetIt->packet));
 
-            packetIt = receivedPackets_.erase(packetIt);
+            packetIt = _receivedPackets.erase(packetIt);
         }
         else
         {
@@ -43,18 +46,18 @@ void SimulationServer::Update(sf::Time dt)
 
     }
 
-    packetIt = sentPackets_.begin();
-    while (packetIt != sentPackets_.end())
+    packetIt = _sentPackets.begin();
+    while (packetIt != _sentPackets.end())
     {
         packetIt->currentTime -= dt.asSeconds();
         if (packetIt->currentTime <= 0.0f)
         {
-            for (auto& client : clients_)
+            for (const auto& client : _clients)
             {
                 client->ReceivePacket(packetIt->packet.get());
             }
             packetIt->packet = nullptr;
-            packetIt = sentPackets_.erase(packetIt);
+            packetIt = _sentPackets.erase(packetIt);
         }
         else
         {
@@ -70,23 +73,23 @@ void SimulationServer::End()
 void SimulationServer::DrawImGui()
 {
     ImGui::Begin("Server");
-    float minDelay = avgDelay_ - marginDelay_;
-    float maxDelay = avgDelay_ + marginDelay_;
+    float minDelay = _avgDelay - _marginDelay;
+    float maxDelay = _avgDelay + _marginDelay;
     bool hasDelayChanged = false;
     hasDelayChanged = hasDelayChanged || ImGui::SliderFloat("Min Delay", &minDelay, 0.01f, maxDelay);
     hasDelayChanged = hasDelayChanged || ImGui::SliderFloat("Max Delay", &maxDelay, minDelay, 1.0f);
     if (hasDelayChanged)
     {
-        avgDelay_ = (maxDelay + minDelay) / 2.0f;
-        marginDelay_ = (maxDelay - minDelay) / 2.0f;
+        _avgDelay = (maxDelay + minDelay) / 2.0f;
+        _marginDelay = (maxDelay - minDelay) / 2.0f;
     }
-    ImGui::SliderFloat("Packet Loss", &packetLoss_, 0.0f, 1.0f);
+    ImGui::SliderFloat("Packet Loss", &_packetLoss, 0.0f, 1.0f);
     ImGui::End();
 }
 
 void SimulationServer::PutPacketInSendingQueue(std::unique_ptr<Packet> packet)
 {
-    sentPackets_.push_back({ avgDelay_ + core::RandomRange(-marginDelay_, marginDelay_), std::move(packet) });
+    _sentPackets.push_back({ _avgDelay + core::RandomRange(-_marginDelay, _marginDelay), std::move(packet) });
 }
 
 void SimulationServer::PutPacketInReceiveQueue(std::unique_ptr<Packet> packet, bool unreliable)
@@ -94,12 +97,12 @@ void SimulationServer::PutPacketInReceiveQueue(std::unique_ptr<Packet> packet, b
     if(unreliable)
     {
         //Packet loss implementation
-        if(core::RandomRange(0.0f, 1.0f) < packetLoss_)
+        if(core::RandomRange(0.0f, 1.0f) < _packetLoss)
         {
             return;
         }
     }
-    receivedPackets_.push_back({ avgDelay_ + core::RandomRange(-marginDelay_, marginDelay_), std::move(packet) });
+    _receivedPackets.push_back({ _avgDelay + core::RandomRange(-_marginDelay, _marginDelay), std::move(packet) });
 }
 
 void SimulationServer::SendReliablePacket(std::unique_ptr<Packet> packet)
@@ -117,19 +120,19 @@ void SimulationServer::ProcessReceivePacket(std::unique_ptr<Packet> packet)
     Server::ReceivePacket(std::move(packet));
 }
 
-void SimulationServer::SpawnNewPlayer(ClientId clientId, PlayerNumber playerNumber)
+void SimulationServer::SpawnNewPlayer(const ClientId clientId, const PlayerNumber playerNumber)
 {
     core::LogDebug("[Server] Spawn new player");
     auto spawnPlayer = std::make_unique<SpawnPlayerPacket>();
-    spawnPlayer->packetType = PacketType::SPAWN_PLAYER;
+    spawnPlayer->packetType = PacketType::SpawnPlayer;
     spawnPlayer->clientId = core::ConvertToBinary(clientId);
     spawnPlayer->playerNumber = playerNumber;
 
-    const auto pos = spawnPositions[playerNumber] * 3.0f;
+    const auto pos = SPAWN_POSITIONS[playerNumber] * 3.0f;
     spawnPlayer->pos = ConvertToBinary(pos);
-    const auto rotation = spawnRotations[playerNumber];
+    const auto rotation = SPAWN_ROTATIONS[playerNumber];
     spawnPlayer->angle = core::ConvertToBinary(rotation);
-    gameManager_.SpawnPlayer(playerNumber, pos, rotation);
+    _gameManager.SpawnPlayer(playerNumber, pos, rotation);
     SendReliablePacket(std::move(spawnPlayer));
 }
 }

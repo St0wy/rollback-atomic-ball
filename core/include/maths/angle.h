@@ -3,12 +3,11 @@
  */
 #pragma once
 
-#include <numbers>
 #include <cmath>
+#include <numbers>
 
 namespace core
 {
-
 inline constexpr static float PI = std::numbers::pi_v<float>;
 class Degree;
 /**
@@ -19,32 +18,40 @@ class Degree;
 class Radian
 {
 public:
-    constexpr Radian() = default;
-    constexpr Radian(float value) : value_(value){}
-    /**
-     * \brief Conversion constructor that implicitly converts Degree to Radian
-     * \param angle is the degree angle to be converted to Radian
-     */
-    constexpr Radian(const Degree& angle);
-    [[nodiscard]] constexpr float value() const { return value_; }
+	constexpr Radian() = default;
+	// ReSharper disable once CppNonExplicitConvertingConstructor
+	constexpr Radian(const float value)
+		: _value(value) {}
 
-    constexpr Radian operator+(Radian angle) const { return { value_ + angle.value() }; }
-    constexpr Radian& operator+=(Radian angle)
-    {
-        value_ += angle.value();
-        return *this;
-    }
-    constexpr Radian operator-(Radian angle) const { return { value_ - angle.value() }; }
-    constexpr Radian& operator-=(Radian angle)
-    {
-        value_ -= angle.value();
-        return *this;
-    }
-    constexpr Radian operator*(float value) const { return { value_ * value }; }
-    constexpr Radian operator/(float value) const { return { value_ / value }; }
-    constexpr Radian operator-() const { return { -value_ }; }
+	// ReSharper disable once CppNonExplicitConvertingConstructor
+	/**
+	 * \brief Conversion constructor that implicitly converts Degree to Radian
+	 * \param angle is the degree angle to be converted to Radian
+	 */
+	constexpr Radian(const Degree& angle);
+	[[nodiscard]] constexpr float Value() const { return _value; }
+
+	constexpr Radian operator+(const Radian angle) const { return {_value + angle.Value()}; }
+
+	constexpr Radian& operator+=(const Radian angle)
+	{
+		_value += angle.Value();
+		return *this;
+	}
+
+	constexpr Radian operator-(const Radian angle) const { return {_value - angle.Value()}; }
+
+	constexpr Radian& operator-=(const Radian angle)
+	{
+		_value -= angle.Value();
+		return *this;
+	}
+
+	constexpr Radian operator*(const float value) const { return {_value * value}; }
+	constexpr Radian operator/(const float value) const { return {_value / value}; }
+	constexpr Radian operator-() const { return {-_value}; }
 private:
-    float value_ = 0.0f;
+	float _value = 0.0f;
 };
 
 /**
@@ -55,39 +62,50 @@ private:
 class Degree
 {
 public:
-    constexpr Degree() = default;
-    constexpr Degree(float value) : value_(value){}
-    /**
-     * \brief Conversion constructor that implicitly converts Radian to Degree
-     * \param angle is the radian angle to be converted to Degree 
-     */
-    constexpr Degree(const Radian& angle) : value_(angle.value()/PI*180.0f){}
-    [[nodiscard]] constexpr float value() const { return value_; }
-    constexpr Degree operator+(Degree angle) const { return { value_ + angle.value() }; }
-    constexpr Degree& operator+=(Degree angle)
-    {
-        value_ += angle.value();
-        return *this;
-    }
-    constexpr Degree operator-(Degree angle) const { return { value_ - angle.value() }; }
-    constexpr Degree& operator-=(Degree angle)
-    {
-        value_ -= angle.value();
-        return *this;
-    }
-    constexpr Degree operator*(float value) const { return { value_ * value }; }
-    constexpr Degree operator/(float value) const { return { value_ / value }; }
-    constexpr Degree operator-() const { return { -value_ }; }
+	constexpr Degree() = default;
+
+	// ReSharper disable once CppNonExplicitConvertingConstructor
+	constexpr Degree(const float value)
+		: _value(value) {}
+
+	// ReSharper disable once CppNonExplicitConvertingConstructor
+	/**
+	 * \brief Conversion constructor that implicitly converts Radian to Degree
+	 * \param angle is the radian angle to be converted to Degree
+	 */
+	constexpr Degree(const Radian& angle)
+		: _value(angle.Value() / PI * 180.0f) {}
+
+	[[nodiscard]] constexpr float Value() const { return _value; }
+	constexpr Degree operator+(const Degree angle) const { return {_value + angle.Value()}; }
+
+	constexpr Degree& operator+=(const Degree angle)
+	{
+		_value += angle.Value();
+		return *this;
+	}
+
+	constexpr Degree operator-(const Degree angle) const { return {_value - angle.Value()}; }
+
+	constexpr Degree& operator-=(const Degree angle)
+	{
+		_value -= angle.Value();
+		return *this;
+	}
+
+	constexpr Degree operator*(const float value) const { return {_value * value}; }
+	constexpr Degree operator/(const float value) const { return {_value / value}; }
+	constexpr Degree operator-() const { return {-_value}; }
 private:
-    float value_ = 0.0f;
+	float _value = 0.0f;
 };
 
-constexpr Degree operator*(float value, Degree angle) { return angle.value() * value; }
+constexpr Degree operator*(const float value, const Degree angle) { return angle.Value() * value; }
 
 
 constexpr Radian::Radian(const Degree& angle)
 {
-    value_ = angle.value() / 180.0f * PI;
+	_value = angle.Value() / 180.0f * PI;
 }
 
 /**
@@ -95,9 +113,9 @@ constexpr Radian::Radian(const Degree& angle)
  * \param angle is the given angle
  * \return the result of the sinus of angle
  */
-inline float Sin(Radian angle)
+inline float Sin(const Radian angle)
 {
-    return std::sin(angle.value());
+	return std::sin(angle.Value());
 }
 
 /**
@@ -105,9 +123,9 @@ inline float Sin(Radian angle)
  * \param angle is the given angle
  * \return the result of the cosinus of angle
  */
-inline float Cos(Radian angle)
+inline float Cos(const Radian angle)
 {
-    return std::cos(angle.value());
+	return std::cos(angle.Value());
 }
 
 /**
@@ -115,39 +133,39 @@ inline float Cos(Radian angle)
  * \param angle is the given angle
  * \return the result of the tangent of angle
  */
-inline float Tan(Radian angle)
+inline float Tan(const Radian angle)
 {
-    return std::tan(angle.value());
+	return std::tan(angle.Value());
 }
 
 /**
  * \brief Asin is a function that calculates the angle of a given ratio.
- * \param ratio is the given ratio between the opponent and hypothenuse
- * \return the result of the asinus function
+ * \param ratio is the given ratio between the opponent and hypotenuse
+ * \return the result of the a-sinus function
  */
-inline Radian Asin(float ratio)
+inline Radian Asin(const float ratio)
 {
-    return {std::asin(ratio)};
+	return {std::asin(ratio)};
 }
 
 /**
  * \brief Acos is a function that calculates the angle of a given ratio.
- * \param ratio is the given ratio between the adjacent and hypothenuse
- * \return the result of the acosinus function
+ * \param ratio is the given ratio between the adjacent and hypotenuse
+ * \return the result of the a-cosinus function
  */
-inline Radian Acos(float ratio)
+inline Radian Acos(const float ratio)
 {
-    return {std::acos(ratio)};
+	return {std::acos(ratio)};
 }
 
 /**
  * \brief Atan is a function that calculates the angle of a given ratio.
- * \param ratio is the given ratio between the adjacent and hypothenuse
+ * \param ratio is the given ratio between the adjacent and hypotenuse
  * \return the result of the atan function
  */
-inline Radian Atan(float ratio)
+inline Radian Atan(const float ratio)
 {
-    return {std::atan(ratio)};
+	return {std::atan(ratio)};
 }
 
 /**
@@ -156,8 +174,8 @@ inline Radian Atan(float ratio)
  * \param x is the lower value of the ratio
  * \return the result of the atan function
  */
-inline Radian Atan2(float y, float x)
+inline Radian Atan2(const float y, const float x)
 {
-    return {std::atan2(y,x)};
+	return {std::atan2(y, x)};
 }
 }

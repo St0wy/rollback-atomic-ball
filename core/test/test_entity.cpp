@@ -1,5 +1,7 @@
 #include <cmath>
+
 #include <engine/entity.h>
+
 #include <gtest/gtest.h>
 
 #include "engine/component.h"
@@ -11,13 +13,13 @@ TEST(Entity, CreateEntity)
     EXPECT_TRUE(entityManager.EntityExists(newEntity));
     EXPECT_TRUE(entityManager.HasComponent(
         newEntity, 
-        static_cast<core::EntityMask>(core::ComponentType::EMPTY)));
+        static_cast<core::EntityMask>(core::ComponentType::Empty)));
 
     entityManager.DestroyEntity(newEntity);
     EXPECT_FALSE(entityManager.EntityExists(newEntity));
     EXPECT_FALSE (entityManager.HasComponent(
         newEntity,
-        static_cast<core::EntityMask>(core::ComponentType::EMPTY)));
+        static_cast<core::EntityMask>(core::ComponentType::Empty)));
 
 }
 

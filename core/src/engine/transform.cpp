@@ -2,76 +2,73 @@
 
 namespace core
 {
-void ScaleManager::AddComponent(Entity entity)
+void ScaleManager::AddComponent(const Entity entity)
 {
-    ComponentManager<Vec2f, 4>::AddComponent(entity);
-    components_[entity] = Vec2f::one();
+	ComponentManager<Vec2f, 4>::AddComponent(entity);
+	_components[entity] = Vec2f::One();
 }
 
-TransformManager::TransformManager(EntityManager& entityManager) :
-    positionManager_(entityManager),
-    scaleManager_(entityManager),
-    rotationManager_(entityManager)
-{
+TransformManager::TransformManager(EntityManager& entityManager)
+	: _positionManager(entityManager),
+	  _scaleManager(entityManager),
+	  _rotationManager(entityManager) {}
 
-}
-
-Vec2f TransformManager::GetPosition(Entity entity) const
+Vec2f TransformManager::GetPosition(const Entity entity) const
 {
-    return positionManager_.GetComponent(entity);
+	return _positionManager.GetComponent(entity);
 }
 
 const std::vector<Vec2f>& TransformManager::GetAllPositions() const
 {
-    return positionManager_.GetAllComponents();
+	return _positionManager.GetAllComponents();
 }
 
 const std::vector<Vec2f>& TransformManager::GetAllScales() const
 {
-    return scaleManager_.GetAllComponents();
+	return _scaleManager.GetAllComponents();
 }
 
 const std::vector<Degree>& TransformManager::GetAllRotations() const
 {
-    return rotationManager_.GetAllComponents();
+	return _rotationManager.GetAllComponents();
 }
 
-void TransformManager::SetPosition(Entity entity, Vec2f position)
+void TransformManager::SetPosition(const Entity entity, const Vec2f position)
 {
-    positionManager_.SetComponent(entity, position);
+	_positionManager.SetComponent(entity, position);
 }
 
-Vec2f TransformManager::GetScale(Entity entity) const
+Vec2f TransformManager::GetScale(const Entity entity) const
 {
-    return scaleManager_.GetComponent(entity);
+	return _scaleManager.GetComponent(entity);
 }
 
-void TransformManager::SetScale(Entity entity, Vec2f scale)
+void TransformManager::SetScale(const Entity entity, const Vec2f scale)
 {
-    scaleManager_.SetComponent(entity, scale);
+	_scaleManager.SetComponent(entity, scale);
 }
 
-Degree TransformManager::GetRotation(Entity entity) const
+Degree TransformManager::GetRotation(const Entity entity) const
 {
-    return rotationManager_.GetComponent(entity);
+	return _rotationManager.GetComponent(entity);
 }
 
-void TransformManager::SetRotation(Entity entity, Degree rotation)
+void TransformManager::SetRotation(const Entity entity, const Degree rotation)
 {
-    rotationManager_.SetComponent(entity, rotation);
+	_rotationManager.SetComponent(entity, rotation);
 }
 
-void TransformManager::AddComponent(Entity entity)
+void TransformManager::AddComponent(const Entity entity)
 {
-    positionManager_.AddComponent(entity);
-    scaleManager_.AddComponent(entity);
-    rotationManager_.AddComponent(entity);
+	_positionManager.AddComponent(entity);
+	_scaleManager.AddComponent(entity);
+	_rotationManager.AddComponent(entity);
 }
 
-void TransformManager::RemoveComponent(Entity entity)
+void TransformManager::RemoveComponent(const Entity entity)
 {
-    positionManager_.AddComponent(entity);
-    scaleManager_.AddComponent(entity);
-    rotationManager_.AddComponent(entity);
+	_positionManager.AddComponent(entity);
+	_scaleManager.AddComponent(entity);
+	_rotationManager.AddComponent(entity);
 }
 }
