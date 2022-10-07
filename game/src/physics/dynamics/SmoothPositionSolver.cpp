@@ -1,14 +1,13 @@
-#include "dynamics/SmoothPositionSolver.hpp"
+#include "physics/dynamics/SmoothPositionSolver.hpp"
 
 #include <vector>
 
-#include "collision/Collision.hpp"
-
-#include "dynamics/Rigidbody.hpp"
+#include "physics/collision/Collision.hpp"
+#include "physics/dynamics/Rigidbody.hpp"
 
 namespace game
 {
-void SmoothPositionSolver::Solve(const std::vector<Collision>& collisions, float deltaTime)
+void SmoothPositionSolver::Solve(const std::vector<Collision>& collisions, float)
 {
     for (const auto& [bodyA, bodyB, points] : collisions)
     {
@@ -20,24 +19,24 @@ void SmoothPositionSolver::Solve(const std::vector<Collision>& collisions, float
         const float aInvMass = aBody ? aBody->InvMass() : 0.0f;
         const float bInvMass = bBody ? bBody->InvMass() : 0.0f;
 
-        Vector2 resolution = points.b - points.a;
+        core::Vec2f resolution = points.b - points.a;
 
         constexpr float slop = 0.05f;
         constexpr float percent = 0.8f;
 
-        const Vector2 correction = points.normal * percent
-            * std::max(resolution.Magnitude() - slop, 0.0f)
+        const core::Vec2f correction = points.normal * percent
+            * std::max(resolution.GetMagnitude() - slop, 0.0f)
             / (aInvMass + bInvMass);
 
         if (aBody ? aBody->IsKinematic() : false)
         {
-            const Vector2 deltaA = aInvMass * correction;
+            const core::Vec2f deltaA = aInvMass * correction;
             aBody->Trans()->position -= deltaA;
         }
 
         if (bBody ? bBody->IsKinematic() : false)
         {
-            const Vector2 deltaB = bInvMass * correction;
+            const core::Vec2f deltaB = bInvMass * correction;
             bBody->Trans()->position += deltaB;
         }
     }

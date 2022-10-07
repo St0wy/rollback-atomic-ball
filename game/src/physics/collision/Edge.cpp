@@ -1,14 +1,14 @@
-#include "collision/Edge.hpp"
+#include "physics/collision/Edge.hpp"
 
 namespace game
 {
-float Edge::VecDot(const Vector2& v) const
+float Edge::VecDot(const core::Vec2f& v) const
 {
-    return EdgeVector().Dot(v);
+	return EdgeVector().Dot(v);
 }
 
-Vector2 Edge::EdgeVector() const
+core::Vec2f Edge::EdgeVector() const
 {
-    return p2 - p1;
+	return p2 - p1;
 }
 }

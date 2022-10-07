@@ -10,8 +10,6 @@
  */
 #pragma once
 
-#include "math/Vector2.hpp"
-
 namespace game
 {
 /**
@@ -24,12 +22,12 @@ public:
     /**
      * \brief The position of this object.
      */
-    Vector2 position{};
+    core::Vec2f position{};
 
     /**
      * \brief The scale of this object.
      */
-    Vector2 scale{1, 1};
+	core::Vec2f scale{1, 1};
 
     /**
      * \brief The rotation of this object.

@@ -1,4 +1,4 @@
-#include "collision/BroadPhaseGrid.hpp"
+#include "physics/collision/BroadPhaseGrid.hpp"
 
 #include <algorithm>
 #include <ranges>
@@ -28,7 +28,7 @@ void BroadPhaseGrid::Update(const std::unordered_map<std::uint64_t, CollisionBod
         const auto transform = body->Trans();
         const auto collider = body->Col();
 
-        const Vector2 offsetCenter = transform->position + collider->center;
+        const core::Vec2f offsetCenter = transform->position + collider->center;
 
         // If body is outside the grid extents, then ignore it
         if (offsetCenter.x < _min.x || offsetCenter.x > _max.x ||
@@ -37,7 +37,7 @@ void BroadPhaseGrid::Update(const std::unordered_map<std::uint64_t, CollisionBod
             continue;
         }
 
-        const Vector2 boundingBoxSize = collider->GetBoundingBoxSize();
+        const core::Vec2f boundingBoxSize = collider->GetBoundingBoxSize();
 
         int xBodyMin = static_cast<int>(std::floor((offsetCenter.x - boundingBoxSize.x - _min.x) / _cellSize));
         xBodyMin = std::clamp(xBodyMin, 0, static_cast<int>(_gridWidth));

@@ -15,7 +15,7 @@
 #include "BroadPhaseGrid.hpp"
 #include "CollisionBody.hpp"
 
-#include "dynamics/Solver.hpp"
+#include "physics/dynamics/Solver.hpp"
 
 namespace game
 {

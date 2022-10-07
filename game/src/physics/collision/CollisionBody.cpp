@@ -1,4 +1,4 @@
-#include "collision/CollisionBody.hpp"
+#include "physics/collision/CollisionBody.hpp"
 
 namespace game
 {
@@ -51,12 +51,12 @@ void CollisionBody::OnCollision(const Collision& collision, const float deltaTim
     }
 }
 
-const Vector2& CollisionBody::Position() const
+const core::Vec2f& CollisionBody::Position() const
 {
     return _transform.position;
 }
 
-void CollisionBody::SetPosition(const Vector2& position)
+void CollisionBody::SetPosition(const core::Vec2f& position)
 {
     _transform.position = position;
 }

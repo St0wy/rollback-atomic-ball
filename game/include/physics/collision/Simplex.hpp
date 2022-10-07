@@ -12,7 +12,7 @@
 
 #include <array>
 
-#include "math/Vector2.hpp"
+#include "maths/vec2.h"
 
 namespace game
 {
@@ -28,30 +28,30 @@ public:
     static constexpr unsigned long long MAX_SIZE = 3ull;
 
     Simplex()
-        : _points({Vector2(0, 0), {0, 0}, {0, 0}}), _size(0) {}
+        : _points({core::Vec2f(0, 0), {0, 0}, {0, 0}}), _size(0) {}
 
-    Simplex& operator=(std::initializer_list<Vector2> list);
-    Vector2 operator[](std::size_t i) const;
+    Simplex& operator=(std::initializer_list<core::Vec2f> list);
+    core::Vec2f operator[](std::size_t i) const;
 
     /**
      * \brief Adds a point in the simplex.
      * \param point Point to add in the simplex.
      */
-    void PushFront(Vector2 point);
+    void PushFront(core::Vec2f point);
     /**
      * \brief Gets the size of the array.
      * \return The size of the array.
      */
     [[nodiscard]] std::size_t Size() const;
-    [[nodiscard]] std::array<Vector2, MAX_SIZE>::const_iterator Begin() const;
-    [[nodiscard]] std::array<Vector2, MAX_SIZE>::const_iterator End() const;
+    [[nodiscard]] std::array<core::Vec2f, MAX_SIZE>::const_iterator Begin() const;
+    [[nodiscard]] std::array<core::Vec2f, MAX_SIZE>::const_iterator End() const;
     /**
      * \brief Increments the size of the simplex with a max at MAX_SIZE.
      */
     void IncrementSize();
 
 private:
-    std::array<Vector2, MAX_SIZE> _points;
+    std::array<core::Vec2f, MAX_SIZE> _points;
     std::size_t _size;
 };
 }

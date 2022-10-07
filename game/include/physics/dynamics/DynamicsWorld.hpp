@@ -12,7 +12,7 @@
 
 #include "Rigidbody.hpp"
 
-#include "collision/CollisionWorld.hpp"
+#include "physics/collision/CollisionWorld.hpp"
 
 namespace game
 {
@@ -49,9 +49,9 @@ public:
      * \brief Sets the gravity in the world.
      * \param gravity Gravity to set.
      */
-    void SetWorldGravity(Vector2 gravity);
+    void SetWorldGravity(core::Vec2f gravity);
 
 private:
-    Vector2 _gravity = {0, -9.81f};
+    core::Vec2f _gravity = {0, -9.81f};
 };
 }

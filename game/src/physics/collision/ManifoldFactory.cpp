@@ -1,13 +1,13 @@
-#include "collision/ManifoldFactory.hpp"
+#include "physics/collision/ManifoldFactory.hpp"
 
 #include <algorithm>
 #include <cmath>
 #include <limits>
 #include <vector>
 
-#include "collision/Collider.hpp"
-#include "collision/Manifold.hpp"
-#include "collision/Simplex.hpp"
+#include "physics/collision/Collider.hpp"
+#include "physics/collision/Manifold.hpp"
+#include "physics/collision/Simplex.hpp"
 
 namespace game
 {
@@ -15,30 +15,30 @@ Manifold algo::FindCircleCircleManifold(
     const CircleCollider* a, const Transform* ta,
     const CircleCollider* b, const Transform* tb)
 {
-    Vector2 aPos = a->center + ta->position;
-    Vector2 bPos = b->center + tb->position;
+    core::Vec2f aPos = a->center + ta->position;
+    core::Vec2f bPos = b->center + tb->position;
 
     const float aRadius = a->radius * ta->scale.Major();
     const float bRadius = b->radius * tb->scale.Major();
 
-    const Vector2 aToB = bPos - aPos;
-    const Vector2 bToA = aPos - bPos;
+    const core::Vec2f aToB = bPos - aPos;
+    const core::Vec2f bToA = aPos - bPos;
 
-    if (aToB.Magnitude() > aRadius + bRadius)
+    if (aToB.GetMagnitude() > aRadius + bRadius)
     {
         return Manifold::Empty();
     }
 
-    aPos += aToB.Normalized() * aRadius;
-    bPos += bToA.Normalized() * bRadius;
+    aPos += aToB.GetNormalized() * aRadius;
+    bPos += bToA.GetNormalized() * bRadius;
 
-    const Vector2 collisionPointsDistance = bPos - aPos;
+    const core::Vec2f collisionPointsDistance = bPos - aPos;
 
     return {
         aPos,
         bPos,
-        collisionPointsDistance.Normalized(),
-        collisionPointsDistance.Magnitude()
+        collisionPointsDistance.GetNormalized(),
+        collisionPointsDistance.GetMagnitude()
     };
 }
 
@@ -73,15 +73,15 @@ Manifold algo::FindAabbAabbManifold(
     const AabbCollider* a, const Transform* ta,
     const AabbCollider* b, const Transform* tb)
 {
-    const Vector2 transformedCenterA = ta->position + a->center;
+    const core::Vec2f transformedCenterA = ta->position + a->center;
     const float aScaledHWidth = a->halfWidth * ta->scale.x;
     const float aScaledHHeight = a->halfHeight * ta->scale.y;
 
-    const Vector2 transformedCenterB = tb->position + b->center;
+    const core::Vec2f transformedCenterB = tb->position + b->center;
     const float bScaledHWidth = b->halfWidth * tb->scale.x;
     const float bScaledHHeight = b->halfHeight * tb->scale.y;
 
-    const Vector2 aToB = transformedCenterB - transformedCenterA;
+    const core::Vec2f aToB = transformedCenterB - transformedCenterA;
     const float xOverlap = aScaledHWidth + bScaledHWidth - std::abs(aToB.x);
 
     // Overlap test on x axis
@@ -96,12 +96,12 @@ Manifold algo::FindAabbAabbManifold(
     if (xOverlap > yOverlap)
     {
         // Point towards B knowing that aToB points from A to B
-        const Vector2 normal = aToB.y < 0.0f ? Vector2(0.0f, 1.0f) : Vector2(0.0f, -1.0f);
+        const core::Vec2f normal = aToB.y < 0.0f ? core::Vec2f(0.0f, 1.0f) : core::Vec2f(0.0f, -1.0f);
         return {normal, yOverlap};
     }
 
     // Point towards B knowing that aToB points from A to B
-    const Vector2 normal = aToB.x < 0.0f ? Vector2(1.0f, 0.0f) : Vector2(-1.0f, 0.0f);
+    const core::Vec2f normal = aToB.x < 0.0f ? core::Vec2f(1.0f, 0.0f) : core::Vec2f(-1.0f, 0.0f);
     return {normal, xOverlap};
 }
 
@@ -110,19 +110,19 @@ Manifold algo::FindAabbCircleManifold(
     const CircleCollider* b, const Transform* tb)
 {
     // Apply the transform to the AabbCollider
-    const Vector2 aabbCenter = ta->position + a->center;
+    const core::Vec2f aabbCenter = ta->position + a->center;
     const float scaledHWidth = a->halfWidth * ta->scale.x;
     const float scaledHHeight = a->halfHeight * ta->scale.y;
 
     // Apply the transform to the circle collider
-    const Vector2 circleCenter = tb->position + b->center;
+    const core::Vec2f circleCenter = tb->position + b->center;
     const float scaledRadius = b->radius * tb->scale.Major();
 
-    const Vector2 aabbToCircle = circleCenter - aabbCenter;
+    const core::Vec2f aabbToCircle = circleCenter - aabbCenter;
 
 
     // Copy aToB to be the initial value of the closest point
-    Vector2 clampedPoint;
+    core::Vec2f clampedPoint;
 
     // Clamp point to the edge of the AABB
     clampedPoint.x = std::clamp(aabbToCircle.x, -scaledHWidth, scaledHWidth);
@@ -130,15 +130,15 @@ Manifold algo::FindAabbCircleManifold(
 
 
     // Put the point in "world space" because it was relative to the center
-    const Vector2 closestPointOnAabb = aabbCenter + clampedPoint;
+    const core::Vec2f closestPointOnAabb = aabbCenter + clampedPoint;
 
-    Vector2 circleToClosestPoint = closestPointOnAabb - circleCenter;
-    float distance = circleToClosestPoint.SqrMagnitude();
+    core::Vec2f circleToClosestPoint = closestPointOnAabb - circleCenter;
+    float distance = circleToClosestPoint.GetSqrMagnitude();
     if (distance > scaledRadius * scaledRadius) return Manifold::Empty();
 
     distance = std::sqrt(distance);
 
-    Vector2 worldCircleToClosestPoint = circleToClosestPoint.NewMagnitude(scaledRadius) + circleCenter;
+    core::Vec2f worldCircleToClosestPoint = circleToClosestPoint.NewMagnitude(scaledRadius) + circleCenter;
 
     if (std::abs(distance) >= 0.0001f)
     {
@@ -155,12 +155,12 @@ Manifold algo::FindCircleAabbManifold(const CircleCollider* a, const Transform* 
     return FindAabbCircleManifold(b, tb, a, ta).Swaped();
 }
 
-Vector2 algo::Support(
+core::Vec2f algo::Support(
     const Collider* colliderA,
     const Transform* transformA,
     const Collider* colliderB,
     const Transform* transformB,
-    const Vector2& direction
+    const core::Vec2f& direction
 )
 {
     return colliderA->FindFurthestPoint(transformA, direction) -
@@ -174,9 +174,9 @@ Manifold algo::Gjk(
     const Transform* transformB
 )
 {
-    Vector2 direction = Vector2::Normalize(transformB->position - transformA->position);
+    core::Vec2f direction = core::Vec2f::Normalize(transformB->position - transformA->position);
 
-    Vector2 support = Support(
+    core::Vec2f support = Support(
         colliderA,
         transformA,
         colliderB,
@@ -187,7 +187,7 @@ Manifold algo::Gjk(
     points.PushFront(support);
 
     // New direction is towards the origin
-    direction = Vector2::Normalize(-support);
+    direction = core::Vec2f::Normalize(-support);
 
     while (true)
     {
@@ -207,7 +207,7 @@ Manifold algo::Gjk(
     }
 }
 
-bool algo::NextSimplex(const Simplex& points, Vector2& direction)
+bool algo::NextSimplex(const Simplex& points, core::Vec2f& direction)
 {
     switch (points.Size())
     {
@@ -220,35 +220,35 @@ bool algo::NextSimplex(const Simplex& points, Vector2& direction)
     }
 }
 
-bool algo::SameDirection(const Vector2 direction, const Vector2 ao)
+bool algo::SameDirection(const core::Vec2f direction, const core::Vec2f ao)
 {
     return direction.Dot(ao) > 0;
 }
 
-bool algo::Line(const Simplex& points, Vector2& direction)
+bool algo::Line(const Simplex& points, core::Vec2f& direction)
 {
-    const Vector2 a = points[0];
-    const Vector2 b = points[1];
-    const Vector2 ab = Vector2::Normalize(b - a);
-    const Vector2 ao = Vector2::Normalize(-a);
-    direction = Vector2::TripleProduct(ab, ao, ab);
+    const core::Vec2f a = points[0];
+    const core::Vec2f b = points[1];
+    const core::Vec2f ab = core::Vec2f::Normalize(b - a);
+    const core::Vec2f ao = core::Vec2f::Normalize(-a);
+    direction = core::Vec2f::TripleProduct(ab, ao, ab);
 
     return false;
 }
 
-bool algo::Triangle(const Simplex& points, Vector2& direction)
+bool algo::Triangle(const Simplex& points, core::Vec2f& direction)
 {
-    const Vector2 a = points[0];
-    const Vector2 b = points[1];
-    const Vector2 c = points[2];
+    const core::Vec2f a = points[0];
+    const core::Vec2f b = points[1];
+    const core::Vec2f c = points[2];
 
-    const Vector2 ab = Vector2::Normalize(b - a);
-    const Vector2 ac = Vector2::Normalize(c - a);
-    const Vector2 ao = Vector2::Normalize(-a);
+    const core::Vec2f ab = core::Vec2f::Normalize(b - a);
+    const core::Vec2f ac = core::Vec2f::Normalize(c - a);
+    const core::Vec2f ao = core::Vec2f::Normalize(-a);
 
-    //const Vector2 tripple = TripleProduct(ac, ac, ab);
-    const Vector2 abf = Vector2::TripleProduct(ac, ab, ab);
-    const Vector2 acf = Vector2::TripleProduct(ab, ac, ac);
+    //const core::Vec2f tripple = TripleProduct(ac, ac, ab);
+    const core::Vec2f abf = core::Vec2f::TripleProduct(ac, ab, ab);
+    const core::Vec2f acf = core::Vec2f::TripleProduct(ab, ac, ac);
 
     if (SameDirection(abf, ao))
     {
@@ -275,7 +275,7 @@ Manifold algo::Epa(
 {
     std::vector polytope(simplex.Begin(), simplex.End());
 
-    Vector2 minNormal;
+    core::Vec2f minNormal;
     float minDistance = std::numeric_limits<float>::infinity();
     std::size_t minIndex = 0;
 
@@ -292,12 +292,12 @@ Manifold algo::Epa(
         {
             const std::size_t j = (i + 1) % polytope.size();
 
-            Vector2 vertexI = polytope[i];
-            Vector2 vertexJ = polytope[j];
+			const core::Vec2f vertexI = polytope[i];
+            core::Vec2f vertexJ = polytope[j];
 
-            Vector2 ij = vertexJ - vertexI;
+            core::Vec2f ij = vertexJ - vertexI;
 
-            Vector2 normal = ij.NegativePerpendicular().Normalized();
+            core::Vec2f normal = ij.NegativePerpendicular().GetNormalized();
             float distance = normal.Dot(vertexI);
 
             if (distance < 0.0f)
@@ -314,7 +314,7 @@ Manifold algo::Epa(
             }
         }
 
-        Vector2 support = Support(colliderA, transformA, colliderB, transformB, minNormal);
+        core::Vec2f support = Support(colliderA, transformA, colliderB, transformB, minNormal);
         const float sDistance = minNormal.Dot(support);
 
         if (std::abs(sDistance - minDistance) > 0.001f)
@@ -339,7 +339,7 @@ Manifold algo::Sat(
 )
 {
     float overlap = std::numeric_limits<float>::max();
-    Vector2 smallestAxis;
+    core::Vec2f smallestAxis;
 
     const auto verticesA = colliderA->GetTransformedVertices(*transformA);
     const auto verticesB = colliderB->GetTransformedVertices(*transformB);
@@ -347,7 +347,7 @@ Manifold algo::Sat(
     const auto axesA = BoxCollider::GetAxes(verticesA);
     const auto axesB = BoxCollider::GetAxes(verticesB);
 
-    auto findCollision = [&](const Vector2 axis)
+    auto findCollision = [&](const core::Vec2f axis)
     {
         const Projection pA = BoxCollider::Project(axis, verticesA);
         const Projection pB = BoxCollider::Project(axis, verticesB);

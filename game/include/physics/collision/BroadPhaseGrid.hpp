@@ -14,6 +14,8 @@
 
 #include "CollisionBody.hpp"
 
+#include "maths/vec2.h"
+
 namespace game
 {
 /**
@@ -44,15 +46,15 @@ public:
 
     /**
      * \brief Find all the pair of objects that are in the same cell.
-     * Doesn't contain any duplicates.
+     * Does not contain any duplicates.
      * \return The pair of objects that will collide.
      */
     [[nodiscard]] std::vector<std::pair<std::uint64_t, std::uint64_t>> GetCollisionPairs() const;
 
 private:
     std::vector<std::vector<std::vector<CollisionBody*>>> _grid;
-    Vector2 _min;
-    Vector2 _max;
+    core::Vec2f _min;
+    core::Vec2f _max;
     float _cellSize;
     std::size_t _gridWidth;
     std::size_t _gridHeight;

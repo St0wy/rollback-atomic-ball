@@ -1,8 +1,8 @@
-#include "dynamics/DynamicsWorld.hpp"
+#include "physics/dynamics/DynamicsWorld.hpp"
 
 #include <ranges>
 
-#include "collision/CollisionBody.hpp"
+#include "physics/collision/CollisionBody.hpp"
 
 namespace game
 {
@@ -24,7 +24,7 @@ void DynamicsWorld::ApplyGravity() const
 
         // ReSharper disable once CppCStyleCast
         const auto rigidbody = (Rigidbody*)body;
-        const Vector2 force = rigidbody->GravityForce() * rigidbody->Mass();
+        const core::Vec2f force = rigidbody->GravityForce() * rigidbody->Mass();
         rigidbody->ApplyForce(force);
     }
 }
@@ -38,12 +38,12 @@ void DynamicsWorld::MoveBodies(const float deltaTime) const
         // ReSharper disable once CppCStyleCast
         const auto rigidbody = (Rigidbody*)body;
 
-        const Vector2 vel = rigidbody->Velocity() + rigidbody->Force() * rigidbody->InvMass() * deltaTime;
+        const core::Vec2f vel = rigidbody->Velocity() + rigidbody->Force() * rigidbody->InvMass() * deltaTime;
         rigidbody->SetVelocity(vel);
 
         //rigidbody->UpdateLastTransform();
 
-        Vector2 pos = rigidbody->Position() + rigidbody->Velocity() * deltaTime;
+        core::Vec2f pos = rigidbody->Position() + rigidbody->Velocity() * deltaTime;
         rigidbody->SetPosition(pos);
 
         rigidbody->SetForce({0, 0});
@@ -57,7 +57,7 @@ void DynamicsWorld::Step(const float deltaTime)
     MoveBodies(deltaTime);
 }
 
-void DynamicsWorld::SetWorldGravity(const Vector2 gravity)
+void DynamicsWorld::SetWorldGravity(const core::Vec2f gravity)
 {
     _gravity = gravity;
 }

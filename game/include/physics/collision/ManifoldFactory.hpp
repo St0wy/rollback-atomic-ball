@@ -14,7 +14,8 @@
 #include "Collider.hpp"
 #include "Manifold.hpp"
 #include "Simplex.hpp"
-#include "Transform.hpp"
+
+#include "physics/Transform.hpp"
 
 namespace game
 {
@@ -121,12 +122,12 @@ Manifold FindCircleAabbManifold(
  * \param direction Direction in which to find the vector.
  * \return The vertex found by the support function.
  */
-Vector2 Support(
+core::Vec2f Support(
     const Collider* colliderA,
     const Transform* transformA,
     const Collider* colliderB,
     const Transform* transformB,
-    const Vector2& direction
+    const core::Vec2f& direction
 );
 
 /**
@@ -150,14 +151,14 @@ Manifold Gjk(
  * \param direction Direction in which to find the next simplex.
  * \return True if we found the origin.
  */
-bool NextSimplex(const Simplex& points, Vector2& direction);
+bool NextSimplex(const Simplex& points, core::Vec2f& direction);
 /**
  * \brief Finds if both vectors are going in the same direction.
  * \param direction Direction vector.
  * \param ao Vector between a and the origin.
  * \return True if both of the vectors are going in the same direction.
  */
-bool SameDirection(Vector2 direction, Vector2 ao);
+bool SameDirection(core::Vec2f direction, core::Vec2f ao);
 
 /**
  * \brief Line case for the NextSimplex function.
@@ -165,14 +166,14 @@ bool SameDirection(Vector2 direction, Vector2 ao);
  * \param direction Direction of the next point.
  * \return True if we found the origin.
  */
-bool Line(const Simplex& points, Vector2& direction);
+bool Line(const Simplex& points, core::Vec2f& direction);
 /**
  * \brief Triangle case for the NextSimplex function.
  * \param points Points of the Triangle simplex.
  * \param direction Direction of the next point.
  * \return True if we found the origin.
  */
-bool Triangle(const Simplex& points, Vector2& direction);
+bool Triangle(const Simplex& points, core::Vec2f& direction);
 
 /**
  * \brief Find the manifold from the last simplex of the GJK algorithm.

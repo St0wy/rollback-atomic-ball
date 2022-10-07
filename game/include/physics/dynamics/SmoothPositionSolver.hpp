@@ -11,6 +11,8 @@
 #pragma once
 #include "Solver.hpp"
 
+#include "physics/collision/Collision.hpp"
+
 namespace game
 {
 /**

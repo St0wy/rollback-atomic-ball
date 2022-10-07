@@ -10,7 +10,7 @@
  */
 #pragma once
 
-#include "collision/CollisionBody.hpp"
+#include "physics/collision/CollisionBody.hpp"
 
 namespace game
 {
@@ -26,39 +26,39 @@ public:
      * \brief Gets the force of the gravity on this body.
      * \return The force of the gravity.
      */
-    [[nodiscard]] const Vector2& GravityForce() const;
+    [[nodiscard]] const core::Vec2f& GravityForce() const;
     /**
      * \brief Sets the gravity force.
      * \param gravityForce New gravity force.
      */
-    void SetGravityForce(const Vector2& gravityForce);
+    void SetGravityForce(const core::Vec2f& gravityForce);
 
     /**
      * \brief Gets the force on this body.
      * \return The force on this body.
      */
-    [[nodiscard]] const Vector2& Force() const;
+    [[nodiscard]] const core::Vec2f& Force() const;
     /**
      * \brief Adds force to this body.
      * \param addedForce The force to add to this body.
      */
-    void ApplyForce(const Vector2& addedForce);
+    void ApplyForce(const core::Vec2f& addedForce);
     /**
      * \brief Sets the force of this body.
      * \param force The new force.
      */
-    void SetForce(const Vector2& force);
+    void SetForce(const core::Vec2f& force);
 
     /**
      * \brief Gets the velocity of this body.
      * \return The velocity of this body.
      */
-    [[nodiscard]] const Vector2& Velocity() const;
+    [[nodiscard]] const core::Vec2f& Velocity() const;
     /**
      * \brief Sets the velocity of this body.
      * \param velocity The new velocity.
      */
-    void SetVelocity(const Vector2& velocity);
+    void SetVelocity(const core::Vec2f& velocity);
 
     /**
      * \brief Computes the mass of this body. Only the inverted mass is stored,
@@ -123,9 +123,9 @@ public:
     void SetRestitution(float restitution);
 
 private:
-    Vector2 _gravityForce;
-    Vector2 _force;
-    Vector2 _velocity;
+    core::Vec2f _gravityForce;
+    core::Vec2f _force;
+    core::Vec2f _velocity;
 
     float _invMass{};
     bool _takesGravity{};

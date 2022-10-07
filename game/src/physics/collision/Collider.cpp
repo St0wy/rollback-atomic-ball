@@ -1,212 +1,208 @@
 // ReSharper disable CppClangTidyReadabilitySuspiciousCallArgument
-#include "collision/Collider.hpp"
+#include "physics/collision/Collider.hpp"
 
 #include <array>
 
-#include "collision/Manifold.hpp"
-#include "collision/ManifoldFactory.hpp"
-
-#include "math/Vector2.hpp"
+#include "physics/collision/Manifold.hpp"
+#include "physics/collision/ManifoldFactory.hpp"
 
 namespace game
 {
 #pragma region BoxCollider
 Manifold BoxCollider::TestCollision(const Transform* transform, const Collider* collider,
-                                    const Transform* colliderTransform) const
+									const Transform* colliderTransform) const
 {
-    return collider->TestCollision(colliderTransform, this, transform);
+	return collider->TestCollision(colliderTransform, this, transform);
 }
 
 Manifold BoxCollider::TestCollision(const Transform* transform, const BoxCollider* collider,
-                                    const Transform* boxTransform) const
+									const Transform* boxTransform) const
 {
-    return algo::FindBoxBoxManifold(this, transform, collider, boxTransform);
+	return algo::FindBoxBoxManifold(this, transform, collider, boxTransform);
 }
 
 Manifold BoxCollider::TestCollision(
-    const Transform* transform,
-    const CircleCollider* collider,
-    const Transform* circleTransform
+	const Transform* transform,
+	const CircleCollider* collider,
+	const Transform* circleTransform
 ) const
 {
-    return algo::FindBoxCircleManifold(this, transform, collider, circleTransform);
+	return algo::FindBoxCircleManifold(this, transform, collider, circleTransform);
 }
 
-Manifold BoxCollider::TestCollision(const Transform* transform, const AabbCollider* collider,
-                                    const Transform* circleTransform) const
+Manifold BoxCollider::TestCollision(const Transform*, const AabbCollider*, const Transform*) const
 {
-    // TODO : Implement
-    return Manifold::Empty();
+	// TODO : Implement
+	return Manifold::Empty();
 }
 
-Vector2 BoxCollider::FindFurthestPoint(const Transform* transform, const Vector2& direction) const
+core::Vec2f BoxCollider::FindFurthestPoint(const Transform* transform, const core::Vec2f& direction) const
 {
-    Vector2 maxPoint;
-    float maxDistance = -std::numeric_limits<float>::max();
+	core::Vec2f maxPoint;
+	float maxDistance = -std::numeric_limits<float>::max();
 
-    for (const Vector2& vertex : GetTransformedVertices(*transform))
-    {
-        const float distance = vertex.Dot(direction);
-        if (distance > maxDistance)
-        {
-            maxDistance = distance;
-            maxPoint = vertex;
-        }
-    }
+	for (const core::Vec2f& vertex : GetTransformedVertices(*transform))
+	{
+		const float distance = core::Vec2f::Dot(vertex, direction);
+		if (distance > maxDistance)
+		{
+			maxDistance = distance;
+			maxPoint = vertex;
+		}
+	}
 
-    return maxPoint;
+	return maxPoint;
 }
 
-std::array<Vector2, 4> BoxCollider::GetVertices() const
+std::array<core::Vec2f, 4> BoxCollider::GetVertices() const
 {
-    return GetTransformedVertices(
-        {
-            {0, 0},
-            {1, 1},
-            0
-        }
-    );
+	return GetTransformedVertices(
+		{
+			{0, 0},
+			{1, 1},
+			0
+		}
+	);
 }
 
-Projection BoxCollider::Project(const Vector2& axis, const std::array<Vector2, 4>& vertices)
+Projection BoxCollider::Project(const core::Vec2f& axis, const std::array<core::Vec2f, 4>& vertices)
 {
-    float min = axis.Dot(vertices[0]);
-    float max = min;
+	float min = core::Vec2f::Dot(axis, vertices[0]);
+	float max = min;
 
-    for (const auto& vertex : vertices)
-    {
-        const float p = axis.Dot(vertex);
-        if (p < min)
-        {
-            min = p;
-        }
-        else if (p > max)
-        {
-            max = p;
-        }
-    }
+	for (const auto& vertex : vertices)
+	{
+		const float p = core::Vec2f::Dot(axis, vertex);
+		if (p < min)
+		{
+			min = p;
+		}
+		else if (p > max)
+		{
+			max = p;
+		}
+	}
 
-    return {min, max};
+	return {min, max};
 }
 
-std::array<Vector2, 4> BoxCollider::GetAxes(const std::array<Vector2, 4>& vertices)
+std::array<core::Vec2f, 4> BoxCollider::GetAxes(const std::array<core::Vec2f, 4>& vertices)
 {
-    std::array<Vector2, 4> axes;
+	std::array<core::Vec2f, 4> axes;
 
-    for (std::size_t i = 0; i < 4; ++i)
-    {
-        Vector2 p1 = vertices[i];
-        Vector2 p2 = vertices[(i + 1) % vertices.size()];
-        Vector2 edge = p1 - p2;
-        Vector2 normal = edge.PositivePerpendicular();
-        axes[i] = normal.Normalized();
-    }
+	for (std::size_t i = 0; i < 4; ++i)
+	{
+		core::Vec2f p1 = vertices[i];
+		const core::Vec2f p2 = vertices[(i + 1) % vertices.size()];
+		core::Vec2f edge = p1 - p2;
+		core::Vec2f normal = edge.PositivePerpendicular();
+		axes[i] = normal.GetNormalized();
+	}
 
-    return axes;
+	return axes;
 }
 
-Vector2 BoxCollider::GetBoundingBoxSize() const
+core::Vec2f BoxCollider::GetBoundingBoxSize() const
 {
-    return {halfWidth * 2.0f, halfHeight * 2.0f};
+	return {halfWidth * 2.0f, halfHeight * 2.0f};
 }
 
-std::array<Vector2, 4> BoxCollider::GetTransformedVertices(const Transform& transform) const
+std::array<core::Vec2f, 4> BoxCollider::GetTransformedVertices(const Transform& transform) const
 {
-    const float scaledHalfWidth = halfWidth * transform.scale.x;
-    const float scaledHalfHeight = halfHeight * transform.scale.y;
-    const Vector2 newCenter = center + transform.position;
+	const float scaledHalfWidth = halfWidth * transform.scale.x;
+	const float scaledHalfHeight = halfHeight * transform.scale.y;
+	const core::Vec2f newCenter = center + transform.position;
 
-    Vector2 topLeft = {newCenter.x - scaledHalfWidth, newCenter.y + scaledHalfHeight};
-    Vector2 topRight = {newCenter.x + scaledHalfWidth, newCenter.y + scaledHalfHeight};
-    Vector2 bottomRight = {newCenter.x + scaledHalfWidth, newCenter.y - scaledHalfHeight};
-    Vector2 bottomLeft = {newCenter.x - scaledHalfWidth, newCenter.y - scaledHalfHeight};
+	core::Vec2f topLeft = {newCenter.x - scaledHalfWidth, newCenter.y + scaledHalfHeight};
+	core::Vec2f topRight = {newCenter.x + scaledHalfWidth, newCenter.y + scaledHalfHeight};
+	core::Vec2f bottomRight = {newCenter.x + scaledHalfWidth, newCenter.y - scaledHalfHeight};
+	core::Vec2f bottomLeft = {newCenter.x - scaledHalfWidth, newCenter.y - scaledHalfHeight};
 
-    topLeft.RotateAround(newCenter, transform.rotation);
-    topRight.RotateAround(newCenter, transform.rotation);
-    bottomRight.RotateAround(newCenter, transform.rotation);
-    bottomLeft.RotateAround(newCenter, transform.rotation);
+	topLeft.RotateAround(newCenter, transform.rotation);
+	topRight.RotateAround(newCenter, transform.rotation);
+	bottomRight.RotateAround(newCenter, transform.rotation);
+	bottomLeft.RotateAround(newCenter, transform.rotation);
 
-    return
-    {
-        topLeft,
-        topRight,
-        bottomRight,
-        bottomLeft,
-    };
+	return
+	{
+		topLeft,
+		topRight,
+		bottomRight,
+		bottomLeft,
+	};
 }
 #pragma endregion
 
 #pragma region CircleCollider
 
 Manifold CircleCollider::TestCollision(const Transform* transform, const Collider* collider,
-                                       const Transform* colliderTransform) const
+									   const Transform* colliderTransform) const
 {
-    return collider->TestCollision(colliderTransform, this, transform);
+	return collider->TestCollision(colliderTransform, this, transform);
 }
 
 Manifold CircleCollider::TestCollision(const Transform* transform, const BoxCollider* collider,
-                                       const Transform* boxTransform) const
+									   const Transform* boxTransform) const
 {
-    return algo::FindCircleBoxManifold(this, transform, collider, boxTransform);
+	return algo::FindCircleBoxManifold(this, transform, collider, boxTransform);
 }
 
 Manifold CircleCollider::TestCollision(const Transform* transform, const CircleCollider* collider,
-                                       const Transform* circleTransform) const
+									   const Transform* circleTransform) const
 {
-    return algo::FindCircleCircleManifold(this, transform, collider, circleTransform);
+	return algo::FindCircleCircleManifold(this, transform, collider, circleTransform);
 }
 
 Manifold CircleCollider::TestCollision(const Transform* transform, const AabbCollider* collider,
-                                       const Transform* aabbTransform) const
+									   const Transform* aabbTransform) const
 {
-    return algo::FindCircleAabbManifold(this, transform, collider, aabbTransform);
+	return algo::FindCircleAabbManifold(this, transform, collider, aabbTransform);
 }
 
-Vector2 CircleCollider::FindFurthestPoint(const Transform* transform, const Vector2& direction) const
+core::Vec2f CircleCollider::FindFurthestPoint(const Transform* transform, const core::Vec2f& direction) const
 {
-    return center + transform->position + radius * direction.Normalized() * transform->scale.Major();
+	return center + transform->position + radius * direction.GetNormalized() * transform->scale.Major();
 }
 
-Vector2 CircleCollider::GetBoundingBoxSize() const
+core::Vec2f CircleCollider::GetBoundingBoxSize() const
 {
-    return {radius * 2, radius * 2};
+	return {radius * 2, radius * 2};
 }
 #pragma endregion
 
 #pragma region AabbCollider
 Manifold AabbCollider::TestCollision(const Transform* transform, const Collider* collider,
-                                     const Transform* colliderTransform) const
+									 const Transform* colliderTransform) const
 {
-    return collider->TestCollision(colliderTransform, this, transform);
+	return collider->TestCollision(colliderTransform, this, transform);
 }
 
-Manifold AabbCollider::TestCollision(const Transform* transform, const BoxCollider* collider,
-                                     const Transform* boxTransform) const
+Manifold AabbCollider::TestCollision(const Transform*, const BoxCollider*, const Transform*) const
 {
-    // TODO : Implement
-    return Manifold::Empty();
+	// TODO : Implement
+	return Manifold::Empty();
 }
 
 Manifold AabbCollider::TestCollision(const Transform* transform, const CircleCollider* collider,
-                                     const Transform* circleTransform) const
+									 const Transform* circleTransform) const
 {
-    return algo::FindAabbCircleManifold(this, transform, collider, circleTransform);
+	return algo::FindAabbCircleManifold(this, transform, collider, circleTransform);
 }
 
 Manifold AabbCollider::TestCollision(const Transform* transform, const AabbCollider* collider,
-                                     const Transform* aabbTransform) const
+									 const Transform* aabbTransform) const
 {
-    return algo::FindAabbAabbManifold(this, transform, collider, aabbTransform);
+	return algo::FindAabbAabbManifold(this, transform, collider, aabbTransform);
 }
 
-Vector2 AabbCollider::FindFurthestPoint(const Transform* transform, const Vector2& direction) const
+core::Vec2f AabbCollider::FindFurthestPoint(const Transform*, const core::Vec2f&) const
 {
-    return {};
+	return {};
 }
 
-Vector2 AabbCollider::GetBoundingBoxSize() const
+core::Vec2f AabbCollider::GetBoundingBoxSize() const
 {
-    return {halfWidth * 2.0f, halfHeight * 2.0f};
+	return {halfWidth * 2.0f, halfHeight * 2.0f};
 }
 #pragma endregion
 }

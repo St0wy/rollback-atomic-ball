@@ -12,30 +12,32 @@
 
 #include <format>
 
-#include "math/Vector2.hpp"
+#include "maths/vec2.h"
 
 namespace game
 {
 struct Manifold
 {
 public:
-    Manifold(const Vector2& a, const Vector2& b, const Vector2& normal, float depth);
-    Manifold(const Vector2& normal, float depth);
+    Manifold(const core::Vec2f& a, const core::Vec2f& b, const core::Vec2f& normal, float depth);
+    Manifold(const core::Vec2f& normal, float depth);
     Manifold();
 
     /**
      * \brief Point a of the manifold.
      */
-    Vector2 a;
+    core::Vec2f a;
+
     /**
      * \brief Point b of the manifold.
      */
-    Vector2 b;
+    core::Vec2f b;
+
     /**
      * \brief The normal of the manifold.
      * Represents the direction in which the collision should be solved.
      */
-    Vector2 normal;
+	core::Vec2f normal;
     /**
      * \brief The depth of the collision. Can be seen as the magnitude of the normal.
      */
@@ -56,6 +58,4 @@ public:
 
     [[nodiscard]] Manifold Swaped() const;
 };
-
-std::ostream& operator<<(std::ostream& os, const Manifold& manifold);
 }

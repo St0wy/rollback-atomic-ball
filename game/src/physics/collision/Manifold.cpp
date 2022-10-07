@@ -1,17 +1,17 @@
-#include "collision/Manifold.hpp"
+#include "physics/collision/Manifold.hpp"
 
 #include <ostream>
 
 namespace game
 {
-Manifold::Manifold(const Vector2& a, const Vector2& b, const Vector2& normal, const float depth)
+Manifold::Manifold(const core::Vec2f& a, const core::Vec2f& b, const core::Vec2f& normal, const float depth)
     : a(a), b(b), normal(normal), depth(depth), hasCollision(true) {}
 
-Manifold::Manifold(const Vector2& normal, const float depth)
-    : Manifold(Vector2(), Vector2(), normal, depth) {}
+Manifold::Manifold(const core::Vec2f& normal, const float depth)
+    : Manifold(core::Vec2f(), core::Vec2f(), normal, depth) {}
 
 Manifold::Manifold()
-    : Manifold(Vector2(), 0.0f)
+    : Manifold(core::Vec2f(), 0.0f)
 {
     hasCollision = false;
 }
@@ -23,13 +23,5 @@ Manifold Manifold::Swaped() const
     copy.b = a;
     copy.normal = -normal;
     return copy;
-}
-
-std::ostream& operator<<(std::ostream& os, const Manifold& manifold)
-{
-    os << "{a: " << manifold.a << ", b: " << manifold.b <<
-        ", normal: " << manifold.normal << ", depth: " <<
-        manifold.depth << ", hasCollision: " << manifold.hasCollision << "}";
-    return os;
 }
 }

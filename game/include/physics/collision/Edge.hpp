@@ -1,16 +1,15 @@
 #pragma once
-
-#include "math/Vector2.hpp"
+#include "maths/vec2.h"
 
 namespace game
 {
 struct Edge
 {
-    Vector2 max;
-    Vector2 p1;
-    Vector2 p2;
+	core::Vec2f max;
+    core::Vec2f p1;
+    core::Vec2f p2;
 
-    [[nodiscard]] float VecDot(const Vector2& v) const;
-    [[nodiscard]] Vector2 EdgeVector() const;
+    [[nodiscard]] float VecDot(const core::Vec2f& v) const;
+    [[nodiscard]] core::Vec2f EdgeVector() const;
 };
 }

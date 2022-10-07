@@ -1,4 +1,4 @@
-#include "dynamics/Rigidbody.hpp"
+#include "physics/dynamics/Rigidbody.hpp"
 
 namespace game
 {
@@ -9,37 +9,37 @@ Rigidbody::Rigidbody()
     _isDynamic = true;
 }
 
-const Vector2& Rigidbody::GravityForce() const
+const core::Vec2f& Rigidbody::GravityForce() const
 {
     return _gravityForce;
 }
 
-void Rigidbody::SetGravityForce(const Vector2& gravityForce)
+void Rigidbody::SetGravityForce(const core::Vec2f& gravityForce)
 {
     _gravityForce = gravityForce;
 }
 
-const Vector2& Rigidbody::Force() const
+const core::Vec2f& Rigidbody::Force() const
 {
     return _force;
 }
 
-void Rigidbody::ApplyForce(const Vector2& addedForce)
+void Rigidbody::ApplyForce(const core::Vec2f& addedForce)
 {
     this->_force += addedForce;
 }
 
-void Rigidbody::SetForce(const Vector2& force)
+void Rigidbody::SetForce(const core::Vec2f& force)
 {
     _force = force;
 }
 
-const Vector2& Rigidbody::Velocity() const
+const core::Vec2f& Rigidbody::Velocity() const
 {
     return _velocity;
 }
 
-void Rigidbody::SetVelocity(const Vector2& velocity)
+void Rigidbody::SetVelocity(const core::Vec2f& velocity)
 {
     _velocity = velocity;
 }
@@ -73,7 +73,7 @@ void Rigidbody::SetTakesGravity(const bool takesGravity)
     _takesGravity = takesGravity;
     if (!_takesGravity)
     {
-        SetGravityForce(Vector2(0, 0));
+        SetGravityForce(core::Vec2f(0, 0));
     }
 }
 

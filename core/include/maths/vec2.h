@@ -12,7 +12,8 @@ namespace core
  */
 struct Vec2f
 {
-	float x = 0.0f, y = 0.0f;
+	float x = 0.0f;
+	float y = 0.0f;
 
 	constexpr Vec2f() = default;
 
@@ -22,24 +23,85 @@ struct Vec2f
 	// ReSharper disable once CppNonExplicitConvertingConstructor
 	Vec2f(sf::Vector2f v);
 
+	static float Dot(Vec2f a, Vec2f b);
+	static Vec2f Lerp(Vec2f a, Vec2f b, float t);
+    static Vec2f Normalize(Vec2f v);
 
 	[[nodiscard]] float GetMagnitude() const;
 	void Normalize();
 	[[nodiscard]] Vec2f GetNormalized() const;
 	[[nodiscard]] float GetSqrMagnitude() const;
 	[[nodiscard]] Vec2f Rotate(Degree rotation) const;
-	static float Dot(Vec2f a, Vec2f b);
-	static Vec2f Lerp(Vec2f a, Vec2f b, float t);
+
+    /**
+     * \brief Computes the distance between this and other.
+     * \param other The other vector.
+     * \return The distance between this and other.
+     */
+    [[nodiscard]] float Distance(const Vec2f& other) const;
+
+    /**
+     * \brief Computes the angle between this and other.
+     * \param other The other vector.
+     * \return The angle between this and other.
+     */
+    [[nodiscard]] float Angle(const Vec2f& other) const;
+
+    /**
+     * \brief Gets the biggest component of this vector.
+     * \return The biggest component of this vector.
+     */
+    [[nodiscard]] float Major() const;
+
+    /**
+     * \brief Computes the perpendicular vector in +90 degrees.
+     * \return The perpendicular vector in the positive direction.
+     */
+    [[nodiscard]] Vec2f PositivePerpendicular() const;
+
+    /**
+     * \brief Computes the perpendicular vector in -90 degrees.
+     * \return The perpendicular vector in the negative direction.
+     */
+    [[nodiscard]] Vec2f NegativePerpendicular() const;
+
+	[[nodiscard]] float Dot(Vec2f other) const;
+
+	/**
+     * \brief Compute the triple product with all of these vectors as 3d vectors with z = 0.
+     * p = a x (b x c)
+     * \param a Vector a.
+     * \param b Vector b.
+     * \param c Vector c.
+     * \return The triple product with a, b and c.
+     */
+    static Vec2f TripleProduct(const Vec2f& a, const Vec2f& b, const Vec2f& c);
+
+    /**
+     * \brief Sets the magnitude of this vector.
+     * \param newMagnitude The new magnitude.
+     */
+    [[nodiscard]] Vec2f NewMagnitude(float newMagnitude) const;
+
+    /**
+     * \brief Rotates this vector around the provided axis.
+     * \param center The axis to rotate around.
+     * \param angle The angle by which this vector should be rotated.
+     */
+    void RotateAround(const Vec2f& center, float angle);
 
 	// ReSharper disable once CppNonExplicitConversionOperator
 	[[nodiscard]] operator sf::Vector2f() const { return {x, y}; }
 
 	Vec2f operator+(Vec2f v) const;
-	Vec2f& operator+=(Vec2f v);
 	Vec2f operator-(Vec2f v) const;
+	Vec2f& operator+=(Vec2f v);
 	Vec2f& operator-=(Vec2f v);
 	Vec2f operator*(float f) const;
 	Vec2f operator/(float f) const;
+    Vec2f operator/=(float scalar);
+    Vec2f operator*=(float scalar);
+	Vec2f operator-() const;
 
 	static constexpr Vec2f Zero() { return {}; }
 	static constexpr Vec2f One() { return {1, 1}; }

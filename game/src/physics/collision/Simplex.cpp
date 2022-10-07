@@ -1,8 +1,8 @@
-#include "collision/Simplex.hpp"
+#include "physics/collision/Simplex.hpp"
 
 namespace game
 {
-Simplex& Simplex::operator=(std::initializer_list<Vector2> list)
+Simplex& Simplex::operator=(std::initializer_list<core::Vec2f> list)
 {
     for (auto v = list.begin(); v != list.end(); v++)
     {
@@ -13,12 +13,12 @@ Simplex& Simplex::operator=(std::initializer_list<Vector2> list)
     return *this;
 }
 
-Vector2 Simplex::operator[](const std::size_t i) const
+core::Vec2f Simplex::operator[](const std::size_t i) const
 {
     return _points[i];
 }
 
-void Simplex::PushFront(const Vector2 point)
+void Simplex::PushFront(const core::Vec2f point)
 {
     _points = {point, _points[0], _points[1]};
     IncrementSize();
@@ -34,12 +34,12 @@ void Simplex::IncrementSize()
     _size = std::min(_size + 1, MAX_SIZE);
 }
 
-std::array<Vector2, Simplex::MAX_SIZE>::const_iterator Simplex::End() const
+std::array<core::Vec2f, Simplex::MAX_SIZE>::const_iterator Simplex::End() const
 {
     return _points.end();
 }
 
-std::array<Vector2, Simplex::MAX_SIZE>::const_iterator Simplex::Begin() const
+std::array<core::Vec2f, Simplex::MAX_SIZE>::const_iterator Simplex::Begin() const
 {
     return _points.begin();
 }
