@@ -23,6 +23,7 @@ public:
 	constexpr Radian(const float value)
 		: _value(value) {}
 
+	// TODO: Add explicit
 	// ReSharper disable once CppNonExplicitConvertingConstructor
 	/**
 	 * \brief Conversion constructor that implicitly converts Degree to Radian
