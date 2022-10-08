@@ -95,9 +95,6 @@ void PhysicalWorld::ResolveCollisions(const float deltaTime)
 	}
 
 	SolveCollisions(collisions, deltaTime);
-
-	SendCollisionCallbacks(collisions, deltaTime);
-	SendCollisionCallbacks(triggers, deltaTime);
 }
 
 void PhysicalWorld::ApplyGravity() const

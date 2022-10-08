@@ -1,14 +1,5 @@
-/**
- * @file Collision.hpp
- * @author Fabian Huber (fabian.hbr@protonmail.ch)
- * @brief Contains the Collision struct.
- * @version 1.0
- * @date 05.07.2022
- *
- * @copyright SAE (c) 2022
- *
- */
 #pragma once
+
 #include "physics/rigidbody.hpp"
 
 namespace game

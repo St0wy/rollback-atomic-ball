@@ -1,7 +1,5 @@
 #include "physics/manifold.hpp"
 
-#include <ostream>
-
 namespace game
 {
 Manifold::Manifold(const core::Vec2f& a, const core::Vec2f& b, const core::Vec2f& normal, const float depth)

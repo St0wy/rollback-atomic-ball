@@ -1,16 +1,4 @@
-/**
- * @file Manifold.hpp
- * @author Fabian Huber (fabian.hbr@protonmail.ch)
- * @brief Contains the Manifold class.
- * @version 1.0
- * @date 05.07.2022
- *
- * @copyright SAE (c) 2022
- *
- */
 #pragma once
-
-#include <format>
 
 #include "maths/vec2.h"
 

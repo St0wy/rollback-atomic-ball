@@ -1,19 +1,6 @@
-/**
- * @file Collider.hpp
- * @author Fabian Huber (fabian.hbr@protonmail.ch)
- * @brief Contains all the Colliders struct.
- * @version 1.0
- * @date 05.07.2022
- *
- * @copyright SAE (c) 2022
- *
- */
 #pragma once
 
-#include <array>
-
 #include "manifold.hpp"
-#include "projection.hpp"
 
 #include "maths/vec2.h"
 
@@ -22,7 +9,6 @@
 namespace game
 {
 struct CircleCollider;
-struct BoxCollider;
 struct AabbCollider;
 
 /**
@@ -54,19 +40,6 @@ public:
 		const Transform* transform,
 		const Collider* collider,
 		const Transform* colliderTransform
-	) const = 0;
-
-	/**
-	 * \brief Tests the collision against a box collider.
-	 * \param transform The transform of this collider.
-	 * \param collider The box collider to collide with.
-	 * \param boxTransform The transform of the collider to collide with.
-	 * \return The manifold of that collision.
-	 */
-	virtual Manifold TestCollision(
-		const Transform* transform,
-		const BoxCollider* collider,
-		const Transform* boxTransform
 	) const = 0;
 
 	/**
@@ -114,67 +87,6 @@ public:
 };
 
 /**
- * \brief A rotatable box collider.
- */
-struct BoxCollider final : Collider
-{
-	/**
-	 * \brief Half of the width of the box.
-	 */
-	float halfWidth = 0;
-	/**
-	 * \brief Half of the height of the box.
-	 */
-	float halfHeight = 0;
-
-	Manifold TestCollision(
-		const Transform* transform,
-		const Collider* collider,
-		const Transform* colliderTransform
-	) const override;
-
-	Manifold TestCollision(
-		const Transform* transform,
-		const BoxCollider* collider,
-		const Transform* boxTransform
-	) const override;
-
-	Manifold TestCollision(
-		const Transform* transform,
-		const CircleCollider* collider,
-		const Transform* circleTransform
-	) const override;
-
-	Manifold TestCollision(const Transform* transform, const AabbCollider* collider,
-						   const Transform* circleTransform) const override;
-
-	[[nodiscard]] core::Vec2f FindFurthestPoint(
-		const Transform* transform,
-		const core::Vec2f& direction
-	) const override;
-
-	/**
-	 * \brief Gets the transformed vertices of the box.
-	 * \param transform The transform to apply to the collider.
-	 * \return The transform vertices of the box.
-	 */
-	[[nodiscard]] std::array<core::Vec2f, 4> GetTransformedVertices(const Transform& transform) const;
-
-	/**
-	 * \brief Gets the untransformed vertices of the box.
-	 * \return The vertices of the box.
-	 */
-	[[nodiscard]] std::array<core::Vec2f, 4> GetVertices() const;
-
-	[[nodiscard]] static Projection Project(
-		const core::Vec2f& axis,
-		const std::array<core::Vec2f, 4>& vertices);
-	[[nodiscard]] static std::array<core::Vec2f, 4> GetAxes(const std::array<core::Vec2f, 4>& vertices);
-
-	[[nodiscard]] core::Vec2f GetBoundingBoxSize() const override;
-};
-
-/**
  * \brief A circle collider.
  */
 struct CircleCollider final : Collider
@@ -193,18 +105,12 @@ public:
 
 	Manifold TestCollision(
 		const Transform* transform,
-		const BoxCollider* collider,
-		const Transform* boxTransform
-	) const override;
-
-	Manifold TestCollision(
-		const Transform* transform,
 		const CircleCollider* collider,
 		const Transform* circleTransform
 	) const override;
 
 	Manifold TestCollision(const Transform* transform, const AabbCollider* collider,
-						   const Transform* aabbTransform) const override;
+		const Transform* aabbTransform) const override;
 
 	[[nodiscard]] core::Vec2f FindFurthestPoint(
 		const Transform* transform,
@@ -228,15 +134,13 @@ struct AabbCollider final : Collider
 	float halfHeight = 0;
 
 	Manifold TestCollision(const Transform* transform, const Collider* collider,
-						   const Transform* colliderTransform) const override;
-	Manifold TestCollision(const Transform* transform, const BoxCollider* collider,
-						   const Transform* boxTransform) const override;
+		const Transform* colliderTransform) const override;
 	Manifold TestCollision(const Transform* transform, const CircleCollider* collider,
-						   const Transform* circleTransform) const override;
+		const Transform* circleTransform) const override;
 	Manifold TestCollision(const Transform* transform, const AabbCollider* collider,
-						   const Transform* aabbTransform) const override;
+		const Transform* aabbTransform) const override;
 	[[nodiscard]] core::Vec2f
-	FindFurthestPoint(const Transform* transform, const core::Vec2f& direction) const override;
+		FindFurthestPoint(const Transform* transform, const core::Vec2f& direction) const override;
 	[[nodiscard]] core::Vec2f GetBoundingBoxSize() const override;
 };
 }

@@ -1,13 +1,3 @@
-/**
- * @file Rigidbody.hpp
- * @author Fabian Huber (fabian.hbr@protonmail.ch)
- * @brief Contains the Rigidbody struct.
- * @version 1.0
- * @date 05.07.2022
- *
- * @copyright SAE (c) 2022
- *
- */
 #pragma once
 
 #include "physics/manifold_factory.hpp"
@@ -171,9 +161,9 @@ public:
     [[nodiscard]] float DynamicFriction() const;
     /**
      * \brief Sets the dynamic friction of this body.
-     * \param dynamicFriciton The new dynamic friction.
+     * \param dynamicFriction The new dynamic friction.
      */
-    void SetDynamicFriciton(float dynamicFriciton);
+    void SetDynamicFriction(float dynamicFriction);
 
     /**
      * \brief Gets the restitution of this body. Can be seen as the "Bounciness".

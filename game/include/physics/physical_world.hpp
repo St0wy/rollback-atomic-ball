@@ -50,13 +50,6 @@ public:
     void SolveCollisions(const std::vector<Collision>& collisions, float deltaTime) const;
 
     /**
-     * \brief Calls the callbacks of all the bodies in each collisions.
-     * \param collisions Collisions to send callback from.
-     * \param deltaTime Time elapsed since the last frame.
-     */
-    void SendCollisionCallbacks(std::vector<Collision>& collisions, float deltaTime) const;
-
-    /**
      * \brief Resolves all the collisions that happened in this world.
      * \param deltaTime Time elapsed since the last frame.
      */
