@@ -176,6 +176,9 @@ public:
      */
     void SetRestitution(float restitution);
 
+    [[nodiscard]] bool IsDynamic() const;
+    void SetIsDynamic(bool isDynamic);
+
 private:
     core::Vec2f _gravityForce;
     core::Vec2f _force;
@@ -191,6 +194,7 @@ private:
     Transform _transform{};
 	Collider* _collider{};
 
+    bool _isDynamic = false;
 	bool _isTrigger = false;
 	bool _isKinematic = false;
 };

@@ -9,9 +9,13 @@ void ImpulseSolver::Solve(const std::vector<Collision>& collisions, float)
 {
 	for (const auto& [bodyA, bodyB, manifold] : collisions)
 	{
+		// ReSharper disable CppCStyleCast
+		Rigidbody* aBody = bodyA->IsDynamic() ? (Rigidbody*)bodyA : nullptr;
+		Rigidbody* bBody = bodyB->IsDynamic() ? (Rigidbody*)bodyB : nullptr;
+		// ReSharper restore CppCStyleCast
 
-		core::Vec2f aVel = bodyA ? bodyA->Velocity() : core::Vec2f::Zero();
-		core::Vec2f bVel = bodyB ? bodyB->Velocity() : core::Vec2f::Zero();
+		core::Vec2f aVel = aBody ? aBody->Velocity() : core::Vec2f::Zero();
+		core::Vec2f bVel = bBody ? bBody->Velocity() : core::Vec2f::Zero();
 		core::Vec2f relativeVelocity = bVel - aVel;
 
 		// Calculate relative velocity in terms of the normal direction
@@ -20,22 +24,22 @@ void ImpulseSolver::Solve(const std::vector<Collision>& collisions, float)
 		// Do not resolve if velocities are separating
 		if (velocityAlongNormal >= 0) continue;
 
-		const float aInvMass = bodyA ? bodyA->InvMass() : 1.0f;
-		const float bInvMass = bodyB ? bodyB->InvMass() : 1.0f;
+		const float aInvMass = aBody ? aBody->InvMass() : 1.0f;
+		const float bInvMass = bBody ? bBody->InvMass() : 1.0f;
 
 		// Impulse
 
-		const float e = std::min(bodyA ? bodyA->Restitution() : 1.0f, bodyB ? bodyB->Restitution() : 1.0f);
+		const float e = std::min(aBody ? aBody->Restitution() : 1.0f, bBody ? bBody->Restitution() : 1.0f);
 		const float j = -(1.0f + e) * velocityAlongNormal / (aInvMass + bInvMass);
 
 		const core::Vec2f impulse = j * manifold.normal;
 
-		if (bodyA ? bodyA->IsKinematic() : false)
+		if (aBody ? aBody->IsKinematic() : false)
 		{
 			aVel -= impulse * aInvMass;
 		}
 
-		if (bodyB ? bodyB->IsKinematic() : false)
+		if (bBody ? bBody->IsKinematic() : false)
 		{
 			bVel += impulse * bInvMass;
 		}
@@ -48,10 +52,10 @@ void ImpulseSolver::Solve(const std::vector<Collision>& collisions, float)
 
 		const float fVel = relativeVelocity.Dot(tangent);
 
-		const float aSf = bodyA ? bodyA->StaticFriction() : 0.0f;
-		const float bSf = bodyB ? bodyB->StaticFriction() : 0.0f;
-		const float aDf = bodyA ? bodyA->DynamicFriction() : 0.0f;
-		const float bDf = bodyB ? bodyB->DynamicFriction() : 0.0f;
+		const float aSf = aBody ? aBody->StaticFriction() : 0.0f;
+		const float bSf = bBody ? bBody->StaticFriction() : 0.0f;
+		const float aDf = aBody ? aBody->DynamicFriction() : 0.0f;
+		const float bDf = bBody ? bBody->DynamicFriction() : 0.0f;
 		float mu = core::Vec2f(aSf, bSf).GetMagnitude();
 		const float f = -fVel / (aInvMass + bInvMass);
 
@@ -66,14 +70,14 @@ void ImpulseSolver::Solve(const std::vector<Collision>& collisions, float)
 			friction = -j * tangent * mu;
 		}
 
-		if (bodyA ? bodyA->IsKinematic() : false)
+		if (aBody ? aBody->IsKinematic() : false)
 		{
-			bodyA->SetVelocity(aVel - friction * aInvMass);
+			aBody->SetVelocity(aVel - friction * aInvMass);
 		}
 
-		if (bodyB ? bodyB->IsKinematic() : false)
+		if (bBody ? bBody->IsKinematic() : false)
 		{
-			bodyB->SetVelocity(bVel + friction * bInvMass);
+			bBody->SetVelocity(bVel + friction * bInvMass);
 		}
 	}
 }
@@ -82,8 +86,13 @@ void SmoothPositionSolver::Solve(const std::vector<Collision>& collisions, float
 {
 	for (const auto& [bodyA, bodyB, points] : collisions)
 	{
-		const float aInvMass = bodyA ? bodyA->InvMass() : 0.0f;
-		const float bInvMass = bodyB ? bodyB->InvMass() : 0.0f;
+		// ReSharper disable CppCStyleCast
+		Rigidbody* aBody = bodyA->IsDynamic() ? (Rigidbody*)bodyA : nullptr;
+		Rigidbody* bBody = bodyB->IsDynamic() ? (Rigidbody*)bodyB : nullptr;
+		// ReSharper restore CppCStyleCast
+
+		const float aInvMass = aBody ? aBody->InvMass() : 0.0f;
+		const float bInvMass = bBody ? bBody->InvMass() : 0.0f;
 
 		core::Vec2f resolution = points.b - points.a;
 
@@ -94,16 +103,16 @@ void SmoothPositionSolver::Solve(const std::vector<Collision>& collisions, float
 			* std::max(resolution.GetMagnitude() - slop, 0.0f)
 			/ (aInvMass + bInvMass);
 
-		if (bodyA ? bodyA->IsKinematic() : false)
+		if (aBody ? aBody->IsKinematic() : false)
 		{
 			const core::Vec2f deltaA = aInvMass * correction;
-			bodyA->Trans()->position -= deltaA;
+			aBody->Trans()->position -= deltaA;
 		}
 
-		if (bodyB ? bodyB->IsKinematic() : false)
+		if (bBody ? bBody->IsKinematic() : false)
 		{
 			const core::Vec2f deltaB = bInvMass * correction;
-			bodyB->Trans()->position += deltaB;
+			bBody->Trans()->position += deltaB;
 		}
 	}
 }

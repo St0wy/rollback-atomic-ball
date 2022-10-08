@@ -1,7 +1,7 @@
 #pragma once
 #include "bullet_manager.h"
 #include "game_globals.h"
-#include "physics_manager.h"
+#include "physics/physics_manager.h"
 #include "player_character.h"
 
 #include "engine/entity.h"
