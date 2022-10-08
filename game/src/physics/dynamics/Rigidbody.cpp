@@ -1,4 +1,4 @@
-#include "physics/dynamics/Rigidbody.hpp"
+#include "physics/dynamics/rigidbody.hpp"
 
 namespace game
 {

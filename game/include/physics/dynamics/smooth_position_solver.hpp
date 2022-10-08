@@ -9,9 +9,9 @@
  *
  */
 #pragma once
-#include "Solver.hpp"
+#include "solver.hpp"
 
-#include "physics/collision/Collision.hpp"
+#include "physics/collision/collision.hpp"
 
 namespace game
 {

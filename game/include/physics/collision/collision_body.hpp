@@ -12,9 +12,9 @@
 
 #include <functional>
 
-#include "Collider.hpp"
+#include "collider.hpp"
 
-#include "physics/Transform.hpp"
+#include "physics/transform.hpp"
 
 namespace game
 {

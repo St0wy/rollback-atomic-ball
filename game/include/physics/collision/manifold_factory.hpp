@@ -11,11 +11,11 @@
  */
 #pragma once
 
-#include "Collider.hpp"
-#include "Manifold.hpp"
-#include "Simplex.hpp"
+#include "collider.hpp"
+#include "manifold.hpp"
+#include "simplex.hpp"
 
-#include "physics/Transform.hpp"
+#include "physics/transform.hpp"
 
 namespace game
 {

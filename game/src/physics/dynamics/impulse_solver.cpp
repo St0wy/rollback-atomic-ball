@@ -1,7 +1,7 @@
-#include "physics/dynamics/ImpulseSolver.hpp"
+#include "physics/dynamics/impulse_solver.hpp"
 
-#include "physics/collision/Collision.hpp"
-#include "physics/dynamics/Rigidbody.hpp"
+#include "physics/collision/collision.hpp"
+#include "physics/dynamics/rigidbody.hpp"
 
 namespace game
 {

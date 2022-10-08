@@ -1,4 +1,4 @@
-#include "physics/collision/Projection.hpp"
+#include "physics/collision/projection.hpp"
 
 #include <algorithm>
 

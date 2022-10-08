@@ -12,12 +12,12 @@
 
 #include <array>
 
-#include "Manifold.hpp"
-#include "Projection.hpp"
+#include "manifold.hpp"
+#include "projection.hpp"
 
 #include "maths/vec2.h"
 
-#include "physics/Transform.hpp"
+#include "physics/transform.hpp"
 
 namespace game
 {

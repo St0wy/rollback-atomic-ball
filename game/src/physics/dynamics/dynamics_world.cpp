@@ -1,8 +1,8 @@
-#include "physics/dynamics/DynamicsWorld.hpp"
+#include "physics/dynamics/dynamics_world.hpp"
 
 #include <ranges>
 
-#include "physics/collision/CollisionBody.hpp"
+#include "physics/collision/collision_body.hpp"
 
 namespace game
 {

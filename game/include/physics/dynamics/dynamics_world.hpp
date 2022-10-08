@@ -10,9 +10,9 @@
  */
 #pragma once
 
-#include "Rigidbody.hpp"
+#include "rigidbody.hpp"
 
-#include "physics/collision/CollisionWorld.hpp"
+#include "physics/collision/collision_world.hpp"
 
 namespace game
 {

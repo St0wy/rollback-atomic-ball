@@ -1,4 +1,4 @@
-#include "physics/collision/CollisionBody.hpp"
+#include "physics/collision/collision_body.hpp"
 
 namespace game
 {

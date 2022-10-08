@@ -1,4 +1,4 @@
-#include "physics/collision/BroadPhaseGrid.hpp"
+#include "physics/collision/broad_phase_grid.hpp"
 
 #include <algorithm>
 #include <ranges>

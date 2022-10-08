@@ -1,8 +1,8 @@
-#include "physics/collision/CollisionWorld.hpp"
+#include "physics/collision/collision_world.hpp"
 
 #include <algorithm>
 
-#include "physics/collision/Collision.hpp"
+#include "physics/collision/collision.hpp"
 
 namespace game
 {

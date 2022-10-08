@@ -12,10 +12,10 @@
 
 #include <vector>
 
-#include "BroadPhaseGrid.hpp"
-#include "CollisionBody.hpp"
+#include "broad_phase_grid.hpp"
+#include "collision_body.hpp"
 
-#include "physics/dynamics/Solver.hpp"
+#include "physics/dynamics/solver.hpp"
 
 namespace game
 {

@@ -10,7 +10,7 @@
  */
 #pragma once
 
-#include "CollisionBody.hpp"
+#include "collision_body.hpp"
 
 namespace game
 {

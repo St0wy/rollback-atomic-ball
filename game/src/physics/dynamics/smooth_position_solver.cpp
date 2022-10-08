@@ -1,9 +1,9 @@
-#include "physics/dynamics/SmoothPositionSolver.hpp"
+#include "physics/dynamics/smooth_position_solver.hpp"
 
 #include <vector>
 
-#include "physics/collision/Collision.hpp"
-#include "physics/dynamics/Rigidbody.hpp"
+#include "physics/collision/collision.hpp"
+#include "physics/dynamics/rigidbody.hpp"
 
 namespace game
 {

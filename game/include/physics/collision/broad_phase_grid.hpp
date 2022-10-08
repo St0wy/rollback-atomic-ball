@@ -12,7 +12,7 @@
 
 #include <vector>
 
-#include "CollisionBody.hpp"
+#include "collision_body.hpp"
 
 #include "maths/vec2.h"
 
