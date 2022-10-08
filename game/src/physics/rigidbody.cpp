@@ -1,4 +1,4 @@
-#include "physics/dynamics/rigidbody.hpp"
+#include "physics/rigidbody.hpp"
 
 namespace game
 {
@@ -6,7 +6,58 @@ Rigidbody::Rigidbody()
     : _invMass(1),
       _takesGravity(true)
 {
-    _isDynamic = true;
+    static std::uint64_t staticId = 0;
+    id = staticId++;
+}
+
+Transform* Rigidbody::Trans()
+{
+    return &_transform;
+}
+
+void Rigidbody::SetTransform(const Transform& transform)
+{
+    _transform = transform;
+}
+
+Collider* Rigidbody::Col() const
+{
+    return _collider;
+}
+
+void Rigidbody::SetCollider(Collider* collider)
+{
+    _collider = collider;
+}
+
+bool Rigidbody::IsTrigger() const
+{
+    return _isTrigger;
+}
+
+void Rigidbody::SetIsTrigger(const bool isTrigger)
+{
+    _isTrigger = isTrigger;
+}
+
+const core::Vec2f& Rigidbody::Position() const
+{
+    return _transform.position;
+}
+
+void Rigidbody::SetPosition(const core::Vec2f& position)
+{
+    _transform.position = position;
+}
+
+bool Rigidbody::IsKinematic() const
+{
+    return _isKinematic;
+}
+
+void Rigidbody::SetIsKinematic(const bool isKinematic)
+{
+    _isKinematic = isKinematic;
 }
 
 const core::Vec2f& Rigidbody::GravityForce() const

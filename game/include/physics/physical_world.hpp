@@ -1,46 +1,34 @@
-/**
- * @file CollisionWorld.hpp
- * @author Fabian Huber (fabian.hbr@protonmail.ch)
- * @brief Contains the CollisionWorld class.
- * @version 1.0
- * @date 05.07.2022
- *
- * @copyright SAE (c) 2022
- *
- */
 #pragma once
 
-#include <vector>
+#include <unordered_map>
 
-#include "broad_phase_grid.hpp"
-#include "collision_body.hpp"
+#include "rigidbody.hpp"
+#include "solver.hpp"
 
-#include "physics/dynamics/solver.hpp"
+#include "physics/broad_phase_grid.hpp"
 
 namespace game
 {
 /**
-* \brief Represents a world where collisions can happen.
-* It does not have dynamics, for this you will need the DynamicsWorld.
-* \see DynamicsWorld
+* \brief A world with dynamics in it.
 */
-class CollisionWorld
+class PhysicalWorld
 {
 public:
-    CollisionWorld();
-    CollisionWorld(std::unordered_map<std::uint64_t, CollisionBody*> bodies, std::vector<Solver*> solvers);
+    PhysicalWorld();
+    PhysicalWorld(std::unordered_map<std::uint64_t, Rigidbody*> bodies, std::vector<Solver*> solvers);
 
     /**
      * \brief Adds a collision body to the world.
      * \param body Body to add.
      */
-    void AddCollisionBody(CollisionBody* body);
+    void AddRigidbody(Rigidbody* body);
 
     /**
      * \brief Removes a collision body to the world.
      * \param body Body to remove.
      */
-    void RemoveCollisionBody(const CollisionBody* body);
+    void RemoveRigidbody(const Rigidbody* body);
 
     /**
      * \brief Adds a solver to the world.
@@ -53,12 +41,6 @@ public:
      * \param solver Solver to remove.
      */
     void RemoveSolver(Solver* solver);
-
-    /**
-     * \brief Sets the collision callback of this world.
-     * \param callback Callback to set.
-     */
-    void SetCollisionCallback(const std::function<void(Collision&, float)>& callback);
 
     /**
      * \brief Solves the collisions with the provided solvers.
@@ -80,11 +62,34 @@ public:
      */
     void ResolveCollisions(float deltaTime);
 
-protected:
-    std::unordered_map<std::uint64_t, CollisionBody*> _bodies;
+    /**
+     * \brief Applies the gravity to all the rigidbody.
+     */
+    void ApplyGravity() const;
+
+    /**
+     * \brief Moves all the rigidbodies.
+     * \param deltaTime Time elapsed since the last frame.
+     */
+    void MoveBodies(float deltaTime) const;
+
+    /**
+     * \brief Steps the world.
+     * \param deltaTime Time elapsed since the last frame.
+     */
+    void Step(float deltaTime);
+
+    /**
+     * \brief Sets the gravity in the world.
+     * \param gravity Gravity to set.
+     */
+    void SetWorldGravity(core::Vec2f gravity);
+
+private:
+    std::unordered_map<std::uint64_t, Rigidbody*> _bodies;
     std::vector<Solver*> _solvers;
     BroadPhaseGrid _grid;
 
-    std::function<void(Collision&, float)> _onCollision;
+    core::Vec2f _gravity = {0, -9.81f};
 };
 }

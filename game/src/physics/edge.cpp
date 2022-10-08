@@ -1,4 +1,4 @@
-#include "physics/collision/edge.hpp"
+#include "physics/edge.hpp"
 
 namespace game
 {

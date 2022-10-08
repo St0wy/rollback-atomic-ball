@@ -19,7 +19,7 @@
 
 namespace game
 {
-struct CollisionBody;
+struct Rigidbody;
 
 /**
  * \brief Namespace containing all the methods to get manifolds from collisions.

@@ -9,8 +9,7 @@
  *
  */
 #pragma once
-
-#include "collision_body.hpp"
+#include "physics/rigidbody.hpp"
 
 namespace game
 {
@@ -22,12 +21,12 @@ struct Collision
     /**
      * \brief Body A of the collision.
      */
-    CollisionBody* bodyA{};
+    Rigidbody* bodyA{};
 
     /**
      * \brief Body B of the collision.
      */
-    CollisionBody* bodyB{};
+    Rigidbody* bodyB{};
 
     /**
      * \brief Manifold of the collision.

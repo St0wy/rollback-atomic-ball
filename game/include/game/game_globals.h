@@ -59,10 +59,12 @@ constexpr std::size_t WINDOW_BUFFER_SIZE = 5ull * 50ull;
  * \brief startDelay is the delay to wait before starting a game in milliseconds
  */
 constexpr long long START_DELAY = 3000;
+
 /**
  * \brief maxInputNmb is the number of inputs stored into an PlayerInputPacket
  */
 constexpr std::size_t MAX_INPUT_NMB = 50;
+
 /**
  * \brief fixedPeriod is the period used in seconds to start a new FixedUpdate method in the game::GameManager
  */

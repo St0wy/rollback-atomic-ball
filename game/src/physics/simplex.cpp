@@ -1,4 +1,4 @@
-#include "physics/collision/simplex.hpp"
+#include "physics/simplex.hpp"
 
 namespace game
 {

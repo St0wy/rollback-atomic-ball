@@ -10,17 +10,81 @@
  */
 #pragma once
 
-#include "physics/collision/collision_body.hpp"
+#include "physics/manifold_factory.hpp"
 
 namespace game
 {
 /**
 * \brief A Rigidbody that has dynamics.
 */
-struct Rigidbody : CollisionBody
+struct Rigidbody
 {
 public:
     Rigidbody();
+
+    std::uint64_t id;
+
+	/**
+	 * \brief Gets the transform of the body.
+	 * \return The transform of the body.
+	 */
+	Transform* Trans();
+
+	/**
+	 * \brief Sets the transform of the body.
+	 * \param transform Transform to set to the body.
+	 */
+	void SetTransform(const Transform& transform);
+
+	/**
+	 * \brief Gets the collider of the body.
+	 * \return The collider of the body.
+	 */
+	[[nodiscard]] Collider* Col() const;
+
+	/**
+	 * \brief Sets the collider of the body.
+	 * \param collider The collider to set on the body.
+	 */
+	void SetCollider(Collider* collider);
+
+	/**
+	 * \brief A boolean saying if the collider is a trigger collider.
+	 * This means that it will not have a collision response and will only have a callback.
+	 * \return If the collider is a trigger collider.
+	 */
+	[[nodiscard]] bool IsTrigger() const;
+
+	/**
+	 * \brief Sets is trigger on the body.
+	 * True means that it will not have a collision response and will only have a callback.
+	 * \param isTrigger The boolean saying if the collider is trigger.
+	 */
+	void SetIsTrigger(bool isTrigger);
+
+	/**
+	 * \brief Gets the position of the body in the world.
+	 * \return The position of the body in the world.
+	 */
+	[[nodiscard]] const core::Vec2f& Position() const;
+
+	/**
+	 * \brief Sets the position of the body in the world.
+	 * \param position The new position of the body.
+	 */
+	void SetPosition(const core::Vec2f& position);
+
+	/**
+	 * \brief Gets a boolean that indicates if this body will receive a collision response.
+	 * \return A boolean that indicates if this body is kinematic.
+	 */
+	[[nodiscard]] bool IsKinematic() const;
+
+	/**
+	 * \brief Sets a boolean that indicates if this body will receive a collision response.
+	 * \param isKinematic The new isKinematic status.
+	 */
+	void SetIsKinematic(bool isKinematic);
 
     /**
      * \brief Gets the force of the gravity on this body.
@@ -133,5 +197,11 @@ private:
     float _staticFriction{};
     float _dynamicFriction{};
     float _restitution{};
+
+    Transform _transform{};
+	Collider* _collider{};
+
+	bool _isTrigger = false;
+	bool _isKinematic = false;
 };
 }

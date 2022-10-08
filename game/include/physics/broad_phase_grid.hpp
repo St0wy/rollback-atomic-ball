@@ -1,20 +1,11 @@
-/**
- * @file BroadPhaseGrid.hpp
- * @author Fabian Huber (fabian.hbr@protonmail.ch)
- * @brief Contains the BroadPhaseGrid class.
- * @version 1.0
- * @date 07.07.2022
- *
- * @copyright SAE (c) 2022
- *
- */
 #pragma once
 
+#include <unordered_map>
 #include <vector>
 
-#include "collision_body.hpp"
-
 #include "maths/vec2.h"
+
+#include "physics/rigidbody.hpp"
 
 namespace game
 {
@@ -42,7 +33,7 @@ public:
      * \brief Updates the layout of the grid.
      * \param bodies Bodies in the physical world.
      */
-    void Update(const std::unordered_map<std::uint64_t, CollisionBody*>& bodies);
+    void Update(const std::unordered_map<std::uint64_t, Rigidbody*>& bodies);
 
     /**
      * \brief Find all the pair of objects that are in the same cell.
@@ -52,7 +43,7 @@ public:
     [[nodiscard]] std::vector<std::pair<std::uint64_t, std::uint64_t>> GetCollisionPairs() const;
 
 private:
-    std::vector<std::vector<std::vector<CollisionBody*>>> _grid;
+    std::vector<std::vector<std::vector<Rigidbody*>>> _grid;
     core::Vec2f _min;
     core::Vec2f _max;
     float _cellSize;
@@ -60,7 +51,7 @@ private:
     std::size_t _gridHeight;
 
     static bool HasBeenChecked(
-        const std::unordered_multimap<CollisionBody*, CollisionBody*>& checkedCollisions,
-        const std::pair<CollisionBody*, CollisionBody*>& bodyPair);
+        const std::unordered_multimap<Rigidbody*, Rigidbody*>& checkedCollisions,
+        const std::pair<Rigidbody*, Rigidbody*>& bodyPair);
 };
 }

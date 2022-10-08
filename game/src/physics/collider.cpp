@@ -1,10 +1,10 @@
 // ReSharper disable CppClangTidyReadabilitySuspiciousCallArgument
-#include "physics/collision/collider.hpp"
+#include "physics/collider.hpp"
 
 #include <array>
 
-#include "physics/collision/manifold.hpp"
-#include "physics/collision/manifold_factory.hpp"
+#include "physics/manifold.hpp"
+#include "physics/manifold_factory.hpp"
 
 namespace game
 {

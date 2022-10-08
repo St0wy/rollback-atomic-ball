@@ -1,13 +1,13 @@
-#include "physics/collision/manifold_factory.hpp"
+#include "physics/manifold_factory.hpp"
 
 #include <algorithm>
 #include <cmath>
 #include <limits>
 #include <vector>
 
-#include "physics/collision/collider.hpp"
-#include "physics/collision/manifold.hpp"
-#include "physics/collision/simplex.hpp"
+#include "physics/collider.hpp"
+#include "physics/manifold.hpp"
+#include "physics/simplex.hpp"
 
 namespace game
 {

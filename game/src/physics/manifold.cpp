@@ -1,4 +1,4 @@
-#include "physics/collision/manifold.hpp"
+#include "physics/manifold.hpp"
 
 #include <ostream>
 

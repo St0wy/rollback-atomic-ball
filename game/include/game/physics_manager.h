@@ -76,11 +76,15 @@ public:
 
 /**
  * \brief PhysicsManager is a class that holds both BodyManager and BoxManager and manages the physics fixed update.
- * It allows to register OnTriggerInterface to be called when a trigger occcurs.
+ * It allows to register OnTriggerInterface to be called when a trigger occurs.
  */
 class PhysicsManager : public core::DrawInterface
 {
 public:
+	static constexpr core::EntityMask PHYSICAL_OBJECT_MASK =
+		static_cast<core::EntityMask>(core::ComponentType::Body2D) |
+		static_cast<core::EntityMask>(core::ComponentType::BoxCollider2D);
+
 	explicit PhysicsManager(core::EntityManager& entityManager);
 	void FixedUpdate(sf::Time dt);
 	[[nodiscard]] const Body& GetBody(core::Entity entity) const;
@@ -100,6 +104,8 @@ public:
 	void Draw(sf::RenderTarget& renderTarget) override;
 	void SetCenter(const sf::Vector2f center) { _center = center; }
 	void SetWindowSize(const sf::Vector2f newWindowSize) { _windowSize = newWindowSize; }
+	[[nodiscard]] bool IsActivePhysicalObject(core::Entity entity) const;
+
 private:
 	core::EntityManager& _entityManager;
 	BodyManager _bodyManager;

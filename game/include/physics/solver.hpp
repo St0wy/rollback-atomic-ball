@@ -12,7 +12,7 @@
 
 #include <vector>
 
-#include "physics/collision/collision.hpp"
+#include "physics/collision.hpp"
 
 namespace game
 {

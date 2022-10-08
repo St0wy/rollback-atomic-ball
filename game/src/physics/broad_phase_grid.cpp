@@ -1,4 +1,4 @@
-#include "physics/collision/broad_phase_grid.hpp"
+#include "physics/broad_phase_grid.hpp"
 
 #include <algorithm>
 #include <ranges>
@@ -18,7 +18,7 @@ BroadPhaseGrid::BroadPhaseGrid(
       _gridHeight(static_cast<std::size_t>(
           std::floor((_max.y - _min.y) / _cellSize))) {}
 
-void BroadPhaseGrid::Update(const std::unordered_map<std::uint64_t, CollisionBody*>& bodies)
+void BroadPhaseGrid::Update(const std::unordered_map<std::uint64_t, Rigidbody*>& bodies)
 {
     _grid.clear();
     _grid.resize(_gridWidth);
@@ -52,12 +52,12 @@ void BroadPhaseGrid::Update(const std::unordered_map<std::uint64_t, CollisionBod
         {
             if (_grid[x].empty()) _grid[x].resize(_gridHeight);
 
-            std::vector<std::vector<CollisionBody*>>& gridCol = _grid[x];
+            std::vector<std::vector<Rigidbody*>>& gridCol = _grid[x];
 
             // Loop through each cell
             for (int y = yBodyMin; y <= yBodyMax; y++)
             {
-                std::vector<CollisionBody*>& gridCell = gridCol[y];
+                std::vector<Rigidbody*>& gridCell = gridCol[y];
                 gridCell.push_back(body);
             }
         }
@@ -66,7 +66,7 @@ void BroadPhaseGrid::Update(const std::unordered_map<std::uint64_t, CollisionBod
 
 std::vector<std::pair<std::uint64_t, std::uint64_t>> BroadPhaseGrid::GetCollisionPairs() const
 {
-    std::unordered_multimap<CollisionBody*, CollisionBody*> checkedCollisions;
+    std::unordered_multimap<Rigidbody*, Rigidbody*> checkedCollisions;
     std::vector<std::pair<std::uint64_t, std::uint64_t>> collisions;
 
     for (auto& gridCol : _grid)
@@ -75,12 +75,12 @@ std::vector<std::pair<std::uint64_t, std::uint64_t>> BroadPhaseGrid::GetCollisio
         {
             for (std::size_t i = 0; i < gridCell.size(); ++i)
             {
-                CollisionBody* bodyA = gridCell[i];
+                Rigidbody* bodyA = gridCell[i];
                 for (std::size_t j = i + 1; j < gridCell.size(); ++j)
                 {
-                    CollisionBody* bodyB = gridCell[j];
+                    Rigidbody* bodyB = gridCell[j];
 
-                    std::pair<CollisionBody*, CollisionBody*> bodyPair = bodyA < bodyB
+                    std::pair<Rigidbody*, Rigidbody*> bodyPair = bodyA < bodyB
                         ? std::make_pair(bodyA, bodyB)
                         : std::make_pair(bodyB, bodyA);
 
@@ -98,8 +98,8 @@ std::vector<std::pair<std::uint64_t, std::uint64_t>> BroadPhaseGrid::GetCollisio
 }
 
 bool BroadPhaseGrid::HasBeenChecked(
-    const std::unordered_multimap<CollisionBody*, CollisionBody*>& checkedCollisions,
-    const std::pair<CollisionBody*, CollisionBody*>& bodyPair
+    const std::unordered_multimap<Rigidbody*, Rigidbody*>& checkedCollisions,
+    const std::pair<Rigidbody*, Rigidbody*>& bodyPair
 )
 {
     auto [first, second] =
