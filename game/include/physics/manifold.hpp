@@ -26,10 +26,12 @@ public:
      * Represents the direction in which the collision should be solved.
      */
 	core::Vec2f normal;
+
     /**
      * \brief The depth of the collision. Can be seen as the magnitude of the normal.
      */
     float depth{};
+
     /**
      * \brief Boolean indicating whether a collision happened.
      */

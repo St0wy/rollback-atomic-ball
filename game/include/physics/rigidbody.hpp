@@ -27,18 +27,6 @@ public:
 	void SetTransform(const Transform& transform);
 
 	/**
-	 * \brief Gets the collider of the body.
-	 * \return The collider of the body.
-	 */
-	[[nodiscard]] Collider* Col() const;
-
-	/**
-	 * \brief Sets the collider of the body.
-	 * \param collider The collider to set on the body.
-	 */
-	void SetCollider(Collider* collider);
-
-	/**
 	 * \brief A boolean saying if the collider is a trigger collider.
 	 * This means that it will not have a collision response and will only have a callback.
 	 * \return If the collider is a trigger collider.
@@ -192,7 +180,7 @@ private:
     float _restitution{};
 
     Transform _transform{};
-	Collider* _collider{};
+	//Collider* _collider{};
 
     bool _isDynamic = false;
 	bool _isTrigger = false;

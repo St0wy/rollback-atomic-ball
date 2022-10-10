@@ -1,5 +1,7 @@
 #pragma once
 
+#include "engine/entity.h"
+
 #include "physics/rigidbody.hpp"
 
 namespace game
@@ -12,12 +14,12 @@ struct Collision
     /**
      * \brief Body A of the collision.
      */
-    Rigidbody* bodyA{};
+    core::Entity bodyA{};
 
     /**
      * \brief Body B of the collision.
      */
-    Rigidbody* bodyB{};
+    core::Entity bodyB{};
 
     /**
      * \brief Manifold of the collision.

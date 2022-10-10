@@ -20,9 +20,10 @@ enum class ComponentType : Component
 	Rotation = 1u << 3u,
 	Transform = Position | Scale | Rotation,
 	Sprite = 1u << 4u,
-	Body2D = 1u << 5u,
-	BoxCollider2D = 1u << 6u,
-	OtherType = 1u << 7u
+	Rigidbody = 1u << 5u,
+	AabbCollider = 1u << 6u,
+	CircleCollider = 1u << 7u,
+	OtherType = 1u << 8u,
 };
 
 /**

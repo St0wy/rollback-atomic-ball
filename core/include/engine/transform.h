@@ -12,7 +12,7 @@ namespace core
  * \brief PositionManager is a ComponentManager that holds positions in 2d space.
  * Positions are in physics space (using pixelPerMeter in globals.h)
  */
-class PositionManager : public ComponentManager<Vec2f, static_cast<Component>(ComponentType::Position)>
+class PositionManager final : public ComponentManager<Vec2f, static_cast<Component>(ComponentType::Position)>
 {
 public:
 	using ComponentManager::ComponentManager;
@@ -22,7 +22,7 @@ public:
  * \brief ScaleManager is a ComponentManager that holds the scale ratio in x and y.
  * By default, AddComponent will set the scale value to one.
  */
-class ScaleManager : public ComponentManager<Vec2f, static_cast<Component>(ComponentType::Scale)>
+class ScaleManager final : public ComponentManager<Vec2f, static_cast<Component>(ComponentType::Scale)>
 {
 public:
 	using ComponentManager::ComponentManager;
@@ -32,7 +32,7 @@ public:
 /**
  * \brief RotationManager is a ComponentManager that holds the Degree angle.
  */
-class RotationManager : public ComponentManager<Degree, static_cast<Component>(ComponentType::Rotation)>
+class RotationManager final : public ComponentManager<Degree, static_cast<Component>(ComponentType::Rotation)>
 {
 public:
 	using ComponentManager::ComponentManager;

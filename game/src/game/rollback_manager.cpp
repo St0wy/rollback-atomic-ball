@@ -85,7 +85,7 @@ void RollbackManager::SimulateToCurrentFrame()
 	for (core::Entity entity = 0; entity < _entityManager.GetEntitiesSize(); entity++)
 	{
 		if (!_entityManager.HasComponent(entity,
-			static_cast<core::EntityMask>(core::ComponentType::Body2D) |
+			static_cast<core::EntityMask>(core::ComponentType::Rigidbody) |
 			static_cast<core::EntityMask>(core::ComponentType::Transform)))
 			continue;
 		const auto& body = _currentPhysicsManager.GetBody(entity);

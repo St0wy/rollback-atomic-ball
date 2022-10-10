@@ -13,11 +13,13 @@
 namespace game
 {
 PhysicsManager::PhysicsManager(core::EntityManager& entityManager)
-	: _entityManager(entityManager), _bodyManager(entityManager), _boxManager(entityManager)
-{}
+	: _entityManager(entityManager),
+	  _bodyManager(entityManager),
+	  _boxManager(entityManager),
+	  _grid(-100, 100, -100, 100, 10) {}
 
 constexpr bool Box2Box(const float r1X, const float r1Y, const float r1W, const float r1H, const float r2X,
-	const float r2Y, const float r2W, const float r2H)
+					   const float r2Y, const float r2W, const float r2H)
 {
 	return r1X + r1W >= r2X && // r1 right edge past r2 left
 		r1X <= r2X + r2W && // r1 left edge past r2 right
@@ -25,7 +27,7 @@ constexpr bool Box2Box(const float r1X, const float r1Y, const float r1W, const 
 		r1Y <= r2Y + r2H;
 }
 
-void PhysicsManager::FixedUpdate(const sf::Time dt)
+void PhysicsManager::FixedUpdate(const sf::Time deltaTime)
 {
 	#ifdef TRACY_ENABLE
 	ZoneScoped;
@@ -33,12 +35,12 @@ void PhysicsManager::FixedUpdate(const sf::Time dt)
 
 	for (core::Entity entity = 0; entity < _entityManager.GetEntitiesSize(); entity++)
 	{
-		const bool isBody2D = _entityManager.HasComponent(entity, static_cast<core::EntityMask>(core::ComponentType::Body2D));
-		if (!isBody2D) continue;
+		const bool isRigidbody = _entityManager.HasComponent(entity,
+			static_cast<core::EntityMask>(core::ComponentType::Rigidbody));
+		if (!isRigidbody) continue;
 
-		auto& body = _bodyManager.GetComponent(entity);
-		body.position += body.velocity * dt.asSeconds();
-		body.rotation += body.angularVelocity * dt.asSeconds();
+		Rigidbody& body = _bodyManager.GetComponent(entity);
+		body.Trans()->position += body.Velocity() * deltaTime.asSeconds();
 		_bodyManager.SetComponent(entity, body);
 	}
 
@@ -49,38 +51,38 @@ void PhysicsManager::FixedUpdate(const sf::Time dt)
 		for (core::Entity otherEntity = entity + 1; otherEntity < _entityManager.GetEntitiesSize(); otherEntity++)
 		{
 			if (!_entityManager.HasComponent(otherEntity,
-				static_cast<core::EntityMask>(core::ComponentType::Body2D) | static_cast<core::EntityMask>(
-				core::ComponentType::BoxCollider2D)) ||
+					static_cast<core::EntityMask>(core::ComponentType::Rigidbody) | static_cast<core::EntityMask>(
+						core::ComponentType::AabbCollider)) ||
 				_entityManager.HasComponent(otherEntity, static_cast<core::EntityMask>(ComponentType::Destroyed)))
 				continue;
-			const Body& body1 = _bodyManager.GetComponent(entity);
-			const Box& box1 = _boxManager.GetComponent(entity);
+			const Rigidbody& body1 = _bodyManager.GetComponent(entity);
+			const AabbCollider& box1 = _boxManager.GetComponent(entity);
 
-			const Body& body2 = _bodyManager.GetComponent(otherEntity);
-			const Box& box2 = _boxManager.GetComponent(otherEntity);
+			const Rigidbody& body2 = _bodyManager.GetComponent(otherEntity);
+			const AabbCollider& box2 = _boxManager.GetComponent(otherEntity);
 
-			if (Box2Box(
-				body1.position.x - box1.extends.x,
-				body1.position.y - box1.extends.y,
-				box1.extends.x * 2.0f,
-				box1.extends.y * 2.0f,
-				body2.position.x - box2.extends.x,
-				body2.position.y - box2.extends.y,
-				box2.extends.x * 2.0f,
-				box2.extends.y * 2.0f))
-			{
-				_onTriggerAction.Execute(entity, otherEntity);
-			}
+			//if (Box2Box(
+			//	body1.position.x - box1.extends.x,
+			//	body1.position.y - box1.extends.y,
+			//	box1.extends.x * 2.0f,
+			//	box1.extends.y * 2.0f,
+			//	body2.position.x - box2.extends.x,
+			//	body2.position.y - box2.extends.y,
+			//	box2.extends.x * 2.0f,
+			//	box2.extends.y * 2.0f))
+			//{
+			//	_onTriggerAction.Execute(entity, otherEntity);
+			//}
 		}
 	}
 }
 
-void PhysicsManager::SetBody(const core::Entity entity, const Body& body)
+void PhysicsManager::SetBody(const core::Entity entity, const Rigidbody& body)
 {
 	_bodyManager.SetComponent(entity, body);
 }
 
-const Body& PhysicsManager::GetBody(const core::Entity entity) const
+const Rigidbody& PhysicsManager::GetBody(const core::Entity entity) const
 {
 	return _bodyManager.GetComponent(entity);
 }
@@ -95,12 +97,12 @@ void PhysicsManager::AddBox(const core::Entity entity)
 	_boxManager.AddComponent(entity);
 }
 
-void PhysicsManager::SetBox(const core::Entity entity, const Box& box)
+void PhysicsManager::SetBox(const core::Entity entity, const AabbCollider& box)
 {
 	_boxManager.SetComponent(entity, box);
 }
 
-const Box& PhysicsManager::GetBox(const core::Entity entity) const
+const AabbCollider& PhysicsManager::GetBox(const core::Entity entity) const
 {
 	return _boxManager.GetComponent(entity);
 }
@@ -109,9 +111,18 @@ void PhysicsManager::RegisterTriggerListener(OnTriggerInterface& onTriggerInterf
 {
 	_onTriggerAction.RegisterCallback(
 		[&onTriggerInterface](const core::Entity entity1, const core::Entity entity2)
-	{
-		onTriggerInterface.OnTrigger(entity1, entity2);
-	});
+		{
+			onTriggerInterface.OnTrigger(entity1, entity2);
+		});
+}
+
+void PhysicsManager::RegisterCollisionListener(OnCollisionInterface& onCollisionInterface)
+{
+	_onCollisionAction.RegisterCallback(
+		[&onCollisionInterface](const core::Entity entity1, const core::Entity entity2)
+		{
+			onCollisionInterface.OnCollision(entity1, entity2);
+		});
 }
 
 void PhysicsManager::CopyAllComponents(const PhysicsManager& physicsManager)
@@ -126,27 +137,54 @@ void PhysicsManager::Draw(sf::RenderTarget& renderTarget)
 	{
 		if (!IsActivePhysicalObject(entity)) continue;
 
-		const auto& [extends, isTrigger] = _boxManager.GetComponent(entity);
-		const auto& [position, velocity, angularVelocity,
-			rotation, bodyType] = _bodyManager.GetComponent(entity);
+		const AabbCollider& box = _boxManager.GetComponent(entity);
+		const Rigidbody& rigidbody = _bodyManager.GetComponent(entity);
 		sf::RectangleShape rectShape;
-		rectShape.setFillColor(core::Color::Transparent());
-		rectShape.setOutlineColor(core::Color::Green());
-		rectShape.setOutlineThickness(2.0f);
-		rectShape.setOrigin({ extends.x * core::PIXEL_PER_METER, extends.y * core::PIXEL_PER_METER });
-		rectShape.setPosition(
-			position.x * core::PIXEL_PER_METER + _center.x,
-			_windowSize.y - (position.y * core::PIXEL_PER_METER + _center.y));
-		rectShape.setSize({ extends.x * 2.0f * core::PIXEL_PER_METER, extends.y * 2.0f * core::PIXEL_PER_METER });
-		renderTarget.draw(rectShape);
+		// TODO : Draw physical shape
 	}
+}
+
+void PhysicsManager::ApplyGravity()
+{
+	for (core::Entity entity = 0; entity < _entityManager.GetEntitiesSize(); entity++)
+	{
+		const bool isRigidbody = _entityManager.HasComponent(entity,
+			static_cast<core::EntityMask>(core::ComponentType::Rigidbody));
+		if (!isRigidbody) continue;
+
+		Rigidbody& body = _bodyManager.GetComponent(entity);
+		const core::Vec2f force = body.GravityForce() * body.Mass();
+		body.ApplyForce(force);
+		_bodyManager.SetComponent(entity, body);
+	}
+}
+
+void PhysicsManager::ResolveCollisions(sf::Time deltaTime)
+{
+	// Vector for the collisions that have been detected
+	std::vector<Collision> collisions;
+
+	// Vector for the collisions that have been caused by trigger colliders
+	std::vector<Collision> triggers;
+
+	_grid.Update(_bodies);
 }
 
 bool PhysicsManager::IsActivePhysicalObject(const core::Entity entity) const
 {
 	const bool hasPhysicalComponents = _entityManager.HasComponent(entity, PHYSICAL_OBJECT_MASK);
-	const bool isDestroyed = _entityManager.HasComponent(entity, static_cast<core::EntityMask>(ComponentType::Destroyed));
+	const bool isDestroyed = _entityManager.HasComponent(entity,
+		static_cast<core::EntityMask>(ComponentType::Destroyed));
 
 	return hasPhysicalComponents && !isDestroyed;
+}
+
+void PhysicsManager::SendCollisionCallbacks(
+	const std::vector<Collision>& collisions, core::Action<core::Entity, core::Entity>& action)
+{
+	for (const auto& [bodyA, bodyB, _] : collisions)
+	{
+		action.Execute(bodyA, bodyB);
+	}
 }
 }

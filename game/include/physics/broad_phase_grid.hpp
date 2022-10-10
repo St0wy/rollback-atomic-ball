@@ -3,6 +3,10 @@
 #include <unordered_map>
 #include <vector>
 
+#include "physics_manager.h"
+
+#include "engine/entity.h"
+
 #include "maths/vec2.h"
 
 #include "physics/rigidbody.hpp"
@@ -26,14 +30,17 @@ public:
      * \param minY Y coordinate on the bottom left point of the grid.
      * \param maxY Y coordinate on the top right point of the grid.
      * \param cellSize Size (in meter) of a cell.
+     * \param entityManager Manager of the Entities.
+     * \param rigidbodyManager Manager of the Rigidbodies.
      */
-    BroadPhaseGrid(float minX, float maxX, float minY, float maxY, float cellSize);
+    BroadPhaseGrid(float minX, float maxX, float minY, float maxY, float cellSize, 
+        core::EntityManager& entityManager, RigidbodyManager& rigidbodyManager);
 
     /**
      * \brief Updates the layout of the grid.
      * \param bodies Bodies in the physical world.
      */
-    void Update(const std::unordered_map<std::uint64_t, Rigidbody*>& bodies);
+    void Update(const std::unordered_map<std::uint64_t, core::Entity>& bodies);
 
     /**
      * \brief Find all the pair of objects that are in the same cell.
@@ -49,9 +56,11 @@ private:
     float _cellSize;
     std::size_t _gridWidth;
     std::size_t _gridHeight;
+    core::EntityManager& _entityManager;
+    RigidbodyManager& _rigidbodyManager;
 
     static bool HasBeenChecked(
-        const std::unordered_multimap<Rigidbody*, Rigidbody*>& checkedCollisions,
-        const std::pair<Rigidbody*, Rigidbody*>& bodyPair);
+        const std::unordered_multimap<core::Entity, core::Entity>& checkedCollisions,
+        const std::pair<core::Entity, core::Entity>& bodyPair);
 };
 }

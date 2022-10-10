@@ -1,5 +1,7 @@
 #include "physics/rigidbody.hpp"
 
+#include "maths/basic.h"
+
 namespace game
 {
 Rigidbody::Rigidbody()
@@ -18,16 +20,6 @@ Transform* Rigidbody::Trans()
 void Rigidbody::SetTransform(const Transform& transform)
 {
 	_transform = transform;
-}
-
-Collider* Rigidbody::Col() const
-{
-	return _collider;
-}
-
-void Rigidbody::SetCollider(Collider* collider)
-{
-	_collider = collider;
 }
 
 bool Rigidbody::IsTrigger() const
@@ -107,7 +99,7 @@ float Rigidbody::InvMass() const
 
 void Rigidbody::SetMass(const float mass)
 {
-	if (mass == 0)
+	if (core::Equal(mass, 0))
 	{
 		_invMass = 0;
 	}
