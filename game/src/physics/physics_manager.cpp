@@ -1,5 +1,6 @@
 #include "physics/physics_manager.h"
 
+#include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 
 #include "engine/transform.hpp"
@@ -158,27 +159,43 @@ void PhysicsManager::Draw(sf::RenderTarget& renderTarget)
 			static_cast<core::EntityMask>(core::ComponentType::CircleCollider));
 		const bool hasCollider = hasAabbCollider || hasCircleCollider;
 
-		if (!hasRigidbody || isDestroyed && !hasCollider) continue;
+		if (!hasRigidbody || isDestroyed || !hasCollider) continue;
+
+		const Rigidbody& rigidbody = _rigidbodyManager.GetComponent(entity);
+		const auto& position = rigidbody.Position();
 
 		if (hasAabbCollider)
 		{
-			const AabbCollider& collider = _aabbManager.GetComponent(entity);
-			const Rigidbody& rigidbody = _rigidbodyManager.GetComponent(entity);
-
+			const AabbCollider& aabbCollider = _aabbManager.GetComponent(entity);
 			sf::RectangleShape rectShape;
 			rectShape.setFillColor(core::Color::Transparent());
 			rectShape.setOutlineColor(core::Color::Green());
 			rectShape.setOutlineThickness(2.0f);
 
-			const auto& position = rigidbody.Position();
-			rectShape.setOrigin({ collider.halfWidth * core::PIXEL_PER_METER, collider.halfHeight * core::PIXEL_PER_METER });
+			rectShape.setOrigin({ aabbCollider.halfWidth * core::PIXEL_PER_METER, aabbCollider.halfHeight * core::PIXEL_PER_METER });
 			rectShape.setPosition(
 				position.x * core::PIXEL_PER_METER + _center.x,
 				_windowSize.y - (position.y * core::PIXEL_PER_METER + _center.y));
-			rectShape.setSize({ collider.halfWidth * 2.0f * core::PIXEL_PER_METER,
-				collider.halfHeight * 2.0f * core::PIXEL_PER_METER });
+			rectShape.setSize({ aabbCollider.halfWidth * 2.0f * core::PIXEL_PER_METER,
+				aabbCollider.halfHeight * 2.0f * core::PIXEL_PER_METER });
 
 			renderTarget.draw(rectShape);
+		}
+
+		if (hasCircleCollider)
+		{
+			const CircleCollider& circleCollider = _circleManager.GetComponent(entity);
+			sf::CircleShape circleShape;
+			circleShape.setFillColor(core::Color::Transparent());
+			circleShape.setOutlineColor(core::Color::Green());
+			circleShape.setOutlineThickness(2.0f);
+			circleShape.setOrigin({ circleCollider.radius * core::PIXEL_PER_METER, circleCollider.radius * core::PIXEL_PER_METER });
+			circleShape.setPosition(
+				position.x * core::PIXEL_PER_METER + _center.x,
+				_windowSize.y - (position.y * core::PIXEL_PER_METER + _center.y));
+			circleShape.setRadius(circleCollider.radius * 2.0f * core::PIXEL_PER_METER);
+
+			renderTarget.draw(circleShape);
 		}
 	}
 }

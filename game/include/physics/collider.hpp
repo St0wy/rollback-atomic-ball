@@ -147,9 +147,6 @@ struct AabbCollider final : Collider
 	[[nodiscard]] core::Vec2f GetBoundingBoxSize() const override;
 };
 
-/**
- * \brief BoxManager is a ComponentManager that holds all the Box in the world.
- */
 class AabbColliderManager final :
 	public core::ComponentManager<AabbCollider, static_cast<core::EntityMask>(core::ComponentType::AabbCollider)>
 {
@@ -158,7 +155,7 @@ public:
 };
 
 class CircleColliderManager final :
-	public core::ComponentManager<AabbCollider, static_cast<core::EntityMask>(core::ComponentType::CircleCollider)>
+	public core::ComponentManager<CircleCollider, static_cast<core::EntityMask>(core::ComponentType::CircleCollider)>
 {
 public:
 	using ComponentManager::ComponentManager;
