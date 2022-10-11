@@ -1,6 +1,3 @@
-/**
- * \file packet_type.h
- */
 // ReSharper disable CppClangTidyCppcoreguidelinesProTypeStaticCastDowncast
 #pragma once
 
@@ -9,7 +6,7 @@
 
 #include <SFML/Network/Packet.hpp>
 
-#include "game/game_globals.h"
+#include "game/game_globals.hpp"
 
 namespace game
 {

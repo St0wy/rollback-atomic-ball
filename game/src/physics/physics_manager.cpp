@@ -2,9 +2,9 @@
 
 #include <SFML/Graphics/RectangleShape.hpp>
 
-#include "engine/transform.h"
+#include "engine/transform.hpp"
 
-#include "game/game_globals.h"
+#include "game/game_globals.hpp"
 
 #ifdef TRACY_ENABLE
 #include <Tracy.hpp>

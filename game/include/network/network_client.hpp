@@ -3,10 +3,10 @@
 #include <SFML/Network/TcpSocket.hpp>
 #include <SFML/Network/UdpSocket.hpp>
 
-#include "client.h"
+#include "client.hpp"
 
 #ifdef ENABLE_SQLITE
-#include "network/debug_db.h"
+#include "network/debug_db.hpp"
 #endif
 
 namespace game

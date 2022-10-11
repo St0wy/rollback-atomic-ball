@@ -1,5 +1,5 @@
 #pragma once
-#include "game/game_globals.h"
+#include "game/game_globals.hpp"
 
 namespace game
 {

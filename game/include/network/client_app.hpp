@@ -2,9 +2,9 @@
 
 #include <SFML/Window/Event.hpp>
 
-#include "engine/app.h"
+#include "engine/app.hpp"
 
-#include "network/network_client.h"
+#include "network/network_client.hpp"
 
 namespace game
 {

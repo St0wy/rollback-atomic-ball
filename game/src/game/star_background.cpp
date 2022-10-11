@@ -1,11 +1,11 @@
-#include "game/star_background.h"
+#include "game/star_background.hpp"
 
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 
-#include "engine/globals.h"
+#include "engine/globals.hpp"
 
-#include "maths/basic.h"
+#include "maths/basic.hpp"
 
 namespace game
 {

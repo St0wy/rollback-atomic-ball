@@ -1,11 +1,11 @@
 #include <fmt/format.h>
 
-#include <game/game_manager.h>
-#include <game/rollback_manager.h>
+#include <game/game_manager.hpp>
+#include <game/rollback_manager.hpp>
 
-#include <utils/log.h>
+#include <utils/log.hpp>
 
-#include "utils/assert.h"
+#include "utils/assert.hpp"
 
 #ifdef TRACY_ENABLE
 #include <Tracy.hpp>

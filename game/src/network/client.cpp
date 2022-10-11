@@ -1,10 +1,10 @@
 // ReSharper disable CppClangTidyCppcoreguidelinesProTypeStaticCastDowncast
-#include "network/client.h"
+#include "network/client.hpp"
 
-#include "maths/basic.h"
+#include "maths/basic.hpp"
 
-#include "utils/assert.h"
-#include "utils/conversion.h"
+#include "utils/assert.hpp"
+#include "utils/conversion.hpp"
 
 #ifdef TRACY_ENABLE
 #include <Tracy.hpp>

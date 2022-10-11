@@ -1,10 +1,10 @@
-#include "engine/entity.h"
+#include "engine/entity.hpp"
 
 #include <algorithm>
 
-#include "engine/component.h"
+#include "engine/component.hpp"
 
-#include "utils/assert.h"
+#include "utils/assert.hpp"
 
 namespace core
 {

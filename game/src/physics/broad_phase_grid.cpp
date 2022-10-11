@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-#include "engine/component.h"
+#include "engine/component.hpp"
 
 #include "physics/physics_manager.h"
 

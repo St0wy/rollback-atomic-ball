@@ -2,10 +2,10 @@
 
 #include <fmt/format.h>
 
-#include <network/server.h>
+#include <network/server.hpp>
 
-#include <utils/conversion.h>
-#include <utils/log.h>
+#include <utils/conversion.hpp>
+#include <utils/log.hpp>
 
 #ifdef TRACY_ENABLE
 #include <Tracy.hpp>

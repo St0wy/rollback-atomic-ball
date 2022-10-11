@@ -1,4 +1,4 @@
-#include "game/input_manager.h"
+#include "game/input_manager.hpp"
 
 #include "SFML/Window/Keyboard.hpp"
 

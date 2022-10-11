@@ -1,6 +1,3 @@
-/**
- * \file basic.h
- */
 #pragma once
 
 #include <random>

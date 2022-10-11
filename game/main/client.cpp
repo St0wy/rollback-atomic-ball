@@ -1,6 +1,6 @@
-#include "engine/engine.h"
+#include "engine/engine.hpp"
 
-#include "network/client_app.h"
+#include "network/client_app.hpp"
 
 int main()
 {

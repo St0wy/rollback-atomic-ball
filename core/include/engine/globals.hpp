@@ -1,7 +1,3 @@
-/**
- * \file globals.h
- */
-
 #pragma once
 
 #include <SFML/System/Vector2.hpp>

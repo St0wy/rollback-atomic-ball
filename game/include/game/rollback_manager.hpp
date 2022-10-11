@@ -1,13 +1,14 @@
 #pragma once
-#include "bullet_manager.h"
-#include "game_globals.h"
+#include "bullet_manager.hpp"
+#include "game_globals.hpp"
+#include "player_character.hpp"
+
+#include "engine/entity.hpp"
+#include "engine/transform.hpp"
+
+#include "network/packet_type.hpp"
+
 #include "physics/physics_manager.h"
-#include "player_character.h"
-
-#include "engine/entity.h"
-#include "engine/transform.h"
-
-#include "network/packet_type.h"
 
 namespace game
 {

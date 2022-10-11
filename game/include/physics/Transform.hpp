@@ -1,7 +1,7 @@
 #pragma once
 
-#include "maths/angle.h"
-#include "maths/vec2.h"
+#include "maths/angle.hpp"
+#include "maths/vec2.hpp"
 
 namespace game
 {

@@ -3,7 +3,7 @@
 //
 #include <gtest/gtest.h>
 
-#include "maths/angle.h"
+#include "maths/angle.hpp"
 
 TEST(Angle, RadianToDegree)
 {

@@ -1,13 +1,10 @@
-/**
- * \file assert.h
- */
 #pragma once
 
 #include <cstdlib>
 
 #include <fmt/format.h>
 
-#include "utils/log.h"
+#include "utils/log.hpp"
 
 namespace core
 {

@@ -5,9 +5,9 @@
 
 #include "rigidbody.hpp"
 
-#include "engine/entity.h"
+#include "engine/entity.hpp"
 
-#include "maths/vec2.h"
+#include "maths/vec2.hpp"
 
 namespace game
 {

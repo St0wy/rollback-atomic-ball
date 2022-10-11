@@ -2,10 +2,10 @@
 #include <SFML/Network/IpAddress.hpp>
 #include <SFML/Network/TcpListener.hpp>
 
-#include "network_client.h"
-#include "server.h"
+#include "network_client.hpp"
+#include "server.hpp"
 
-#include "game/game_globals.h"
+#include "game/game_globals.hpp"
 
 namespace game
 {

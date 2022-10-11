@@ -1,6 +1,6 @@
 #include <spdlog/spdlog.h>
 
-#include <utils/log.h>
+#include <utils/log.hpp>
 
 namespace core
 {

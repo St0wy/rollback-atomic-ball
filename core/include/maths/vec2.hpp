@@ -1,6 +1,6 @@
 #pragma once
 
-#include <maths/angle.h>
+#include <maths/angle.hpp>
 
 #include <SFML/System/Vector2.hpp>
 

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "engine/system.h"
+#include "engine/system.hpp"
 
-#include "graphics/graphics.h"
+#include "graphics/graphics.hpp"
 
 namespace core
 {

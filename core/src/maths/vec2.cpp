@@ -1,6 +1,6 @@
 #include <cmath>
 
-#include <maths/vec2.h>
+#include <maths/vec2.hpp>
 
 namespace core
 {

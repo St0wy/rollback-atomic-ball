@@ -1,5 +1,5 @@
-#include <game/game_manager.h>
-#include <game/player_character.h>
+#include <game/game_manager.hpp>
+#include <game/player_character.hpp>
 
 #ifdef TRACY_ENABLE
 #include <Tracy.hpp>

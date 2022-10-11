@@ -1,10 +1,10 @@
 #include <cmath>
 
-#include <engine/entity.h>
+#include <engine/entity.hpp>
 
 #include <gtest/gtest.h>
 
-#include "engine/component.h"
+#include "engine/component.hpp"
 
 TEST(Entity, CreateEntity)
 {

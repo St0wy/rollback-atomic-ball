@@ -8,12 +8,12 @@
 #include "rigidbody.hpp"
 #include "solver.hpp"
 
-#include "engine/component.h"
-#include "engine/entity.h"
+#include "engine/component.hpp"
+#include "engine/entity.hpp"
 
-#include "graphics/graphics.h"
+#include "graphics/graphics.hpp"
 
-#include "utils/action_utility.h"
+#include "utils/action_utility.hpp"
 
 namespace core
 {

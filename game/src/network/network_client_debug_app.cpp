@@ -1,9 +1,9 @@
-#include "network/network_client_debug_app.h"
+#include "network/network_client_debug_app.hpp"
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
 
-#include "game/input_manager.h"
+#include "game/input_manager.hpp"
 
 #ifdef TRACY_ENABLE
 #include <Tracy.hpp>

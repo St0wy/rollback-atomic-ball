@@ -1,6 +1,6 @@
 #pragma once
 
-#include "maths/vec2.h"
+#include "maths/vec2.hpp"
 
 namespace game
 {

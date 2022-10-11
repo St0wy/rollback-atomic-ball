@@ -1,6 +1,6 @@
-#include "engine/engine.h"
+#include "engine/engine.hpp"
 
-#include "network/simulation_app.h"
+#include "network/simulation_app.hpp"
 
 int main()
 {

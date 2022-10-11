@@ -1,12 +1,12 @@
 #pragma once
 #include <memory>
 
-#include "packet_type.h"
+#include "packet_type.hpp"
 
-#include "engine/system.h"
+#include "engine/system.hpp"
 
-#include "game/game_globals.h"
-#include "game/game_manager.h"
+#include "game/game_globals.hpp"
+#include "game/game_manager.hpp"
 
 namespace game
 {

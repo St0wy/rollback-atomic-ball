@@ -1,9 +1,9 @@
 #pragma once
-#include "packet_type.h"
+#include "packet_type.hpp"
 
-#include "game/game_manager.h"
+#include "game/game_manager.hpp"
 
-#include "graphics/graphics.h"
+#include "graphics/graphics.hpp"
 
 namespace game
 {

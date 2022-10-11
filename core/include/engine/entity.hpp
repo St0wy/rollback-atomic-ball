@@ -1,6 +1,3 @@
-/**
- * \file entity.h
- */
 #pragma once
 
 #include <cstdint>

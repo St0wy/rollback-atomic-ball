@@ -1,6 +1,3 @@
-/**
- * \file angle.h
- */
 #pragma once
 
 #include <cmath>

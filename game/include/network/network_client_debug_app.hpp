@@ -2,12 +2,12 @@
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Window/Event.hpp>
 
-#include "client.h"
-#include "network_client.h"
+#include "client.hpp"
+#include "network_client.hpp"
 
-#include "engine/app.h"
+#include "engine/app.hpp"
 
-#include "game/game_globals.h"
+#include "game/game_globals.hpp"
 
 
 namespace game

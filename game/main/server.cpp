@@ -2,7 +2,7 @@
 
 #include <SFML/System/Clock.hpp>
 
-#include "network/network_server.h"
+#include "network/network_server.hpp"
 
 int main(const int argc, char** argv)
 {

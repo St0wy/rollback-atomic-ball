@@ -2,12 +2,12 @@
 #include <imgui.h>
 #include <imgui_stdlib.h>
 
-#include <network/network_client.h>
+#include <network/network_client.hpp>
 
-#include "maths/basic.h"
+#include "maths/basic.hpp"
 
-#include "utils/conversion.h"
-#include "utils/log.h"
+#include "utils/conversion.hpp"
+#include "utils/log.hpp"
 
 #ifdef TRACY_ENABLE
 #include <Tracy.hpp>

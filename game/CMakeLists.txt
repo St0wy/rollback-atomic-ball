@@ -1,5 +1,5 @@
-file(GLOB_RECURSE Game_SRC src/game/*.cpp include/game/*.h)
-file(GLOB_RECURSE Network_SRC src/network/*.cpp include/network/*.h)
+file(GLOB_RECURSE Game_SRC src/game/*.cpp include/game/*.h[pp])
+file(GLOB_RECURSE Network_SRC src/network/*.cpp include/network/*.h[pp])
 file(GLOB_RECURSE Physics_SRC src/physics/*.cpp include/physics/*.h[pp])
 
 source_group("Game" FILES ${Game_SRC})

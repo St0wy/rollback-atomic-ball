@@ -4,7 +4,7 @@
 
 #include <SFML/Graphics/RenderWindow.hpp>
 
-#include "engine/app.h"
+#include "engine/app.hpp"
 
 namespace core
 {

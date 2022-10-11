@@ -1,9 +1,9 @@
-#include "network/debug_db.h"
+#include "network/debug_db.hpp"
 
 #ifdef ENABLE_SQLITE
 
-#include "utils/log.h"
-#include "utils/conversion.h"
+#include "utils/log.hpp"
+#include "utils/conversion.hpp"
 
 
 #include <sqlite3.h>

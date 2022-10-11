@@ -1,6 +1,6 @@
 #include "physics/solver.hpp"
 
-#include "engine/component.h"
+#include "engine/component.hpp"
 
 #include "physics/collision.hpp"
 #include "physics/rigidbody.hpp"

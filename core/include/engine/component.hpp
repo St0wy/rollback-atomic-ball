@@ -2,10 +2,10 @@
 
 #include <cstdint>
 
-#include "engine/entity.h"
-#include "engine/globals.h"
+#include "engine/entity.hpp"
+#include "engine/globals.hpp"
 
-#include "utils/assert.h"
+#include "utils/assert.hpp"
 
 
 namespace core

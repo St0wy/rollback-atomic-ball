@@ -2,7 +2,7 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
 
-#include "graphics/graphics.h"
+#include "graphics/graphics.hpp"
 
 
 namespace game

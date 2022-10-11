@@ -1,14 +1,14 @@
-#include "game/game_manager.h"
+#include "game/game_manager.hpp"
 
 #include <chrono>
 #include <imgui.h>
 
 #include <fmt/format.h>
 
-#include "maths/basic.h"
+#include "maths/basic.hpp"
 
-#include "utils/conversion.h"
-#include "utils/log.h"
+#include "utils/conversion.hpp"
+#include "utils/log.hpp"
 
 
 #ifdef TRACY_ENABLE

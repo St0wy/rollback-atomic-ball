@@ -2,11 +2,11 @@
 
 #include <fmt/format.h>
 
-#include <network/network_server.h>
+#include <network/network_server.hpp>
 
-#include "utils/assert.h"
-#include "utils/conversion.h"
-#include "utils/log.h"
+#include "utils/assert.hpp"
+#include "utils/conversion.hpp"
+#include "utils/log.hpp"
 
 #ifdef TRACY_ENABLE
 #include <Tracy.hpp>

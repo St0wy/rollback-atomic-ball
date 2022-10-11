@@ -1,6 +1,6 @@
-#include <engine/transform.h>
+#include <engine/transform.hpp>
 
-#include <graphics/sprite.h>
+#include <graphics/sprite.hpp>
 
 namespace core
 {

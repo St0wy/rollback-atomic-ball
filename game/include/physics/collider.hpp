@@ -2,10 +2,10 @@
 
 #include "manifold.hpp"
 
-#include "engine/component.h"
-#include "engine/entity.h"
+#include "engine/component.hpp"
+#include "engine/entity.hpp"
 
-#include "maths/vec2.h"
+#include "maths/vec2.hpp"
 
 #include "physics/transform.hpp"
 

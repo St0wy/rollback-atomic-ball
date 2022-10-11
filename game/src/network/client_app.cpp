@@ -1,8 +1,8 @@
-#include "network/client_app.h"
+#include "network/client_app.hpp"
 
-#include "engine/globals.h"
+#include "engine/globals.hpp"
 
-#include "game/input_manager.h"
+#include "game/input_manager.hpp"
 
 #ifdef TRACY_ENABLE
 #include <Tracy.hpp>

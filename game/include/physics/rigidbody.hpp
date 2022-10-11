@@ -1,7 +1,7 @@
 #pragma once
 
-#include "engine/component.h"
-#include "engine/entity.h"
+#include "engine/component.hpp"
+#include "engine/entity.hpp"
 
 #include "physics/manifold_factory.hpp"
 

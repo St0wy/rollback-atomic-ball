@@ -1,6 +1,6 @@
-#include <engine/engine.h>
+#include <engine/engine.hpp>
 
-#include "network/network_client_debug_app.h"
+#include "network/network_client_debug_app.hpp"
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 {

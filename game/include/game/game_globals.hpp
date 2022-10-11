@@ -1,17 +1,13 @@
-/**
- * \file game_globals.h
- */
-
 #pragma once
 #include <array>
 
-#include "engine/component.h"
-#include "engine/entity.h"
+#include "engine/component.hpp"
+#include "engine/entity.hpp"
 
-#include "graphics/color.h"
+#include "graphics/color.hpp"
 
-#include "maths/angle.h"
-#include "maths/vec2.h"
+#include "maths/angle.hpp"
+#include "maths/vec2.hpp"
 
 
 namespace game

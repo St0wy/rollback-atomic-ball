@@ -1,4 +1,4 @@
-#include "engine/engine.h"
+#include "engine/engine.hpp"
 
 #include <imgui-SFML.h>
 #include <imgui.h>
@@ -8,13 +8,13 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/VideoMode.hpp>
 
-#include "engine/globals.h"
-#include "engine/system.h"
+#include "engine/globals.hpp"
+#include "engine/system.hpp"
 
-#include "graphics/graphics.h"
+#include "graphics/graphics.hpp"
 
-#include "utils/assert.h"
-#include "utils/log.h"
+#include "utils/assert.hpp"
+#include "utils/log.hpp"
 
 #ifdef TRACY_ENABLE
 #include <Tracy.hpp>

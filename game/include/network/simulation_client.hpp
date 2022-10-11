@@ -1,11 +1,11 @@
 #pragma once
 #include <memory>
 
-#include <network/client.h>
+#include <network/client.hpp>
 
 #include <SFML/System/Time.hpp>
 
-#include "debug_db.h"
+#include "debug_db.hpp"
 
 namespace game
 {

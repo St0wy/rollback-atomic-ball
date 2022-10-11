@@ -1,12 +1,12 @@
 #pragma once
 #include <SFML/Graphics/RenderTexture.hpp>
 
-#include "simulation_client.h"
-#include "simulation_server.h"
+#include "simulation_client.hpp"
+#include "simulation_server.hpp"
 
-#include "engine/app.h"
+#include "engine/app.hpp"
 
-#include "game/game_globals.h"
+#include "game/game_globals.hpp"
 
 namespace game
 {

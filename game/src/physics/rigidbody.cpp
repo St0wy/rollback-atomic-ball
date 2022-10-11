@@ -1,6 +1,6 @@
 #include "physics/rigidbody.hpp"
 
-#include "maths/basic.h"
+#include "maths/basic.hpp"
 
 namespace game
 {

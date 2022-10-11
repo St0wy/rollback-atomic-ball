@@ -3,9 +3,9 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 
-#include "graphics.h"
+#include "graphics.hpp"
 
-#include "engine/component.h"
+#include "engine/component.hpp"
 
 namespace core
 {

@@ -1,11 +1,11 @@
-#include "network/simulation_app.h"
+#include "network/simulation_app.hpp"
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
 
-#include "engine/globals.h"
+#include "engine/globals.hpp"
 
-#include "game/input_manager.h"
+#include "game/input_manager.hpp"
 
 #ifdef TRACY_ENABLE
 #include <Tracy.hpp>

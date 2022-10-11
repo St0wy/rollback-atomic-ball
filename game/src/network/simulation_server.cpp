@@ -1,12 +1,12 @@
 #include <imgui.h>
 
-#include <maths/basic.h>
+#include <maths/basic.hpp>
 
-#include <network/simulation_client.h>
-#include <network/simulation_server.h>
+#include <network/simulation_client.hpp>
+#include <network/simulation_server.hpp>
 
-#include <utils/conversion.h>
-#include <utils/log.h>
+#include <utils/conversion.hpp>
+#include <utils/log.hpp>
 
 #ifdef TRACY_ENABLE
 #include <Tracy.hpp>

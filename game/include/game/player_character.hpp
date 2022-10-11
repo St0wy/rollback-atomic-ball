@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/System/Time.hpp>
 
-#include "game_globals.h"
+#include "game_globals.hpp"
 
 namespace game
 {
@@ -23,7 +23,7 @@ class GameManager;
 /**
  * \brief PlayerCharacterManager is a ComponentManager that holds all the PlayerCharacter in the game.
  */
-class PlayerCharacterManager : public core::ComponentManager<PlayerCharacter, static_cast<core::EntityMask>(ComponentType::PlayerCharacter)>
+class PlayerCharacterManager final : public core::ComponentManager<PlayerCharacter, static_cast<core::EntityMask>(ComponentType::PlayerCharacter)>
 {
 public:
     explicit PlayerCharacterManager(core::EntityManager& entityManager, PhysicsManager& physicsManager, GameManager& gameManager);

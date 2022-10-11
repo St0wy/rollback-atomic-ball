@@ -1,6 +1,6 @@
-#include "game/bullet_manager.h"
+#include "game/bullet_manager.hpp"
 
-#include "game/game_manager.h"
+#include "game/game_manager.hpp"
 
 #ifdef TRACY_ENABLE
 #include <Tracy.hpp>

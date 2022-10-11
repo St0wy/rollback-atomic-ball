@@ -6,18 +6,18 @@
 #include <SFML/System/Time.hpp>
 #include <SFML/System/Vector2.hpp>
 
-#include "game_globals.h"
-#include "rollback_manager.h"
-#include "star_background.h"
+#include "game_globals.hpp"
+#include "rollback_manager.hpp"
+#include "star_background.hpp"
 
-#include "engine/entity.h"
-#include "engine/system.h"
-#include "engine/transform.h"
+#include "engine/entity.hpp"
+#include "engine/system.hpp"
+#include "engine/transform.hpp"
 
-#include "graphics/graphics.h"
-#include "graphics/sprite.h"
+#include "graphics/graphics.hpp"
+#include "graphics/sprite.hpp"
 
-#include "network/packet_type.h"
+#include "network/packet_type.hpp"
 
 namespace game
 {

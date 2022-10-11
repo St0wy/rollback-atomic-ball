@@ -3,10 +3,10 @@
 
 #include <SFML/System/Time.hpp>
 
-#include "debug_db.h"
-#include "server.h"
+#include "debug_db.hpp"
+#include "server.hpp"
 
-#include "graphics/graphics.h"
+#include "graphics/graphics.hpp"
 
 namespace game
 {
