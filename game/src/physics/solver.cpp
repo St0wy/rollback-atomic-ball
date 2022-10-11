@@ -1,17 +1,33 @@
 #include "physics/solver.hpp"
 
+#include "engine/component.h"
+
 #include "physics/collision.hpp"
 #include "physics/rigidbody.hpp"
 
 namespace game
 {
+Solver::Solver(core::EntityManager& entityManager, RigidbodyManager& rigidbodyManager)
+	: _entityManager(entityManager), _rigidbodyManager(rigidbodyManager)
+{}
+
 void ImpulseSolver::Solve(const std::vector<Collision>& collisions, float)
 {
-	for (const auto& [bodyA, bodyB, manifold] : collisions)
+	for (const auto& [entityA, entityB, manifold] : collisions)
 	{
+		const bool isRigidbodyA = _entityManager.HasComponent(entityA,
+			static_cast<core::EntityMask>(core::ComponentType::Rigidbody));
+		const bool isRigidbodyB = _entityManager.HasComponent(entityB,
+			static_cast<core::EntityMask>(core::ComponentType::Rigidbody));
+
+		if (!isRigidbodyA || !isRigidbodyB) continue;
+
+		Rigidbody& bodyA = _rigidbodyManager.GetComponent(entityA);
+		Rigidbody& bodyB = _rigidbodyManager.GetComponent(entityB);
+
 		// ReSharper disable CppCStyleCast
-		Rigidbody* aBody = bodyA->IsDynamic() ? (Rigidbody*)bodyA : nullptr;
-		Rigidbody* bBody = bodyB->IsDynamic() ? (Rigidbody*)bodyB : nullptr;
+		Rigidbody* aBody = bodyA.IsDynamic() ? &bodyA : nullptr;
+		Rigidbody* bBody = bodyB.IsDynamic() ? &bodyB : nullptr;
 		// ReSharper restore CppCStyleCast
 
 		core::Vec2f aVel = aBody ? aBody->Velocity() : core::Vec2f::Zero();
@@ -84,11 +100,21 @@ void ImpulseSolver::Solve(const std::vector<Collision>& collisions, float)
 
 void SmoothPositionSolver::Solve(const std::vector<Collision>& collisions, float)
 {
-	for (const auto& [bodyA, bodyB, points] : collisions)
+	for (const auto& [entityA, entityB, points] : collisions)
 	{
+		const bool isRigidbodyA = _entityManager.HasComponent(entityA,
+			static_cast<core::EntityMask>(core::ComponentType::Rigidbody));
+		const bool isRigidbodyB = _entityManager.HasComponent(entityB,
+			static_cast<core::EntityMask>(core::ComponentType::Rigidbody));
+
+		if (!isRigidbodyA || !isRigidbodyB) continue;
+
+		Rigidbody& bodyA = _rigidbodyManager.GetComponent(entityA);
+		Rigidbody& bodyB = _rigidbodyManager.GetComponent(entityB);
+
 		// ReSharper disable CppCStyleCast
-		Rigidbody* aBody = bodyA->IsDynamic() ? (Rigidbody*)bodyA : nullptr;
-		Rigidbody* bBody = bodyB->IsDynamic() ? (Rigidbody*)bodyB : nullptr;
+		Rigidbody* aBody = bodyA.IsDynamic() ? &bodyA : nullptr;
+		Rigidbody* bBody = bodyB.IsDynamic() ? &bodyB : nullptr;
 		// ReSharper restore CppCStyleCast
 
 		const float aInvMass = aBody ? aBody->InvMass() : 0.0f;

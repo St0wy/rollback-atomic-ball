@@ -8,11 +8,16 @@ Rigidbody::Rigidbody()
 	: _invMass(1),
 	_takesGravity(true)
 {
-	static std::uint64_t staticId = 0;
-	id = staticId++;
+	//static std::uint64_t staticId = 0;
+	//id = staticId++;
 }
 
 Transform* Rigidbody::Trans()
+{
+	return &_transform;
+}
+
+const Transform* Rigidbody::Trans() const
 {
 	return &_transform;
 }
@@ -40,6 +45,11 @@ const core::Vec2f& Rigidbody::Position() const
 void Rigidbody::SetPosition(const core::Vec2f& position)
 {
 	_transform.position = position;
+}
+
+core::Radian Rigidbody::Rotation() const
+{
+	return _transform.rotation;
 }
 
 bool Rigidbody::IsKinematic() const

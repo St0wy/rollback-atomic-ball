@@ -8,15 +8,16 @@
 namespace game
 {
 PlayerCharacterManager::PlayerCharacterManager(core::EntityManager& entityManager, PhysicsManager& physicsManager,
-											   GameManager& gameManager)
+	GameManager& gameManager)
 	: ComponentManager(entityManager),
-	  _physicsManager(physicsManager),
-	  _gameManager(gameManager) {}
+	_physicsManager(physicsManager),
+	_gameManager(gameManager)
+{}
 
 void PlayerCharacterManager::FixedUpdate(const sf::Time dt)
 {
 	#ifdef TRACY_ENABLE
-    ZoneScoped;
+	ZoneScoped;
 	#endif
 	for (PlayerNumber playerNumber = 0; playerNumber < MAX_PLAYER_NMB; playerNumber++)
 	{
@@ -24,25 +25,26 @@ void PlayerCharacterManager::FixedUpdate(const sf::Time dt)
 		if (!_entityManager.HasComponent(playerEntity,
 			static_cast<core::EntityMask>(ComponentType::PlayerCharacter)))
 			continue;
-		auto playerBody = _physicsManager.GetBody(playerEntity);
-		auto playerCharacter = GetComponent(playerEntity);
+		Rigidbody& playerBody = _physicsManager.GetRigidbody(playerEntity);
+		auto& playerCharacter = GetComponent(playerEntity);
 		const auto input = playerCharacter.input;
 
-		const bool right = input & player_input_enum::PlayerInput::Right;
-		const bool left = input & player_input_enum::PlayerInput::Left;
+		//const bool right = input & player_input_enum::PlayerInput::Right;
+		//const bool left = input & player_input_enum::PlayerInput::Left;
 		const bool up = input & player_input_enum::PlayerInput::Up;
 		const bool down = input & player_input_enum::PlayerInput::Down;
 
-		const auto angularVelocity = ((left ? -1.0f : 0.0f) + (right ? 1.0f : 0.0f)) * PLAYER_ANGULAR_SPEED;
+		//const auto angularVelocity = ((left ? -1.0f : 0.0f) + (right ? 1.0f : 0.0f)) * PLAYER_ANGULAR_SPEED;
 
-		playerBody.angularVelocity = angularVelocity;
+		//playerBody.angularVelocity = angularVelocity;
 
 		auto dir = core::Vec2f::Up();
-		dir = dir.Rotate(-(playerBody.rotation + playerBody.angularVelocity * dt.asSeconds()));
+		//dir = dir.Rotate(-(playerBody.rotation + playerBody.angularVelocity * dt.asSeconds()));
 
 		const auto acceleration = ((down ? -1.0f : 0.0f) + (up ? 1.0f : 0.0f)) * dir;
 
-		playerBody.velocity += acceleration * dt.asSeconds();
+		const core::Vec2f vel = playerBody.Velocity() + acceleration * dt.asSeconds();
+		playerBody.SetVelocity(vel);
 
 		_physicsManager.SetBody(playerEntity, playerBody);
 
@@ -64,11 +66,11 @@ void PlayerCharacterManager::FixedUpdate(const sf::Time dt)
 		{
 			if (input & player_input_enum::PlayerInput::Shoot)
 			{
-				const auto currentPlayerSpeed = playerBody.velocity.GetMagnitude();
+				const auto currentPlayerSpeed = playerBody.Velocity().GetMagnitude();
 				const auto bulletVelocity = dir *
-				((core::Vec2f::Dot(playerBody.velocity, dir) > 0.0f ? currentPlayerSpeed : 0.0f)
+					((core::Vec2f::Dot(playerBody.Velocity(), dir) > 0.0f ? currentPlayerSpeed : 0.0f)
 					+ BULLET_SPEED);
-				const auto bulletPosition = playerBody.position + dir * 0.5f + playerBody.velocity * dt.asSeconds();
+				const auto bulletPosition = playerBody.Position() + dir * 0.5f + playerBody.Position() * dt.asSeconds();
 				_gameManager.SpawnBullet(playerCharacter.playerNumber,
 					bulletPosition,
 					bulletVelocity);

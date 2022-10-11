@@ -14,17 +14,17 @@
 namespace game
 {
 RollbackManager::RollbackManager(GameManager& gameManager, core::EntityManager& entityManager)
-	: _gameManager(gameManager), _entityManager(entityManager),
-	  _currentTransformManager(entityManager),
-	  _currentPhysicsManager(entityManager), _currentPlayerManager(entityManager, _currentPhysicsManager, _gameManager),
-	  _currentBulletManager(entityManager, gameManager),
-	  _lastValidatePhysicsManager(entityManager),
-	  _lastValidatePlayerManager(entityManager, _lastValidatePhysicsManager, _gameManager),
-	  _lastValidateBulletManager(entityManager, gameManager)
+	: OnTriggerInterface(), _gameManager(gameManager), _entityManager(entityManager),
+	_currentTransformManager(entityManager),
+	_currentPhysicsManager(entityManager), _currentPlayerManager(entityManager, _currentPhysicsManager, _gameManager),
+	_currentBulletManager(entityManager, gameManager),
+	_lastValidatePhysicsManager(entityManager),
+	_lastValidatePlayerManager(entityManager, _lastValidatePhysicsManager, _gameManager),
+	_lastValidateBulletManager(entityManager, gameManager)
 {
 	for (auto& input : _inputs)
 	{
-		std::fill(input.begin(), input.end(), '\0');
+		std::ranges::fill(input, '\0');
 	}
 	_currentPhysicsManager.RegisterTriggerListener(*this);
 }
@@ -32,16 +32,16 @@ RollbackManager::RollbackManager(GameManager& gameManager, core::EntityManager& 
 void RollbackManager::SimulateToCurrentFrame()
 {
 	#ifdef TRACY_ENABLE
-    ZoneScoped;
+	ZoneScoped;
 	#endif
 	const auto currentFrame = _gameManager.GetCurrentFrame();
 	const auto lastValidateFrame = _gameManager.GetLastValidateFrame();
 	//Destroying all created Entities after the last validated frame
-	for (const auto& createdEntity : _createdEntities)
+	for (const auto& [entity, createdFrame] : _createdEntities)
 	{
-		if (createdEntity.createdFrame > lastValidateFrame)
+		if (createdFrame > lastValidateFrame)
 		{
-			_entityManager.DestroyEntity(createdEntity.entity);
+			_entityManager.DestroyEntity(entity);
 		}
 	}
 	_createdEntities.clear();
@@ -72,7 +72,7 @@ void RollbackManager::SimulateToCurrentFrame()
 				core::LogWarning(fmt::format("Invalid Entity in {}:line {}", __FILE__, __LINE__));
 				continue;
 			}
-			auto playerCharacter = _currentPlayerManager.GetComponent(playerEntity);
+			auto& playerCharacter = _currentPlayerManager.GetComponent(playerEntity);
 			playerCharacter.input = playerInput;
 			_currentPlayerManager.SetComponent(playerEntity, playerCharacter);
 		}
@@ -88,13 +88,13 @@ void RollbackManager::SimulateToCurrentFrame()
 			static_cast<core::EntityMask>(core::ComponentType::Rigidbody) |
 			static_cast<core::EntityMask>(core::ComponentType::Transform)))
 			continue;
-		const auto& body = _currentPhysicsManager.GetBody(entity);
-		_currentTransformManager.SetPosition(entity, body.position);
-		_currentTransformManager.SetRotation(entity, body.rotation);
+		const auto& body = _currentPhysicsManager.GetRigidbody(entity);
+		_currentTransformManager.SetPosition(entity, body.Position());
+		_currentTransformManager.SetRotation(entity, body.Rotation());
 	}
 }
 
-void RollbackManager::SetPlayerInput(PlayerNumber playerNumber, PlayerInput playerInput, Frame inputFrame)
+void RollbackManager::SetPlayerInput(const PlayerNumber playerNumber, const PlayerInput playerInput, const Frame inputFrame)
 {
 	//Should only be called on the server
 	if (_currentFrame < inputFrame)
@@ -116,7 +116,7 @@ void RollbackManager::SetPlayerInput(PlayerNumber playerNumber, PlayerInput play
 void RollbackManager::StartNewFrame(Frame newFrame)
 {
 	#ifdef TRACY_ENABLE
-    ZoneScoped;
+	ZoneScoped;
 	#endif
 	if (_currentFrame > newFrame)
 		return;
@@ -143,7 +143,7 @@ void RollbackManager::StartNewFrame(Frame newFrame)
 void RollbackManager::ValidateFrame(Frame newValidateFrame)
 {
 	#ifdef TRACY_ENABLE
-    ZoneScoped;
+	ZoneScoped;
 	#endif
 	const auto lastValidateFrame = _gameManager.GetLastValidateFrame();
 	//We check that we got all the inputs
@@ -188,7 +188,7 @@ void RollbackManager::ValidateFrame(Frame newValidateFrame)
 		{
 			const auto playerInput = GetInputAtFrame(playerNumber, frame);
 			const auto playerEntity = _gameManager.GetEntityFromPlayerNumber(playerNumber);
-			auto playerCharacter = _currentPlayerManager.GetComponent(playerEntity);
+			auto& playerCharacter = _currentPlayerManager.GetComponent(playerEntity);
 			playerCharacter.input = playerInput;
 			_currentPlayerManager.SetComponent(playerEntity, playerCharacter);
 		}
@@ -214,10 +214,10 @@ void RollbackManager::ValidateFrame(Frame newValidateFrame)
 }
 
 void RollbackManager::ConfirmFrame(Frame newValidatedFrame,
-								   const std::array<PhysicsState, MAX_PLAYER_NMB>& serverPhysicsState)
+	const std::array<PhysicsState, MAX_PLAYER_NMB>& serverPhysicsState)
 {
 	#ifdef TRACY_ENABLE
-    ZoneScoped;
+	ZoneScoped;
 	#endif
 	ValidateFrame(newValidatedFrame);
 	for (PlayerNumber playerNumber = 0; playerNumber < MAX_PLAYER_NMB; playerNumber++)
@@ -227,24 +227,23 @@ void RollbackManager::ConfirmFrame(Frame newValidatedFrame,
 		{
 			gpr_assert(false,
 				fmt::format(
-					"Physics State are not equal for player {} (server frame: {}, client frame: {}, server: {}, client: {})",
-					playerNumber + 1,
-					newValidatedFrame,
-					_lastValidateFrame,
-					serverPhysicsState[playerNumber],
-					lastPhysicsState));
+				"Physics State are not equal for player {} (server frame: {}, client frame: {}, server: {}, client: {})",
+				playerNumber + 1,
+				newValidatedFrame,
+				_lastValidateFrame,
+				serverPhysicsState[playerNumber],
+				lastPhysicsState));
 		}
 	}
 }
 
-PhysicsState RollbackManager::GetValidatePhysicsState(PlayerNumber playerNumber) const
+PhysicsState RollbackManager::GetValidatePhysicsState(const PlayerNumber playerNumber) const
 {
 	PhysicsState state = 0;
 	const core::Entity playerEntity = _gameManager.GetEntityFromPlayerNumber(playerNumber);
-	const auto& [position, velocity, angularVelocity,
-		rotation, bodyType] = _lastValidatePhysicsManager.GetBody(playerEntity);
+	const Rigidbody& rigidbody = _lastValidatePhysicsManager.GetRigidbody(playerEntity);
 
-	const auto pos = position;
+	const auto& pos = rigidbody.Position();
 	const auto* posPtr = reinterpret_cast<const PhysicsState*>(&pos);
 
 	//Adding position
@@ -254,42 +253,37 @@ PhysicsState RollbackManager::GetValidatePhysicsState(PlayerNumber playerNumber)
 	}
 
 	//Adding velocity
-	const auto* velocityPtr = reinterpret_cast<const PhysicsState*>(&velocity);
+	const auto* velocityPtr = reinterpret_cast<const PhysicsState*>(&rigidbody.Velocity());
 	for (size_t i = 0; i < sizeof(core::Vec2f) / sizeof(PhysicsState); i++)
 	{
 		state += velocityPtr[i];
 	}
 
 	//Adding rotation
-	const auto angle = rotation.Value();
+	const auto angle = rigidbody.Trans()->rotation.Value();
 	const auto* anglePtr = reinterpret_cast<const PhysicsState*>(&angle);
 	for (size_t i = 0; i < sizeof(float) / sizeof(PhysicsState); i++)
 	{
 		state += anglePtr[i];
 	}
 
-	//Adding angular Velocity
-	const float angularVelocityFloat = angularVelocity.Value();
-	const auto* angularVelPtr = reinterpret_cast<const PhysicsState*>(&angularVelocityFloat);
-	for (size_t i = 0; i < sizeof(float) / sizeof(PhysicsState); i++)
-	{
-		state += angularVelPtr[i];
-	}
-
 	return state;
 }
 
 void RollbackManager::SpawnPlayer(const PlayerNumber playerNumber, const core::Entity entity,
-								  const core::Vec2f position, const core::Degree rotation)
+	const core::Vec2f position, const core::Degree rotation)
 {
 	#ifdef TRACY_ENABLE
-    ZoneScoped;
+	ZoneScoped;
 	#endif
-	Body playerBody;
-	playerBody.position = position;
-	playerBody.rotation = rotation;
-	Box playerBox;
-	playerBox.extends = core::Vec2f::One() * 0.25f;
+
+	Rigidbody playerBody;
+	playerBody.SetPosition(position);
+	playerBody.Trans()->rotation = rotation;
+
+	AabbCollider playerBox;
+	playerBox.halfHeight = 0.25f;
+	playerBox.halfWidth = 0.25f;
 
 	PlayerCharacter playerCharacter;
 	playerCharacter.playerNumber = playerNumber;
@@ -358,18 +352,20 @@ void RollbackManager::OnTrigger(const core::Entity entity1, const core::Entity e
 }
 
 void RollbackManager::SpawnBullet(const PlayerNumber playerNumber, const core::Entity entity,
-								  const core::Vec2f position, const core::Vec2f velocity)
+	const core::Vec2f position, const core::Vec2f velocity)
 {
-	_createdEntities.push_back({entity, _testedFrame});
+	_createdEntities.push_back({ entity, _testedFrame });
 
-	Body bulletBody;
-	bulletBody.position = position;
-	bulletBody.velocity = velocity;
-	Box bulletBox;
-	bulletBox.extends = core::Vec2f::One() * BULLET_SCALE * 0.5f;
+	Rigidbody bulletBody;
+	bulletBody.SetPosition(position);
+	bulletBody.SetVelocity(velocity);
+
+	AabbCollider bulletBox;
+	bulletBox.halfHeight = 0.25f;
+	bulletBox.halfWidth = 0.25f;
 
 	_currentBulletManager.AddComponent(entity);
-	_currentBulletManager.SetComponent(entity, {BULLET_PERIOD, playerNumber});
+	_currentBulletManager.SetComponent(entity, { BULLET_PERIOD, playerNumber });
 
 	_currentPhysicsManager.AddBody(entity);
 	_currentPhysicsManager.SetBody(entity, bulletBody);
@@ -385,14 +381,14 @@ void RollbackManager::SpawnBullet(const PlayerNumber playerNumber, const core::E
 void RollbackManager::DestroyEntity(core::Entity entity)
 {
 	#ifdef TRACY_ENABLE
-    ZoneScoped;
+	ZoneScoped;
 	#endif
 	//we don't need to save a bullet that has been created in the time window
 	if (std::ranges::find_if(_createdEntities,
 		[entity](auto newEntity)
-		{
-			return newEntity.entity == entity;
-		}) != _createdEntities.end())
+	{
+		return newEntity.entity == entity;
+	}) != _createdEntities.end())
 	{
 		_entityManager.DestroyEntity(entity);
 		return;

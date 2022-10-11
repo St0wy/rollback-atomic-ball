@@ -2,6 +2,9 @@
 
 #include "manifold.hpp"
 
+#include "engine/component.h"
+#include "engine/entity.h"
+
 #include "maths/vec2.h"
 
 #include "physics/transform.hpp"
@@ -142,5 +145,22 @@ struct AabbCollider final : Collider
 	[[nodiscard]] core::Vec2f
 		FindFurthestPoint(const Transform* transform, const core::Vec2f& direction) const override;
 	[[nodiscard]] core::Vec2f GetBoundingBoxSize() const override;
+};
+
+/**
+ * \brief BoxManager is a ComponentManager that holds all the Box in the world.
+ */
+class AabbColliderManager final :
+	public core::ComponentManager<AabbCollider, static_cast<core::EntityMask>(core::ComponentType::AabbCollider)>
+{
+public:
+	using ComponentManager::ComponentManager;
+};
+
+class CircleColliderManager final :
+	public core::ComponentManager<AabbCollider, static_cast<core::EntityMask>(core::ComponentType::CircleCollider)>
+{
+public:
+	using ComponentManager::ComponentManager;
 };
 }

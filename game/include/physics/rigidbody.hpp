@@ -1,5 +1,8 @@
 #pragma once
 
+#include "engine/component.h"
+#include "engine/entity.h"
+
 #include "physics/manifold_factory.hpp"
 
 namespace game
@@ -12,13 +15,15 @@ struct Rigidbody
 public:
     Rigidbody();
 
-    std::uint64_t id;
+    //std::uint64_t id;
 
 	/**
 	 * \brief Gets the transform of the body.
 	 * \return The transform of the body.
 	 */
-	Transform* Trans();
+	[[nodiscard]] Transform* Trans();
+
+	[[nodiscard]] const Transform* Trans() const;
 
 	/**
 	 * \brief Sets the transform of the body.
@@ -51,6 +56,8 @@ public:
 	 * \param position The new position of the body.
 	 */
 	void SetPosition(const core::Vec2f& position);
+
+    [[nodiscard]] core::Radian Rotation() const;
 
 	/**
 	 * \brief Gets a boolean that indicates if this body will receive a collision response.
@@ -185,5 +192,15 @@ private:
     bool _isDynamic = false;
 	bool _isTrigger = false;
 	bool _isKinematic = false;
+};
+
+/**
+ * \brief BodyManager is a ComponentManager that holds all the Body in the world.
+ */
+class RigidbodyManager final :
+	public core::ComponentManager<Rigidbody, static_cast<core::EntityMask>(core::ComponentType::Rigidbody)>
+{
+public:
+	using ComponentManager::ComponentManager;
 };
 }

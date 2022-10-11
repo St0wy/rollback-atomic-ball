@@ -1,17 +1,19 @@
 #include "physics/broad_phase_grid.hpp"
 
 #include <algorithm>
-#include <ranges>
 
 #include "engine/component.h"
+
+#include "physics/physics_manager.h"
 
 namespace game
 {
 BroadPhaseGrid::BroadPhaseGrid(
 	const float minX, const float maxX,
 	const float minY, const float maxY,
-	const float cellSize, 
-	core::EntityManager& entityManager, RigidbodyManager& rigidbodyManager
+	const float cellSize,
+	core::EntityManager& entityManager, RigidbodyManager& rigidbodyManager,
+	AabbColliderManager& aabbManager, CircleColliderManager& circleManager
 )
 	: _min(minX, minY),
 	_max(maxX, maxY),
@@ -20,15 +22,16 @@ BroadPhaseGrid::BroadPhaseGrid(
 	std::floor((_max.x - _min.x) / _cellSize))),
 	_gridHeight(static_cast<std::size_t>(
 	std::floor((_max.y - _min.y) / _cellSize))),
-	_entityManager(entityManager), _rigidbodyManager(rigidbodyManager)
+	_entityManager(entityManager), _rigidbodyManager(rigidbodyManager),
+	_aabbManager(aabbManager), _circleManager(circleManager)
 {}
 
-void BroadPhaseGrid::Update(const std::unordered_map<std::uint64_t, core::Entity>& bodies)
+void BroadPhaseGrid::Update()
 {
 	_grid.clear();
 	_grid.resize(_gridWidth);
 
-	for (const core::Entity entity : bodies | std::views::values)
+	for (core::Entity entity = 0; entity < _entityManager.GetEntitiesSize(); entity++)
 	{
 		const bool isRigidbody = _entityManager.HasComponent(entity,
 			static_cast<core::EntityMask>(core::ComponentType::Rigidbody));
@@ -37,7 +40,10 @@ void BroadPhaseGrid::Update(const std::unordered_map<std::uint64_t, core::Entity
 		Rigidbody& body = _rigidbodyManager.GetComponent(entity);
 
 		const auto transform = body.Trans();
-		const auto collider = bodyCol();
+
+		const Collider* collider = PhysicsManager::GetCollider(_entityManager, _aabbManager, _circleManager, entity);
+
+		if (!collider) continue;
 
 		const core::Vec2f offsetCenter = transform->position + collider->center;
 
@@ -63,22 +69,23 @@ void BroadPhaseGrid::Update(const std::unordered_map<std::uint64_t, core::Entity
 		{
 			if (_grid[x].empty()) _grid[x].resize(_gridHeight);
 
-			std::vector<std::vector<Rigidbody*>>& gridCol = _grid[x];
+			std::vector<std::vector<core::Entity>>& gridCol = _grid[x];
 
 			// Loop through each cell
 			for (int y = yBodyMin; y <= yBodyMax; y++)
 			{
-				std::vector<Rigidbody*>& gridCell = gridCol[y];
-				gridCell.push_back(body);
+				std::vector<core::Entity>& gridCell = gridCol[y];
+				gridCell.push_back(entity);
 			}
 		}
 	}
 }
 
-std::vector<std::pair<std::uint64_t, std::uint64_t>> BroadPhaseGrid::GetCollisionPairs() const
+std::vector<std::pair<core::Entity, core::Entity>> BroadPhaseGrid::GetCollisionPairs() const
 {
-	std::unordered_multimap<Rigidbody*, Rigidbody*> checkedCollisions;
-	std::vector<std::pair<std::uint64_t, std::uint64_t>> collisions;
+	std::unordered_multimap<core::Entity, core::Entity> checkedCollisions;
+	std::vector<std::pair<core::Entity, core::Entity>> collisions;
+	collisions.reserve(64);
 
 	for (auto& gridCol : _grid)
 	{
@@ -86,20 +93,19 @@ std::vector<std::pair<std::uint64_t, std::uint64_t>> BroadPhaseGrid::GetCollisio
 		{
 			for (std::size_t i = 0; i < gridCell.size(); ++i)
 			{
-				Rigidbody* bodyA = gridCell[i];
+				core::Entity bodyA = gridCell[i];
 				for (std::size_t j = i + 1; j < gridCell.size(); ++j)
 				{
-					Rigidbody* bodyB = gridCell[j];
+					core::Entity bodyB = gridCell[j];
 
-					std::pair<Rigidbody*, Rigidbody*> bodyPair = bodyA < bodyB
+					std::pair<core::Entity, core::Entity> bodyPair = bodyA < bodyB
 						? std::make_pair(bodyA, bodyB)
 						: std::make_pair(bodyB, bodyA);
 
-					if (!HasBeenChecked(checkedCollisions, bodyPair))
-					{
-						collisions.emplace_back(bodyPair.first->id, bodyPair.second->id);
-						checkedCollisions.insert(bodyPair);
-					}
+					if (HasBeenChecked(checkedCollisions, bodyPair)) continue;
+
+					collisions.emplace_back(bodyPair.first, bodyPair.second);
+					checkedCollisions.insert(bodyPair);
 				}
 			}
 		}
@@ -109,8 +115,8 @@ std::vector<std::pair<std::uint64_t, std::uint64_t>> BroadPhaseGrid::GetCollisio
 }
 
 bool BroadPhaseGrid::HasBeenChecked(
-	const std::unordered_multimap<Rigidbody*, Rigidbody*>& checkedCollisions,
-	const std::pair<Rigidbody*, Rigidbody*>& bodyPair
+	const std::unordered_multimap<core::Entity, core::Entity>& checkedCollisions,
+	const std::pair<core::Entity, core::Entity>& bodyPair
 )
 {
 	auto [first, second] =
