@@ -58,6 +58,7 @@ public:
 	void SetPosition(const core::Vec2f& position);
 
     [[nodiscard]] core::Radian Rotation() const;
+    void SetRotation(core::Radian rotation);
 
 	/**
 	 * \brief Gets a boolean that indicates if this body will receive a collision response.

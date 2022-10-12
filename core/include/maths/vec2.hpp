@@ -23,9 +23,20 @@ struct Vec2f
 	// ReSharper disable once CppNonExplicitConvertingConstructor
 	Vec2f(sf::Vector2f v);
 
+    static Vec2f FromAngle(Radian angle);
 	static float Dot(Vec2f a, Vec2f b);
 	static Vec2f Lerp(Vec2f a, Vec2f b, float t);
     static Vec2f Normalize(Vec2f v);
+
+    /**
+     * \brief Compute the triple product with all of these vectors as 3d vectors with z = 0.
+     * p = a x (b x c)
+     * \param a Vector a.
+     * \param b Vector b.
+     * \param c Vector c.
+     * \return The triple product with a, b and c.
+     */
+    static Vec2f TripleProduct(const Vec2f& a, const Vec2f& b, const Vec2f& c);
 
 	[[nodiscard]] float GetMagnitude() const;
 	void Normalize();
@@ -45,7 +56,7 @@ struct Vec2f
      * \param other The other vector.
      * \return The angle between this and other.
      */
-    [[nodiscard]] float Angle(const Vec2f& other) const;
+    [[nodiscard]] Radian Angle(const Vec2f& other) const;
 
     /**
      * \brief Gets the biggest component of this vector.
@@ -66,16 +77,6 @@ struct Vec2f
     [[nodiscard]] Vec2f NegativePerpendicular() const;
 
 	[[nodiscard]] float Dot(Vec2f other) const;
-
-	/**
-     * \brief Compute the triple product with all of these vectors as 3d vectors with z = 0.
-     * p = a x (b x c)
-     * \param a Vector a.
-     * \param b Vector b.
-     * \param c Vector c.
-     * \return The triple product with a, b and c.
-     */
-    static Vec2f TripleProduct(const Vec2f& a, const Vec2f& b, const Vec2f& c);
 
     /**
      * \brief Sets the magnitude of this vector.

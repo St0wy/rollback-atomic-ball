@@ -6,6 +6,7 @@
 namespace game
 {
 class PhysicsManager;
+class GameManager;
 
 /**
  * \brief PlayerCharacter is a struct that holds information about the player character (when they can shoot again, their current input, and their current health).
@@ -18,7 +19,8 @@ struct PlayerCharacter
     short health = PLAYER_HEALTH;
     float invincibilityTime = 0.0f;
 };
-class GameManager;
+
+
 
 /**
  * \brief PlayerCharacterManager is a ComponentManager that holds all the PlayerCharacter in the game.

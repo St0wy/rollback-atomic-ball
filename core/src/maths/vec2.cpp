@@ -5,8 +5,13 @@
 namespace core
 {
 Vec2f::Vec2f(const sf::Vector2f v)
-	: x(v.x), y(v.y) {}
+	: x(v.x), y(v.y)
+{}
 
+Vec2f Vec2f::FromAngle(const Radian angle)
+{
+	return {Sin(angle), Cos(angle) };
+}
 
 float Vec2f::Dot(const Vec2f other) const
 {
@@ -37,7 +42,7 @@ void Vec2f::RotateAround(const Vec2f& center, const float angle)
 
 Vec2f Vec2f::operator+(const Vec2f v) const
 {
-	return {x + v.x, y + v.y};
+	return { x + v.x, y + v.y };
 }
 
 Vec2f& Vec2f::operator+=(const Vec2f v)
@@ -49,7 +54,7 @@ Vec2f& Vec2f::operator+=(const Vec2f v)
 
 Vec2f Vec2f::operator-(const Vec2f v) const
 {
-	return {x - v.x, y - v.y};
+	return { x - v.x, y - v.y };
 }
 
 Vec2f& Vec2f::operator-=(const Vec2f v)
@@ -61,12 +66,12 @@ Vec2f& Vec2f::operator-=(const Vec2f v)
 
 Vec2f Vec2f::operator*(const float f) const
 {
-	return {x * f, y * f};
+	return { x * f, y * f };
 }
 
 Vec2f Vec2f::operator/(const float f) const
 {
-	return {x / f, y / f};
+	return { x / f, y / f };
 }
 
 Vec2f Vec2f::operator/=(const float scalar)
@@ -79,13 +84,13 @@ Vec2f Vec2f::operator/=(const float scalar)
 Vec2f Vec2f::operator*=(const float scalar)
 {
 	this->x *= scalar;
-    this->y *= scalar;
-    return *this;
+	this->y *= scalar;
+	return *this;
 }
 
 Vec2f Vec2f::operator-() const
 {
-	return {-x, -y};
+	return { -x, -y };
 }
 
 Vec2f operator*(const float f, const Vec2f v)
@@ -133,7 +138,7 @@ float Vec2f::Distance(const Vec2f& other) const
 		(this->y - other.y) * (this->y - other.y));
 }
 
-float Vec2f::Angle(const Vec2f& other) const
+Radian Vec2f::Angle(const Vec2f& other) const
 {
 	return std::acos(this->Dot(other) / GetMagnitude() * other.GetMagnitude());
 }
@@ -149,12 +154,12 @@ float Vec2f::Major() const
 
 Vec2f Vec2f::PositivePerpendicular() const
 {
-	return {-y, x};
+	return { -y, x };
 }
 
 Vec2f Vec2f::NegativePerpendicular() const
 {
-	return {y, -x};
+	return { y, -x };
 }
 
 float Vec2f::Dot(const Vec2f a, const Vec2f b)

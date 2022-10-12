@@ -52,6 +52,11 @@ core::Radian Rigidbody::Rotation() const
 	return _transform.rotation;
 }
 
+void Rigidbody::SetRotation(const core::Radian rotation)
+{
+	_transform.rotation = rotation;
+}
+
 bool Rigidbody::IsKinematic() const
 {
 	return _isKinematic;

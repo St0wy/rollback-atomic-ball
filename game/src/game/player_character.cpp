@@ -29,20 +29,17 @@ void PlayerCharacterManager::FixedUpdate(const sf::Time dt)
 		auto& playerCharacter = GetComponent(playerEntity);
 		const auto input = playerCharacter.input;
 
-		//const bool right = input & player_input_enum::PlayerInput::Right;
-		//const bool left = input & player_input_enum::PlayerInput::Left;
+		const bool right = input & player_input_enum::PlayerInput::Right;
+		const bool left = input & player_input_enum::PlayerInput::Left;
 		const bool up = input & player_input_enum::PlayerInput::Up;
 		const bool down = input & player_input_enum::PlayerInput::Down;
 
-		//const auto angularVelocity = ((left ? -1.0f : 0.0f) + (right ? 1.0f : 0.0f)) * PLAYER_ANGULAR_SPEED;
-
-		//playerBody.angularVelocity = angularVelocity;
-
-		auto dir = core::Vec2f::Up();
-		//dir = dir.Rotate(-(playerBody.rotation + playerBody.angularVelocity * dt.asSeconds()));
+		const auto rotationOffset = ((left ? -1.0f : 0.0f) + (right ? 1.0f : 0.0f)) * PLAYER_ANGULAR_SPEED;
+		const auto rotation = playerBody.Rotation() + rotationOffset;
+		playerBody.SetRotation(rotation);
+		auto dir = core::Vec2f::FromAngle(rotation);
 
 		const auto acceleration = ((down ? -1.0f : 0.0f) + (up ? 1.0f : 0.0f)) * dir;
-
 		const core::Vec2f vel = playerBody.Velocity() + acceleration * dt.asSeconds();
 		playerBody.SetVelocity(vel);
 
@@ -54,14 +51,14 @@ void PlayerCharacterManager::FixedUpdate(const sf::Time dt)
 			SetComponent(playerEntity, playerCharacter);
 		}
 
-		//Check if playerCharacter cannot shoot, and increase shootingTime
+		// Check if playerCharacter cannot shoot, and increase shootingTime
 		if (playerCharacter.shootingTime < PLAYER_SHOOTING_PERIOD)
 		{
 			playerCharacter.shootingTime += dt.asSeconds();
 			SetComponent(playerEntity, playerCharacter);
 		}
 
-		//Shooting mechanism
+		// Shooting mechanism
 		if (playerCharacter.shootingTime >= PLAYER_SHOOTING_PERIOD)
 		{
 			if (input & player_input_enum::PlayerInput::Shoot)
