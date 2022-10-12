@@ -62,10 +62,10 @@ void SimulationClient::Draw(sf::RenderTarget& renderTarget)
 }
 
 
-void SimulationClient::SetPlayerInput(const PlayerInput input)
+void SimulationClient::SetPlayerInput(const PlayerInput playerInput)
 {
 	const auto currentFrame = _gameManager.GetCurrentFrame();
-	_gameManager.SetPlayerInput(_gameManager.GetPlayerNumber(), input, currentFrame);
+	_gameManager.SetPlayerInput(_gameManager.GetPlayerNumber(), playerInput, currentFrame);
 }
 
 void SimulationClient::DrawImGui()

@@ -32,7 +32,7 @@ public:
 	void ReceivePacket(const Packet* packet) override;
 
 	void DrawImGui() override;
-	void SetPlayerInput(PlayerInput input);
+	void SetPlayerInput(PlayerInput playerInput);
 
 private:
 	SimulationServer& _server;

@@ -363,6 +363,7 @@ void RollbackManager::SpawnBullet(const PlayerNumber playerNumber, const core::E
 	const auto scale = core::Vec2f::One() * BULLET_SCALE;
 	bulletBody.Trans()->scale = scale;
 	bulletBody.SetTakesGravity(false);
+	bulletBody.SetIsTrigger(true);
 
 	CircleCollider bulletCircle;
 	bulletCircle.radius = 0.25f;
