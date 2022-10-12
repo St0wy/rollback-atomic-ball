@@ -22,9 +22,8 @@ void BulletManager::FixedUpdate(const sf::Time dt)
     for (core::Entity entity = 0; entity < _entityManager.GetEntitiesSize(); entity++)
     {
         if(_entityManager.HasComponent(entity, static_cast<core::EntityMask>(ComponentType::Destroyed)))
-        {
             continue;
-        }
+
         if (_entityManager.HasComponent(entity, static_cast<core::EntityMask>(ComponentType::Bullet)))
         {
             auto& [remainingTime, playerNumber] = _components[entity];

@@ -190,7 +190,7 @@ private:
     Transform _transform{};
 	//Collider* _collider{};
 
-    bool _isDynamic = false;
+    bool _isDynamic = true;
 	bool _isTrigger = false;
 	bool _isKinematic = false;
 };

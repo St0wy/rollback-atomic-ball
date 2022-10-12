@@ -31,6 +31,7 @@ class GameManager
 public:
 	GameManager();
 	virtual ~GameManager() = default;
+
 	virtual void SpawnPlayer(PlayerNumber playerNumber, core::Vec2f position, core::Degree rotation);
 	virtual core::Entity SpawnBullet(PlayerNumber, core::Vec2f position, core::Vec2f velocity);
 	virtual void DestroyBullet(core::Entity entity);

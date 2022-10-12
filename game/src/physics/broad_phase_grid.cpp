@@ -4,7 +4,9 @@
 
 #include "engine/component.hpp"
 
-#include "physics/physics_manager.h"
+#include "game/game_globals.hpp"
+
+#include "physics/physics_manager.hpp"
 
 namespace game
 {
@@ -93,19 +95,28 @@ std::vector<std::pair<core::Entity, core::Entity>> BroadPhaseGrid::GetCollisionP
 		{
 			for (std::size_t i = 0; i < gridCell.size(); ++i)
 			{
-				core::Entity bodyA = gridCell[i];
+				core::Entity entityA = gridCell[i];
 				for (std::size_t j = i + 1; j < gridCell.size(); ++j)
 				{
-					core::Entity bodyB = gridCell[j];
+					core::Entity entityB = gridCell[j];
 
-					std::pair<core::Entity, core::Entity> bodyPair = bodyA < bodyB
-						? std::make_pair(bodyA, bodyB)
-						: std::make_pair(bodyB, bodyA);
+					std::pair<core::Entity, core::Entity> bodyPair = entityA < entityB
+						? std::make_pair(entityA, entityB)
+						: std::make_pair(entityB, entityA);
 
 					if (HasBeenChecked(checkedCollisions, bodyPair)) continue;
 
-					collisions.emplace_back(bodyPair.first, bodyPair.second);
 					checkedCollisions.insert(bodyPair);
+
+					const bool aIsDestroyed = _entityManager.HasComponent(entityA,
+						static_cast<core::EntityMask>(ComponentType::Destroyed));
+					const bool bIsDestroyed = _entityManager.HasComponent(entityB,
+						static_cast<core::EntityMask>(ComponentType::Destroyed));
+
+					if (aIsDestroyed || bIsDestroyed) continue;
+
+
+					collisions.emplace_back(bodyPair.first, bodyPair.second);
 				}
 			}
 		}

@@ -1,4 +1,4 @@
-#include "physics/physics_manager.h"
+#include "physics/physics_manager.hpp"
 
 #include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
@@ -19,7 +19,7 @@ PhysicsManager::PhysicsManager(core::EntityManager& entityManager)
 	_aabbManager(entityManager),
 	_circleManager(entityManager), _impulseSolver(_entityManager, _rigidbodyManager),
 	_smoothPositionSolver(_entityManager, _rigidbodyManager),
-	_grid(-100, 100, -100, 100, 10, _entityManager, _rigidbodyManager, _aabbManager, _circleManager)
+	_grid(-500, 500, -500, 500, 10, _entityManager, _rigidbodyManager, _aabbManager, _circleManager)
 {}
 
 std::optional<core::ComponentType> PhysicsManager::
@@ -106,19 +106,34 @@ void PhysicsManager::AddBody(const core::Entity entity)
 	_rigidbodyManager.AddComponent(entity);
 }
 
-void PhysicsManager::AddBox(const core::Entity entity)
+void PhysicsManager::AddAabbCollider(const core::Entity entity)
 {
 	_aabbManager.AddComponent(entity);
 }
 
-void PhysicsManager::SetBox(const core::Entity entity, const AabbCollider& box)
+void PhysicsManager::SetAabbCollider(const core::Entity entity, const AabbCollider& aabbCollider)
 {
-	_aabbManager.SetComponent(entity, box);
+	_aabbManager.SetComponent(entity, aabbCollider);
 }
 
-const AabbCollider& PhysicsManager::GetBox(const core::Entity entity) const
+AabbCollider& PhysicsManager::GetAabbCollider(const core::Entity entity)
 {
 	return _aabbManager.GetComponent(entity);
+}
+
+void PhysicsManager::AddCircleCollider(const core::Entity entity)
+{
+	_circleManager.AddComponent(entity);
+}
+
+void PhysicsManager::SetCircleCollider(const core::Entity entity, const CircleCollider& circleCollider)
+{
+	_circleManager.SetComponent(entity, circleCollider);
+}
+
+CircleCollider& PhysicsManager::GetCircleCollider(const core::Entity entity)
+{
+	return _circleManager.GetComponent(entity);
 }
 
 void PhysicsManager::RegisterTriggerListener(OnTriggerInterface& onTriggerInterface)
@@ -193,7 +208,7 @@ void PhysicsManager::Draw(sf::RenderTarget& renderTarget)
 			circleShape.setPosition(
 				position.x * core::PIXEL_PER_METER + _center.x,
 				_windowSize.y - (position.y * core::PIXEL_PER_METER + _center.y));
-			circleShape.setRadius(circleCollider.radius * 2.0f * core::PIXEL_PER_METER);
+			circleShape.setRadius(circleCollider.radius * core::PIXEL_PER_METER);
 
 			renderTarget.draw(circleShape);
 		}

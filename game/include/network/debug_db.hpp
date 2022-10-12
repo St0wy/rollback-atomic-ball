@@ -2,7 +2,7 @@
 
 #ifdef ENABLE_SQLITE
 #include "network/packet_type.h"
-#include "game/physics_manager.h"
+#include "game/physics_manager.hpp"
 
 #include <string_view>
 #include <condition_variable>

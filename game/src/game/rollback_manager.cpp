@@ -113,7 +113,7 @@ void RollbackManager::SetPlayerInput(const PlayerNumber playerNumber, const Play
 	}
 }
 
-void RollbackManager::StartNewFrame(Frame newFrame)
+void RollbackManager::StartNewFrame(const Frame newFrame)
 {
 	#ifdef TRACY_ENABLE
 	ZoneScoped;
@@ -140,7 +140,7 @@ void RollbackManager::StartNewFrame(Frame newFrame)
 	_currentFrame = newFrame;
 }
 
-void RollbackManager::ValidateFrame(Frame newValidateFrame)
+void RollbackManager::ValidateFrame(const Frame newValidateFrame)
 {
 	#ifdef TRACY_ENABLE
 	ZoneScoped;
@@ -279,7 +279,7 @@ void RollbackManager::SpawnPlayer(const PlayerNumber playerNumber, const core::E
 
 	Rigidbody playerBody;
 	playerBody.SetPosition(position);
-	playerBody.Trans()->rotation = rotation;
+	playerBody.SetRotation(rotation);
 
 	AabbCollider playerBox;
 	playerBox.halfHeight = 0.25f;
@@ -293,16 +293,16 @@ void RollbackManager::SpawnPlayer(const PlayerNumber playerNumber, const core::E
 
 	_currentPhysicsManager.AddBody(entity);
 	_currentPhysicsManager.SetBody(entity, playerBody);
-	_currentPhysicsManager.AddBox(entity);
-	_currentPhysicsManager.SetBox(entity, playerBox);
+	_currentPhysicsManager.AddAabbCollider(entity);
+	_currentPhysicsManager.SetAabbCollider(entity, playerBox);
 
 	_lastValidatePlayerManager.AddComponent(entity);
 	_lastValidatePlayerManager.SetComponent(entity, playerCharacter);
 
 	_lastValidatePhysicsManager.AddBody(entity);
 	_lastValidatePhysicsManager.SetBody(entity, playerBody);
-	_lastValidatePhysicsManager.AddBox(entity);
-	_lastValidatePhysicsManager.SetBox(entity, playerBox);
+	_lastValidatePhysicsManager.AddAabbCollider(entity);
+	_lastValidatePhysicsManager.SetAabbCollider(entity, playerBox);
 
 	_currentTransformManager.AddComponent(entity);
 	_currentTransformManager.SetPosition(entity, position);
@@ -359,22 +359,23 @@ void RollbackManager::SpawnBullet(const PlayerNumber playerNumber, const core::E
 	Rigidbody bulletBody;
 	bulletBody.SetPosition(position);
 	bulletBody.SetVelocity(velocity);
+	const auto scale = core::Vec2f::One() * BULLET_SCALE;
+	bulletBody.Trans()->scale = scale;
 
-	AabbCollider bulletBox;
-	bulletBox.halfHeight = 0.25f;
-	bulletBox.halfWidth = 0.25f;
+	CircleCollider bulletCircle;
+	bulletCircle.radius = 0.25f;
 
 	_currentBulletManager.AddComponent(entity);
 	_currentBulletManager.SetComponent(entity, { BULLET_PERIOD, playerNumber });
 
 	_currentPhysicsManager.AddBody(entity);
 	_currentPhysicsManager.SetBody(entity, bulletBody);
-	_currentPhysicsManager.AddBox(entity);
-	_currentPhysicsManager.SetBox(entity, bulletBox);
+	_currentPhysicsManager.AddCircleCollider(entity);
+	_currentPhysicsManager.SetCircleCollider(entity, bulletCircle);
 
 	_currentTransformManager.AddComponent(entity);
 	_currentTransformManager.SetPosition(entity, position);
-	_currentTransformManager.SetScale(entity, core::Vec2f::One() * BULLET_SCALE);
+	_currentTransformManager.SetScale(entity, scale);
 	_currentTransformManager.SetRotation(entity, core::Degree(0.0f));
 }
 

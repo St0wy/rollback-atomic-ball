@@ -8,7 +8,7 @@
 
 #include "network/packet_type.hpp"
 
-#include "physics/physics_manager.h"
+#include "physics/physics_manager.hpp"
 
 namespace game
 {

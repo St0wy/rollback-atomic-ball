@@ -70,9 +70,13 @@ public:
 	void SetBody(core::Entity entity, const Rigidbody& body);
 	void AddBody(core::Entity entity);
 
-	void AddBox(core::Entity entity);
-	void SetBox(core::Entity entity, const AabbCollider& box);
-	[[nodiscard]] const AabbCollider& GetBox(core::Entity entity) const;
+	void AddAabbCollider(core::Entity entity);
+	void SetAabbCollider(core::Entity entity, const AabbCollider& aabbCollider);
+	[[nodiscard]] AabbCollider& GetAabbCollider(core::Entity entity);
+
+	void AddCircleCollider(core::Entity entity);
+	void SetCircleCollider(core::Entity entity, const CircleCollider& circleCollider);
+	[[nodiscard]] CircleCollider& GetCircleCollider(core::Entity entity);
 
 	void SetCenter(const sf::Vector2f center) { _center = center; }
 	void SetWindowSize(const sf::Vector2f newWindowSize) { _windowSize = newWindowSize; }

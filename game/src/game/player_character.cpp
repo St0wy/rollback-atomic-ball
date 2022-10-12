@@ -26,7 +26,8 @@ void PlayerCharacterManager::FixedUpdate(const sf::Time dt)
 			static_cast<core::EntityMask>(ComponentType::PlayerCharacter)))
 			continue;
 		Rigidbody& playerBody = _physicsManager.GetRigidbody(playerEntity);
-		auto& playerCharacter = GetComponent(playerEntity);
+		// ReSharper disable once CppUseStructuredBinding
+		PlayerCharacter& playerCharacter = GetComponent(playerEntity);
 		const auto input = playerCharacter.input;
 
 		const bool right = input & player_input_enum::PlayerInput::Right;
@@ -43,19 +44,15 @@ void PlayerCharacterManager::FixedUpdate(const sf::Time dt)
 		const core::Vec2f vel = playerBody.Velocity() + acceleration * dt.asSeconds();
 		playerBody.SetVelocity(vel);
 
-		_physicsManager.SetBody(playerEntity, playerBody);
-
 		if (playerCharacter.invincibilityTime > 0.0f)
 		{
 			playerCharacter.invincibilityTime -= dt.asSeconds();
-			SetComponent(playerEntity, playerCharacter);
 		}
 
 		// Check if playerCharacter cannot shoot, and increase shootingTime
 		if (playerCharacter.shootingTime < PLAYER_SHOOTING_PERIOD)
 		{
 			playerCharacter.shootingTime += dt.asSeconds();
-			SetComponent(playerEntity, playerCharacter);
 		}
 
 		// Shooting mechanism
@@ -72,7 +69,6 @@ void PlayerCharacterManager::FixedUpdate(const sf::Time dt)
 					bulletPosition,
 					bulletVelocity);
 				playerCharacter.shootingTime = 0.0f;
-				SetComponent(playerEntity, playerCharacter);
 			}
 		}
 	}
