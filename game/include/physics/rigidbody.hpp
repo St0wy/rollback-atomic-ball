@@ -189,8 +189,8 @@ private:
 	//Collider* _collider{};
 
     bool _isDynamic = true;
-	bool _isTrigger = false;
 	bool _isKinematic = false;
+	bool _isTrigger = false;
 };
 
 /**

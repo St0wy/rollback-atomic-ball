@@ -44,8 +44,8 @@ private:
 	std::vector<DelayPacket> _receivedPackets;
 	std::vector<DelayPacket> _sentPackets;
 	std::array<std::unique_ptr<SimulationClient>, MAX_PLAYER_NMB>& _clients;
-	float _avgDelay = 0.25f;
-	float _marginDelay = 0.1f;
+	float _avgDelay = 0.0f;
+	float _marginDelay = 0.0f;
 	float _packetLoss = 0.0f;
 };
 }

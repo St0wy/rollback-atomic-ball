@@ -167,6 +167,7 @@ void PhysicsManager::CopyAllComponents(const PhysicsManager& physicsManager)
 {
 	_rigidbodyManager.CopyAllComponents(physicsManager._rigidbodyManager.GetAllComponents());
 	_aabbManager.CopyAllComponents(physicsManager._aabbManager.GetAllComponents());
+	_circleManager.CopyAllComponents(physicsManager._circleManager.GetAllComponents());
 }
 
 void PhysicsManager::Draw(sf::RenderTarget& renderTarget)

@@ -50,12 +50,12 @@ void ImpulseSolver::Solve(const std::vector<Collision>& collisions, float)
 
 		const core::Vec2f impulse = j * manifold.normal;
 
-		if (aBody ? aBody->IsKinematic() : false)
+		if (aBody ? !aBody->IsKinematic() : false)
 		{
 			aVel -= impulse * aInvMass;
 		}
 
-		if (bBody ? bBody->IsKinematic() : false)
+		if (bBody ? !bBody->IsKinematic() : false)
 		{
 			bVel += impulse * bInvMass;
 		}
@@ -86,12 +86,12 @@ void ImpulseSolver::Solve(const std::vector<Collision>& collisions, float)
 			friction = -j * tangent * mu;
 		}
 
-		if (aBody ? aBody->IsKinematic() : false)
+		if (aBody ? !aBody->IsKinematic() : false)
 		{
 			aBody->SetVelocity(aVel - friction * aInvMass);
 		}
 
-		if (bBody ? bBody->IsKinematic() : false)
+		if (bBody ? !bBody->IsKinematic() : false)
 		{
 			bBody->SetVelocity(bVel + friction * bInvMass);
 		}
@@ -129,13 +129,13 @@ void SmoothPositionSolver::Solve(const std::vector<Collision>& collisions, float
 			* std::max(resolution.GetMagnitude() - slop, 0.0f)
 			/ (aInvMass + bInvMass);
 
-		if (aBody ? aBody->IsKinematic() : false)
+		if (aBody ? !aBody->IsKinematic() : false)
 		{
 			const core::Vec2f deltaA = aInvMass * correction;
 			aBody->Trans()->position -= deltaA;
 		}
 
-		if (bBody ? bBody->IsKinematic() : false)
+		if (bBody ? !bBody->IsKinematic() : false)
 		{
 			const core::Vec2f deltaB = bInvMass * correction;
 			bBody->Trans()->position += deltaB;
