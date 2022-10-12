@@ -196,6 +196,7 @@ void PhysicsManager::Draw(sf::RenderTarget& renderTarget)
 			rectShape.setFillColor(core::Color::Transparent());
 			rectShape.setOutlineColor(core::Color::Green());
 			rectShape.setOutlineThickness(2.0f);
+			rectShape.setScale(rigidbody.Trans().scale);
 
 			rectShape.setOrigin({ aabbCollider.halfWidth * core::PIXEL_PER_METER, aabbCollider.halfHeight * core::PIXEL_PER_METER });
 			rectShape.setPosition(
@@ -214,6 +215,7 @@ void PhysicsManager::Draw(sf::RenderTarget& renderTarget)
 			circleShape.setFillColor(core::Color::Transparent());
 			circleShape.setOutlineColor(core::Color::Green());
 			circleShape.setOutlineThickness(2.0f);
+			circleShape.setScale(rigidbody.Trans().scale);
 			circleShape.setOrigin({ circleCollider.radius * core::PIXEL_PER_METER, circleCollider.radius * core::PIXEL_PER_METER });
 			circleShape.setPosition(
 				position.x * core::PIXEL_PER_METER + _center.x,
@@ -273,9 +275,11 @@ void PhysicsManager::ResolveCollisions(const sf::Time deltaTime)
 		Rigidbody& firstRigibody = GetRigidbody(firstEntity);
 		Rigidbody& secondRigidbody = GetRigidbody(secondEntity);
 
-		const Manifold manifold = firstCollider->TestCollision(firstRigibody.Trans(),
+		const Manifold manifold = firstCollider->TestCollision(
+			&firstRigibody.Trans(),
 			secondCollider,
-			secondRigidbody.Trans());
+			&secondRigidbody.Trans()
+		);
 
 		if (!manifold.hasCollision) continue;
 

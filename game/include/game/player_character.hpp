@@ -8,9 +8,6 @@ namespace game
 class PhysicsManager;
 class GameManager;
 
-/**
- * \brief PlayerCharacter is a struct that holds information about the player character (when they can shoot again, their current input, and their current health).
- */
 struct PlayerCharacter
 {
     float shootingTime = 0.0f;
@@ -18,9 +15,8 @@ struct PlayerCharacter
     PlayerNumber playerNumber = INVALID_PLAYER;
     short health = PLAYER_HEALTH;
     float invincibilityTime = 0.0f;
+    bool hasBall = false;
 };
-
-
 
 /**
  * \brief PlayerCharacterManager is a ComponentManager that holds all the PlayerCharacter in the game.
@@ -29,7 +25,7 @@ class PlayerCharacterManager final : public core::ComponentManager<PlayerCharact
 {
 public:
     explicit PlayerCharacterManager(core::EntityManager& entityManager, PhysicsManager& physicsManager, GameManager& gameManager);
-    void FixedUpdate(sf::Time dt);
+    void FixedUpdate(sf::Time deltaTime);
 
 private:
     PhysicsManager& _physicsManager;

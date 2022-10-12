@@ -41,13 +41,13 @@ void BroadPhaseGrid::Update()
 
 		Rigidbody& body = _rigidbodyManager.GetComponent(entity);
 
-		const auto transform = body.Trans();
+		const auto& transform = body.Trans();
 
 		const Collider* collider = PhysicsManager::GetCollider(_entityManager, _aabbManager, _circleManager, entity);
 
 		if (!collider) continue;
 
-		const core::Vec2f offsetCenter = transform->position + collider->center;
+		const core::Vec2f offsetCenter = transform.position + collider->center;
 
 		// If body is outside the grid extents, then ignore it
 		if (offsetCenter.x < _min.x || offsetCenter.x > _max.x ||

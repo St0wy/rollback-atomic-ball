@@ -12,14 +12,14 @@ Rigidbody::Rigidbody()
 	//id = staticId++;
 }
 
-Transform* Rigidbody::Trans()
+Transform& Rigidbody::Trans()
 {
-	return &_transform;
+	return _transform;
 }
 
-const Transform* Rigidbody::Trans() const
+const Transform& Rigidbody::Trans() const
 {
-	return &_transform;
+	return _transform;
 }
 
 void Rigidbody::SetTransform(const Transform& transform)

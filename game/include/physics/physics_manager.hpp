@@ -98,8 +98,6 @@ public:
 	void ResolveCollisions(sf::Time deltaTime);
 	void SolveCollisions(const std::vector<Collision>& collisions, sf::Time deltaTime);
 
-	//[[nodiscard]] bool IsActivePhysicalObject(core::Entity entity) const;
-
 private:
 	static void SendCollisionCallbacks(const std::vector<Collision>& collisions, core::Action<core::Entity, core::Entity>& action);
 

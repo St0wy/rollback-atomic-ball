@@ -132,13 +132,13 @@ void SmoothPositionSolver::Solve(const std::vector<Collision>& collisions, float
 		if (aBody ? !aBody->IsKinematic() : false)
 		{
 			const core::Vec2f deltaA = aInvMass * correction;
-			aBody->Trans()->position -= deltaA;
+			aBody->Trans().position -= deltaA;
 		}
 
 		if (bBody ? !bBody->IsKinematic() : false)
 		{
 			const core::Vec2f deltaB = bInvMass * correction;
-			bBody->Trans()->position += deltaB;
+			bBody->Trans().position += deltaB;
 		}
 	}
 }

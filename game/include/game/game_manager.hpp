@@ -8,7 +8,6 @@
 
 #include "game_globals.hpp"
 #include "rollback_manager.hpp"
-#include "star_background.hpp"
 
 #include "engine/entity.hpp"
 #include "engine/system.hpp"
@@ -31,6 +30,10 @@ class GameManager
 public:
 	GameManager();
 	virtual ~GameManager() = default;
+	GameManager(const GameManager& other) = delete;
+	GameManager(GameManager&& other) = delete;
+	GameManager& operator=(const GameManager& other) = delete;
+	GameManager& operator=(GameManager&& other) = delete;
 
 	virtual void SpawnPlayer(PlayerNumber playerNumber, core::Vec2f position, core::Degree rotation);
 	virtual core::Entity SpawnBullet(PlayerNumber, core::Vec2f position, core::Vec2f velocity);
@@ -48,7 +51,6 @@ public:
 	void Validate(Frame newValidateFrame);
 	[[nodiscard]] PlayerNumber CheckWinner() const;
 	virtual void WinGame(PlayerNumber winner);
-
 
 protected:
 	core::EntityManager _entityManager;
@@ -107,13 +109,12 @@ protected:
 	sf::View _cameraView;
 	PlayerNumber _clientPlayer = INVALID_PLAYER;
 	core::SpriteManager _spriteManager;
-	StarBackground _starBackground;
 	float _fixedTimer = 0.0f;
 	unsigned long long _startingTime = 0;
 	std::uint32_t _state = 0;
 
-	sf::Texture _shipTexture;
-	sf::Texture _bulletTexture;
+	sf::Texture _playerNoBallTexture;
+	sf::Texture _ballTexture;
 	sf::Font _font;
 
 	sf::Text _textRenderer;

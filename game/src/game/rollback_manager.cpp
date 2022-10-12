@@ -260,7 +260,7 @@ PhysicsState RollbackManager::GetValidatePhysicsState(const PlayerNumber playerN
 	}
 
 	//Adding rotation
-	const auto angle = rigidbody.Trans()->rotation.Value();
+	const auto angle = rigidbody.Trans().rotation.Value();
 	const auto* anglePtr = reinterpret_cast<const PhysicsState*>(&angle);
 	for (size_t i = 0; i < sizeof(float) / sizeof(PhysicsState); i++)
 	{
@@ -282,9 +282,8 @@ void RollbackManager::SpawnPlayer(const PlayerNumber playerNumber, const core::E
 	playerBody.SetRotation(rotation);
 	playerBody.SetTakesGravity(false);
 
-	AabbCollider playerBox;
-	playerBox.halfHeight = 0.25f;
-	playerBox.halfWidth = 0.25f;
+	CircleCollider playerCircle;
+	playerCircle.radius = 0.25f;
 
 	PlayerCharacter playerCharacter;
 	playerCharacter.playerNumber = playerNumber;
@@ -294,16 +293,16 @@ void RollbackManager::SpawnPlayer(const PlayerNumber playerNumber, const core::E
 
 	_currentPhysicsManager.AddRigidbody(entity);
 	_currentPhysicsManager.SetRigidbody(entity, playerBody);
-	_currentPhysicsManager.AddAabbCollider(entity);
-	_currentPhysicsManager.SetAabbCollider(entity, playerBox);
+	_currentPhysicsManager.AddCircleCollider(entity);
+	_currentPhysicsManager.SetCircleCollider(entity, playerCircle);
 
 	_lastValidatePlayerManager.AddComponent(entity);
 	_lastValidatePlayerManager.SetComponent(entity, playerCharacter);
 
 	_lastValidatePhysicsManager.AddRigidbody(entity);
 	_lastValidatePhysicsManager.SetRigidbody(entity, playerBody);
-	_lastValidatePhysicsManager.AddAabbCollider(entity);
-	_lastValidatePhysicsManager.SetAabbCollider(entity, playerBox);
+	_lastValidatePhysicsManager.AddCircleCollider(entity);
+	_lastValidatePhysicsManager.SetCircleCollider(entity, playerCircle);
 
 	_currentTransformManager.AddComponent(entity);
 	_currentTransformManager.SetPosition(entity, position);
@@ -361,7 +360,7 @@ void RollbackManager::SpawnBullet(const PlayerNumber playerNumber, const core::E
 	bulletBody.SetPosition(position);
 	bulletBody.SetVelocity(velocity);
 	const auto scale = core::Vec2f::One() * BULLET_SCALE;
-	bulletBody.Trans()->scale = scale;
+	bulletBody.Trans().scale = scale;
 	bulletBody.SetTakesGravity(false);
 	bulletBody.SetIsTrigger(true);
 
@@ -378,7 +377,7 @@ void RollbackManager::SpawnBullet(const PlayerNumber playerNumber, const core::E
 
 	_currentTransformManager.AddComponent(entity);
 	_currentTransformManager.SetPosition(entity, position);
-	_currentTransformManager.SetScale(entity, scale);
+	//_currentTransformManager.SetScale(entity, scale);
 	_currentTransformManager.SetRotation(entity, core::Degree(0.0f));
 }
 

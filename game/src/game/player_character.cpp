@@ -14,7 +14,7 @@ PlayerCharacterManager::PlayerCharacterManager(core::EntityManager& entityManage
 	_gameManager(gameManager)
 {}
 
-void PlayerCharacterManager::FixedUpdate(const sf::Time dt)
+void PlayerCharacterManager::FixedUpdate(const sf::Time deltaTime)
 {
 	#ifdef TRACY_ENABLE
 	ZoneScoped;
@@ -22,9 +22,10 @@ void PlayerCharacterManager::FixedUpdate(const sf::Time dt)
 	for (PlayerNumber playerNumber = 0; playerNumber < MAX_PLAYER_NMB; playerNumber++)
 	{
 		const auto playerEntity = _gameManager.GetEntityFromPlayerNumber(playerNumber);
-		if (!_entityManager.HasComponent(playerEntity,
-			static_cast<core::EntityMask>(ComponentType::PlayerCharacter)))
-			continue;
+		const bool isPlayer = _entityManager.HasComponent(playerEntity,
+			static_cast<core::EntityMask>(ComponentType::PlayerCharacter));
+		if (!isPlayer) continue;
+
 		Rigidbody& playerBody = _physicsManager.GetRigidbody(playerEntity);
 		// ReSharper disable once CppUseStructuredBinding
 		PlayerCharacter& playerCharacter = GetComponent(playerEntity);
@@ -41,18 +42,18 @@ void PlayerCharacterManager::FixedUpdate(const sf::Time dt)
 		auto dir = core::Vec2f::FromAngle(rotation);
 
 		const auto acceleration = ((down ? -1.0f : 0.0f) + (up ? 1.0f : 0.0f)) * dir * PLAYER_SPEED;
-		const core::Vec2f vel = acceleration * dt.asSeconds();
+		const core::Vec2f vel = acceleration * deltaTime.asSeconds();
 		playerBody.ApplyForce(vel);
 
 		if (playerCharacter.invincibilityTime > 0.0f)
 		{
-			playerCharacter.invincibilityTime -= dt.asSeconds();
+			playerCharacter.invincibilityTime -= deltaTime.asSeconds();
 		}
 
 		// Check if playerCharacter cannot shoot, and increase shootingTime
 		if (playerCharacter.shootingTime < PLAYER_SHOOTING_PERIOD)
 		{
-			playerCharacter.shootingTime += dt.asSeconds();
+			playerCharacter.shootingTime += deltaTime.asSeconds();
 		}
 
 		// Shooting mechanism
@@ -64,7 +65,7 @@ void PlayerCharacterManager::FixedUpdate(const sf::Time dt)
 				const auto bulletVelocity = dir *
 					((core::Vec2f::Dot(playerBody.Velocity(), dir) > 0.0f ? currentPlayerSpeed : 0.0f)
 					+ BULLET_SPEED);
-				const auto bulletPosition = playerBody.Position() + dir * 0.5f + playerBody.Position() * dt.asSeconds();
+				const auto bulletPosition = playerBody.Position() + dir * 0.5f + playerBody.Position() * deltaTime.asSeconds();
 				_gameManager.SpawnBullet(playerCharacter.playerNumber,
 					bulletPosition,
 					bulletVelocity);

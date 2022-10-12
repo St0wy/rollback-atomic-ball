@@ -19,9 +19,9 @@ public:
 	 * \brief Gets the transform of the body.
 	 * \return The transform of the body.
 	 */
-	[[nodiscard]] Transform* Trans();
+	[[nodiscard]] Transform& Trans();
 
-	[[nodiscard]] const Transform* Trans() const;
+	[[nodiscard]] const Transform& Trans() const;
 
 	/**
 	 * \brief Sets the transform of the body.

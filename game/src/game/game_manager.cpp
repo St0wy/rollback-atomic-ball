@@ -19,7 +19,7 @@ namespace game
 {
 GameManager::GameManager()
 	: _transformManager(_entityManager),
-	  _rollbackManager(*this, _entityManager)
+	_rollbackManager(*this, _entityManager)
 {
 	_playerEntityMap.fill(core::INVALID_ENTITY);
 }
@@ -35,6 +35,7 @@ void GameManager::SpawnPlayer(const PlayerNumber playerNumber, const core::Vec2f
 	_transformManager.AddComponent(entity);
 	_transformManager.SetPosition(entity, position);
 	_transformManager.SetRotation(entity, rotation);
+	_transformManager.SetScale(entity, core::Vec2f::One() * 0.07f);
 	_rollbackManager.SpawnPlayer(playerNumber, entity, position, rotation);
 }
 
@@ -43,9 +44,8 @@ core::Entity GameManager::GetEntityFromPlayerNumber(const PlayerNumber playerNum
 	return _playerEntityMap[playerNumber];
 }
 
-
 void GameManager::SetPlayerInput(const PlayerNumber playerNumber, const PlayerInput playerInput,
-								 const std::uint32_t inputFrame)
+	const std::uint32_t inputFrame)
 {
 	if (playerNumber == INVALID_PLAYER)
 		return;
@@ -66,7 +66,7 @@ void GameManager::Validate(const Frame newValidateFrame)
 }
 
 core::Entity GameManager::SpawnBullet(const PlayerNumber playerNumber, const core::Vec2f position,
-									  const core::Vec2f velocity)
+	const core::Vec2f velocity)
 {
 	const core::Entity entity = _entityManager.CreateEntity();
 
@@ -110,8 +110,9 @@ void GameManager::WinGame(const PlayerNumber winner)
 
 ClientGameManager::ClientGameManager(PacketSenderInterface& packetSenderInterface)
 	: GameManager(),
-	  _packetSenderInterface(packetSenderInterface),
-	  _spriteManager(_entityManager, _transformManager) {}
+	_packetSenderInterface(packetSenderInterface),
+	_spriteManager(_entityManager, _transformManager)
+{}
 
 void ClientGameManager::Begin()
 {
@@ -119,21 +120,22 @@ void ClientGameManager::Begin()
 	ZoneScoped;
 	#endif
 	//load textures
-	if (!_bulletTexture.loadFromFile("data/sprites/bullet.png"))
+	if (!_ballTexture.loadFromFile("data/sprites/ball.png"))
 	{
 		core::LogError("Could not load bullet sprite");
 	}
-	if (!_shipTexture.loadFromFile("data/sprites/ship.png"))
+
+	if (!_playerNoBallTexture.loadFromFile("data/sprites/char_idle.png"))
 	{
-		core::LogError("Could not load ship sprite");
+		core::LogError("Could not load Player no ball sprite");
 	}
+
 	//load fonts
 	if (!_font.loadFromFile("data/fonts/8-bit-hud.ttf"))
 	{
 		core::LogError("Could not load font");
 	}
 	_textRenderer.setFont(_font);
-	_starBackground.Init();
 }
 
 void ClientGameManager::Update(const sf::Time dt)
@@ -141,37 +143,38 @@ void ClientGameManager::Update(const sf::Time dt)
 	#ifdef TRACY_ENABLE
 	ZoneScoped;
 	#endif
+
 	if (_state & Started)
 	{
 		_rollbackManager.SimulateToCurrentFrame();
-		//Copy rollback transform position to our own
+
+		// Copy rollback transform position to our own
 		for (core::Entity entity = 0; entity < _entityManager.GetEntitiesSize(); entity++)
 		{
 			if (_entityManager.HasComponent(entity,
 				static_cast<core::EntityMask>(ComponentType::PlayerCharacter) |
 				static_cast<core::EntityMask>(core::ComponentType::Sprite)))
 			{
+				// ReSharper disable once CppUseStructuredBinding
 				const auto& player = _rollbackManager.GetPlayerCharacterManager().GetComponent(entity);
 
-				if (player.invincibilityTime > 0.0f &&
-					std::fmod(player.invincibilityTime, INVINCIBILITY_FLASH_PERIOD) > INVINCIBILITY_FLASH_PERIOD / 2.0f)
+				sf::Color entityColor = sf::Color::White;
+				const float remainder = std::fmod(player.invincibilityTime, INVINCIBILITY_FLASH_PERIOD);
+				if (player.invincibilityTime > 0.0f && remainder > INVINCIBILITY_FLASH_PERIOD / 2.0f)
 				{
-					_spriteManager.SetColor(entity, sf::Color::Black);
+					entityColor = sf::Color::Black;
 				}
-				else
-				{
-					_spriteManager.SetColor(entity, PLAYER_COLORS[player.playerNumber]);
-				}
+				_spriteManager.SetColor(entity, entityColor);
 			}
 
 			if (_entityManager.HasComponent(entity, static_cast<core::EntityMask>(core::ComponentType::Transform)))
 			{
 				_transformManager.SetPosition(entity, _rollbackManager.GetTransformManager().GetPosition(entity));
-				_transformManager.SetScale(entity, _rollbackManager.GetTransformManager().GetScale(entity));
 				_transformManager.SetRotation(entity, _rollbackManager.GetTransformManager().GetRotation(entity));
 			}
 		}
 	}
+
 	_fixedTimer += dt.asSeconds();
 	while (_fixedTimer > FIXED_PERIOD)
 	{
@@ -201,10 +204,10 @@ void ClientGameManager::Draw(sf::RenderTarget& target)
 	#ifdef TRACY_ENABLE
 	ZoneScoped;
 	#endif
+
 	UpdateCameraView();
 	target.setView(_cameraView);
 
-	_starBackground.Draw(target);
 	_spriteManager.Draw(target);
 
 	if (_drawPhysics)
@@ -258,7 +261,7 @@ void ClientGameManager::Draw(sf::RenderTarget& target)
 			using namespace std::chrono;
 			const unsigned long long ms = duration_cast<milliseconds>(
 				system_clock::now().time_since_epoch()
-			).count();
+				).count();
 			if (ms < _startingTime)
 			{
 				const std::string countDownText = fmt::format("Starts in {}", ((_startingTime - ms) / 1000 + 1));
@@ -305,20 +308,20 @@ void ClientGameManager::SpawnPlayer(PlayerNumber playerNumber, const core::Vec2f
 	GameManager::SpawnPlayer(playerNumber, position, rotation);
 	const auto entity = GetEntityFromPlayerNumber(playerNumber);
 	_spriteManager.AddComponent(entity);
-	_spriteManager.SetTexture(entity, _shipTexture);
-	_spriteManager.SetOrigin(entity, sf::Vector2f(_shipTexture.getSize()) / 2.0f);
-	_spriteManager.SetColor(entity, PLAYER_COLORS[playerNumber]);
+	_spriteManager.SetTexture(entity, _playerNoBallTexture);
+	_spriteManager.SetOrigin(entity, sf::Vector2f(_playerNoBallTexture.getSize()) / 2.0f);
+	//_spriteManager.SetColor(entity, PLAYER_COLORS[playerNumber]);
 }
 
 core::Entity ClientGameManager::SpawnBullet(const PlayerNumber playerNumber, const core::Vec2f position,
-											const core::Vec2f velocity)
+	const core::Vec2f velocity)
 {
 	const auto entity = GameManager::SpawnBullet(playerNumber, position, velocity);
 
 	_spriteManager.AddComponent(entity);
-	_spriteManager.SetTexture(entity, _bulletTexture);
-	_spriteManager.SetOrigin(entity, sf::Vector2f(_bulletTexture.getSize()) / 2.0f);
-	_spriteManager.SetColor(entity, PLAYER_COLORS[playerNumber]);
+	_spriteManager.SetTexture(entity, _ballTexture);
+	_spriteManager.SetOrigin(entity, sf::Vector2f(_ballTexture.getSize()) / 2.0f);
+	//_spriteManager.SetColor(entity, PLAYER_COLORS[playerNumber]);
 
 	return entity;
 }
@@ -336,7 +339,7 @@ void ClientGameManager::FixedUpdate()
 			using namespace std::chrono;
 			const auto ms = duration_cast<duration<unsigned long long, std::milli>>(
 				system_clock::now().time_since_epoch()
-			).count();
+				).count();
 			if (ms > _startingTime)
 			{
 				_state = _state | Started;
@@ -387,7 +390,7 @@ void ClientGameManager::FixedUpdate()
 
 
 void ClientGameManager::SetPlayerInput(const PlayerNumber playerNumber, const PlayerInput playerInput,
-									   const std::uint32_t inputFrame)
+	const std::uint32_t inputFrame)
 {
 	if (playerNumber == INVALID_PLAYER)
 		return;
@@ -409,14 +412,15 @@ void ClientGameManager::DrawImGui()
 		using namespace std::chrono;
 		const unsigned long long ms = duration_cast<milliseconds>(
 			system_clock::now().time_since_epoch()
-		).count();
+			).count();
 		ImGui::Text("Current Time: %llu", ms);
 	}
+
 	ImGui::Checkbox("Draw Physics", &_drawPhysics);
 }
 
 void ClientGameManager::ConfirmValidateFrame(Frame newValidateFrame,
-											 const std::array<PhysicsState, MAX_PLAYER_NMB>& physicsStates)
+	const std::array<PhysicsState, MAX_PLAYER_NMB>& physicsStates)
 {
 	if (newValidateFrame < _rollbackManager.GetLastValidateFrame())
 	{
@@ -456,7 +460,7 @@ void ClientGameManager::UpdateCameraView()
 	}
 
 	_cameraView = _originalView;
-	const sf::Vector2f extends{_cameraView.getSize() / 2.0f / core::PIXEL_PER_METER};
+	const sf::Vector2f extends{ _cameraView.getSize() / 2.0f / core::PIXEL_PER_METER };
 	float currentZoom = 1.0f;
 	for (PlayerNumber playerNumber = 0; playerNumber < MAX_PLAYER_NMB; playerNumber++)
 	{
