@@ -15,8 +15,6 @@ struct Rigidbody
 public:
     Rigidbody();
 
-    //std::uint64_t id;
-
 	/**
 	 * \brief Gets the transform of the body.
 	 * \return The transform of the body.
@@ -181,7 +179,7 @@ private:
     core::Vec2f _velocity;
 
     float _invMass{};
-    bool _takesGravity{};
+    bool _takesGravity = false;
 
     float _staticFriction{};
     float _dynamicFriction{};

@@ -74,6 +74,8 @@ const core::Vec2f& Rigidbody::GravityForce() const
 
 void Rigidbody::SetGravityForce(const core::Vec2f& gravityForce)
 {
+	if (!TakesGravity()) return;
+
 	_gravityForce = gravityForce;
 }
 

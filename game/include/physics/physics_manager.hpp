@@ -67,8 +67,8 @@ public:
 
 	[[nodiscard]] const Rigidbody& GetRigidbody(core::Entity entity) const;
 	[[nodiscard]] Rigidbody& GetRigidbody(core::Entity entity);
-	void SetBody(core::Entity entity, const Rigidbody& body);
-	void AddBody(core::Entity entity);
+	void SetRigidbody(core::Entity entity, Rigidbody& body);
+	void AddRigidbody(core::Entity entity);
 
 	void AddAabbCollider(core::Entity entity);
 	void SetAabbCollider(core::Entity entity, const AabbCollider& aabbCollider);
@@ -116,7 +116,9 @@ private:
 	SmoothPositionSolver _smoothPositionSolver;
 	BroadPhaseGrid _grid;
 
-	//Used for debug
+	core::Vec2f _gravity = { 0, -9.81f };
+
+	// Used for debug
 	sf::Vector2f _center{};
 	sf::Vector2f _windowSize{};
 };

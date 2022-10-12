@@ -280,6 +280,7 @@ void RollbackManager::SpawnPlayer(const PlayerNumber playerNumber, const core::E
 	Rigidbody playerBody;
 	playerBody.SetPosition(position);
 	playerBody.SetRotation(rotation);
+	playerBody.SetTakesGravity(false);
 
 	AabbCollider playerBox;
 	playerBox.halfHeight = 0.25f;
@@ -291,16 +292,16 @@ void RollbackManager::SpawnPlayer(const PlayerNumber playerNumber, const core::E
 	_currentPlayerManager.AddComponent(entity);
 	_currentPlayerManager.SetComponent(entity, playerCharacter);
 
-	_currentPhysicsManager.AddBody(entity);
-	_currentPhysicsManager.SetBody(entity, playerBody);
+	_currentPhysicsManager.AddRigidbody(entity);
+	_currentPhysicsManager.SetRigidbody(entity, playerBody);
 	_currentPhysicsManager.AddAabbCollider(entity);
 	_currentPhysicsManager.SetAabbCollider(entity, playerBox);
 
 	_lastValidatePlayerManager.AddComponent(entity);
 	_lastValidatePlayerManager.SetComponent(entity, playerCharacter);
 
-	_lastValidatePhysicsManager.AddBody(entity);
-	_lastValidatePhysicsManager.SetBody(entity, playerBody);
+	_lastValidatePhysicsManager.AddRigidbody(entity);
+	_lastValidatePhysicsManager.SetRigidbody(entity, playerBody);
 	_lastValidatePhysicsManager.AddAabbCollider(entity);
 	_lastValidatePhysicsManager.SetAabbCollider(entity, playerBox);
 
@@ -361,6 +362,7 @@ void RollbackManager::SpawnBullet(const PlayerNumber playerNumber, const core::E
 	bulletBody.SetVelocity(velocity);
 	const auto scale = core::Vec2f::One() * BULLET_SCALE;
 	bulletBody.Trans()->scale = scale;
+	bulletBody.SetTakesGravity(false);
 
 	CircleCollider bulletCircle;
 	bulletCircle.radius = 0.25f;
@@ -368,8 +370,8 @@ void RollbackManager::SpawnBullet(const PlayerNumber playerNumber, const core::E
 	_currentBulletManager.AddComponent(entity);
 	_currentBulletManager.SetComponent(entity, { BULLET_PERIOD, playerNumber });
 
-	_currentPhysicsManager.AddBody(entity);
-	_currentPhysicsManager.SetBody(entity, bulletBody);
+	_currentPhysicsManager.AddRigidbody(entity);
+	_currentPhysicsManager.SetRigidbody(entity, bulletBody);
 	_currentPhysicsManager.AddCircleCollider(entity);
 	_currentPhysicsManager.SetCircleCollider(entity, bulletCircle);
 

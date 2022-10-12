@@ -4,6 +4,7 @@
 
 int main()
 {
+
 	core::Engine engine;
 	game::SimulationApp app;
 	engine.RegisterApp(&app);

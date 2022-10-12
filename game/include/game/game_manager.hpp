@@ -117,6 +117,6 @@ protected:
 	sf::Font _font;
 
 	sf::Text _textRenderer;
-	bool _drawPhysics = false;
+	bool _drawPhysics = true;
 };
 }

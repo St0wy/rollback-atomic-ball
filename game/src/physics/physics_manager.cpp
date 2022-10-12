@@ -86,9 +86,13 @@ void PhysicsManager::FixedUpdate(const sf::Time deltaTime)
 	MoveBodies(deltaTime);
 }
 
-void PhysicsManager::SetBody(const core::Entity entity, const Rigidbody& body)
+void PhysicsManager::SetRigidbody(const core::Entity entity, Rigidbody& body)
 {
 	_rigidbodyManager.SetComponent(entity, body);
+	if (body.TakesGravity())
+	{
+		body.SetGravityForce(_gravity);
+	}
 }
 
 const Rigidbody& PhysicsManager::GetRigidbody(const core::Entity entity) const
@@ -101,9 +105,14 @@ Rigidbody& PhysicsManager::GetRigidbody(const core::Entity entity)
 	return _rigidbodyManager.GetComponent(entity);
 }
 
-void PhysicsManager::AddBody(const core::Entity entity)
+void PhysicsManager::AddRigidbody(const core::Entity entity)
 {
 	_rigidbodyManager.AddComponent(entity);
+	Rigidbody& rb = _rigidbodyManager.GetComponent(entity);
+	if (rb.TakesGravity())
+	{
+		rb.SetGravityForce(_gravity);
+	}
 }
 
 void PhysicsManager::AddAabbCollider(const core::Entity entity)

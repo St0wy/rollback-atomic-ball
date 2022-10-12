@@ -40,9 +40,9 @@ void PlayerCharacterManager::FixedUpdate(const sf::Time dt)
 		playerBody.SetRotation(rotation);
 		auto dir = core::Vec2f::FromAngle(rotation);
 
-		const auto acceleration = ((down ? -1.0f : 0.0f) + (up ? 1.0f : 0.0f)) * dir;
-		const core::Vec2f vel = playerBody.Velocity() + acceleration * dt.asSeconds();
-		playerBody.SetVelocity(vel);
+		const auto acceleration = ((down ? -1.0f : 0.0f) + (up ? 1.0f : 0.0f)) * dir * PLAYER_SPEED;
+		const core::Vec2f vel = acceleration * dt.asSeconds();
+		playerBody.ApplyForce(vel);
 
 		if (playerCharacter.invincibilityTime > 0.0f)
 		{

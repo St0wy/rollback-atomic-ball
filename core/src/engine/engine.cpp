@@ -86,6 +86,10 @@ void Engine::Init()
 	{
 		LogError("Could not init ImGui-SFML");
 	}
+
+	ImGuiIO& io = ImGui::GetIO();
+	io.FontGlobalScale = 2;
+
 	for (auto* system : _systems)
 	{
 		system->Begin();
