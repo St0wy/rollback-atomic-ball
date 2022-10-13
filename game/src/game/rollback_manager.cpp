@@ -282,6 +282,7 @@ void RollbackManager::SpawnPlayer(const PlayerNumber playerNumber, const core::E
 	playerBody.SetRotation(rotation);
 	playerBody.SetTakesGravity(false);
 	playerBody.SetDragFactor(0.9f);
+	playerBody.SetBodyType(BodyType::Dynamic);
 
 	CircleCollider playerCircle;
 	playerCircle.radius = 0.25f;
@@ -364,6 +365,7 @@ void RollbackManager::SpawnBullet(const PlayerNumber playerNumber, const core::E
 	bulletBody.Trans().scale = scale;
 	bulletBody.SetTakesGravity(false);
 	bulletBody.SetIsTrigger(true);
+	bulletBody.SetBodyType(BodyType::Dynamic);
 
 	CircleCollider bulletCircle;
 	bulletCircle.radius = 0.25f;

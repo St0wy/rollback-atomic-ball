@@ -7,6 +7,13 @@
 
 namespace game
 {
+enum class BodyType : std::uint8_t
+{
+	Static,
+	Kinematic,
+	Dynamic,
+};
+
 /**
 * \brief A Rigidbody that has dynamics.
 */
@@ -57,18 +64,6 @@ public:
 
 	[[nodiscard]] core::Radian Rotation() const;
 	void SetRotation(core::Radian rotation);
-
-	/**
-	 * \brief Gets a boolean that indicates if this body will receive a collision response.
-	 * \return A boolean that indicates if this body is kinematic.
-	 */
-	[[nodiscard]] bool IsKinematic() const;
-
-	/**
-	 * \brief Sets a boolean that indicates if this body will receive a collision response.
-	 * \param isKinematic The new isKinematic status.
-	 */
-	void SetIsKinematic(bool isKinematic);
 
 	/**
 	 * \brief Gets the force of the gravity on this body.
@@ -170,11 +165,14 @@ public:
 	 */
 	void SetRestitution(float restitution);
 
-	[[nodiscard]] bool IsDynamic() const;
-	void SetIsDynamic(bool isDynamic);
-
 	[[nodiscard]] float DragFactor() const { return _dragFactor; }
 	void SetDragFactor(const float dragFactor) { _dragFactor = dragFactor; }
+
+	[[nodiscard]] bool IsDynamic() const { return _bodyType == BodyType::Dynamic; }
+	[[nodiscard]] bool IsStatic() const { return _bodyType == BodyType::Static; }
+	[[nodiscard]] bool IsKinematic() const { return _bodyType == BodyType::Kinematic; }
+	[[nodiscard]] BodyType GetBodyType() const { return _bodyType; }
+	void SetBodyType(const BodyType bodyType) { _bodyType = bodyType; }
 
 private:
 	core::Vec2f _gravityForce;
@@ -190,11 +188,10 @@ private:
 	float _dragFactor = 1.0f;
 
 	Transform _transform{};
-	//Collider* _collider{};
 
-	bool _isDynamic = true;
-	bool _isKinematic = false;
 	bool _isTrigger = false;
+
+	BodyType _bodyType = BodyType::Static;
 };
 
 /**

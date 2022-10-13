@@ -57,16 +57,6 @@ void Rigidbody::SetRotation(const core::Radian rotation)
 	_transform.rotation = rotation;
 }
 
-bool Rigidbody::IsKinematic() const
-{
-	return _isKinematic;
-}
-
-void Rigidbody::SetIsKinematic(const bool isKinematic)
-{
-	_isKinematic = isKinematic;
-}
-
 const core::Vec2f& Rigidbody::GravityForce() const
 {
 	return _gravityForce;
@@ -165,15 +155,5 @@ float Rigidbody::Restitution() const
 void Rigidbody::SetRestitution(const float restitution)
 {
 	_restitution = restitution;
-}
-
-bool Rigidbody::IsDynamic() const
-{
-	return _isDynamic;
-}
-
-void Rigidbody::SetIsDynamic(const bool isDynamic)
-{
-	_isDynamic = isDynamic;
 }
 }

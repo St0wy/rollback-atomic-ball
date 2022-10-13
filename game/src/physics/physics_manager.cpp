@@ -65,6 +65,8 @@ void PhysicsManager::MoveBodies(const sf::Time deltaTime)
 
 		Rigidbody& rigidbody = GetRigidbody(entity);
 
+		if (rigidbody.IsStatic()) continue;
+
 		const auto draggedVel = rigidbody.Velocity() * rigidbody.DragFactor();
 		const core::Vec2f vel = draggedVel + rigidbody.Force() * rigidbody.InvMass() * deltaTime.asSeconds();
 		rigidbody.SetVelocity(vel);
@@ -238,6 +240,8 @@ void PhysicsManager::ApplyGravity()
 		if (!hasRigidbody) continue;
 
 		Rigidbody& rigidbody = GetRigidbody(entity);
+
+		if (!rigidbody.IsDynamic()) continue;
 
 		const core::Vec2f force = rigidbody.GravityForce() * rigidbody.Mass();
 		rigidbody.ApplyForce(force);

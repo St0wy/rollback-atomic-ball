@@ -1,8 +1,6 @@
 #include <game/game_manager.hpp>
 #include <game/player_character.hpp>
 
-#include "spdlog/spdlog.h"
-
 #ifdef TRACY_ENABLE
 #include <Tracy.hpp>
 #endif
