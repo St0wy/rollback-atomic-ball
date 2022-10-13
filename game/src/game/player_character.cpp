@@ -54,33 +54,17 @@ void PlayerCharacterManager::FixedUpdate(const sf::Time deltaTime)
 			playerCharacter.aimDirection = vel.GetNormalized();
 		}
 
-
-		if (playerCharacter.invincibilityTime > 0.0f)
+		if (input & player_input_enum::PlayerInput::Shoot && playerCharacter.hasBall)
 		{
-			playerCharacter.invincibilityTime -= deltaTime.asSeconds();
-		}
-
-		// Check if playerCharacter cannot shoot, and increase shootingTime
-		if (playerCharacter.shootingTime < PLAYER_SHOOTING_PERIOD)
-		{
-			playerCharacter.shootingTime += deltaTime.asSeconds();
-		}
-
-		// Shooting mechanism
-		if (playerCharacter.shootingTime >= PLAYER_SHOOTING_PERIOD)
-		{
-			if (input & player_input_enum::PlayerInput::Shoot)
-			{
-				const auto currentPlayerSpeed = playerBody.Velocity().GetMagnitude();
-				const auto bulletVelocity = playerCharacter.aimDirection *
-					((core::Vec2f::Dot(playerBody.Velocity(), playerCharacter.aimDirection) > 0.0f ? currentPlayerSpeed : 0.0f)
-					+ BULLET_SPEED);
-				const auto bulletPosition = playerBody.Position() + playerCharacter.aimDirection * 0.5f + playerBody.Position() * deltaTime.asSeconds();
-				_gameManager.SpawnBullet(playerCharacter.playerNumber,
-					bulletPosition,
-					bulletVelocity);
-				playerCharacter.shootingTime = 0.0f;
-			}
+			const auto currentPlayerSpeed = playerBody.Velocity().GetMagnitude();
+			const auto ballVelocity = playerCharacter.aimDirection *
+				((core::Vec2f::Dot(playerBody.Velocity(), playerCharacter.aimDirection) > 0.0f ? currentPlayerSpeed : 0.0f)
+				+ BULLET_SPEED);
+			const auto ballPosition = playerBody.Position() + playerCharacter.aimDirection * 0.5f + playerBody.Position() * deltaTime.asSeconds();
+			_gameManager.SpawnBall(playerCharacter.playerNumber,
+				ballPosition,
+				ballVelocity);
+			playerCharacter.ThrowBall();
 		}
 	}
 }

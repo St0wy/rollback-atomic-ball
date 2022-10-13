@@ -65,20 +65,20 @@ void GameManager::Validate(const Frame newValidateFrame)
 	_rollbackManager.ValidateFrame(newValidateFrame);
 }
 
-core::Entity GameManager::SpawnBullet(const PlayerNumber playerNumber, const core::Vec2f position,
+core::Entity GameManager::SpawnBall(const PlayerNumber playerNumber, const core::Vec2f position,
 	const core::Vec2f velocity)
 {
 	const core::Entity entity = _entityManager.CreateEntity();
 
 	_transformManager.AddComponent(entity);
 	_transformManager.SetPosition(entity, position);
-	_transformManager.SetScale(entity, core::Vec2f::One() * BULLET_SCALE);
+	_transformManager.SetScale(entity, core::Vec2f::One() * BALL_SCALE);
 	_transformManager.SetRotation(entity, core::Degree(0.0f));
-	_rollbackManager.SpawnBullet(playerNumber, entity, position, velocity);
+	_rollbackManager.SpawnBall(playerNumber, entity, position, velocity);
 	return entity;
 }
 
-void GameManager::DestroyBullet(const core::Entity entity)
+void GameManager::DestroyBall(const core::Entity entity)
 {
 	_rollbackManager.DestroyEntity(entity);
 }
@@ -130,6 +130,11 @@ void ClientGameManager::Begin()
 		core::LogError("Could not load Player no ball sprite");
 	}
 
+	if (!_playerBallTexture.loadFromFile("data/sprites/char_idle_ball.png"))
+	{
+		core::LogError("Could not load Player ball sprite");
+	}
+
 	//load fonts
 	if (!_font.loadFromFile("data/fonts/8-bit-hud.ttf"))
 	{
@@ -151,20 +156,23 @@ void ClientGameManager::Update(const sf::Time dt)
 		// Copy rollback transform position to our own
 		for (core::Entity entity = 0; entity < _entityManager.GetEntitiesSize(); entity++)
 		{
-			if (_entityManager.HasComponent(entity,
+			// ReSharper disable once CppTooWideScope
+			const bool isPlayerWithSprite = _entityManager.HasComponent(entity,
 				static_cast<core::EntityMask>(ComponentType::PlayerCharacter) |
-				static_cast<core::EntityMask>(core::ComponentType::Sprite)))
+				static_cast<core::EntityMask>(core::ComponentType::Sprite));
+			if (isPlayerWithSprite)
 			{
 				// ReSharper disable once CppUseStructuredBinding
 				const auto& player = _rollbackManager.GetPlayerCharacterManager().GetComponent(entity);
 
-				sf::Color entityColor = sf::Color::White;
-				const float remainder = std::fmod(player.invincibilityTime, INVINCIBILITY_FLASH_PERIOD);
-				if (player.invincibilityTime > 0.0f && remainder > INVINCIBILITY_FLASH_PERIOD / 2.0f)
+				if (player.hasBall && !player.hadBall)
 				{
-					entityColor = sf::Color::Black;
+					_spriteManager.SetTexture(entity, _playerBallTexture);
 				}
-				_spriteManager.SetColor(entity, entityColor);
+				else if (!player.hasBall && player.hadBall)
+				{
+					_spriteManager.SetTexture(entity, _playerNoBallTexture);
+				}
 			}
 
 			if (_entityManager.HasComponent(entity, static_cast<core::EntityMask>(core::ComponentType::Transform)))
@@ -191,7 +199,7 @@ void ClientGameManager::SetWindowSize(const sf::Vector2u windowsSize)
 	const auto width = static_cast<float>(_windowSize.x);
 	const auto height = static_cast<float>(_windowSize.y);
 	const sf::FloatRect visibleArea(0.0f, 0.0f, width, height);
-	_originalView = sf::View(visibleArea);
+	_cameraView = sf::View(visibleArea);
 	_spriteManager.SetWindowSize(sf::Vector2f(windowsSize));
 	_spriteManager.SetCenter(sf::Vector2f(windowsSize) / 2.0f);
 	auto& currentPhysicsManager = _rollbackManager.GetCurrentPhysicsManager();
@@ -205,8 +213,8 @@ void ClientGameManager::Draw(sf::RenderTarget& target)
 	ZoneScoped;
 	#endif
 
+	// Draw texts on screen
 	target.setView(_cameraView);
-
 	_spriteManager.Draw(target);
 
 	if (_drawPhysics)
@@ -215,8 +223,6 @@ void ClientGameManager::Draw(sf::RenderTarget& target)
 		currentPhysicsManager.Draw(target);
 	}
 
-	// Draw texts on screen
-	target.setView(_originalView);
 	if (_state & Finished)
 	{
 		if (_winner == GetPlayerNumber())
@@ -311,10 +317,10 @@ void ClientGameManager::SpawnPlayer(PlayerNumber playerNumber, const core::Vec2f
 	_spriteManager.SetOrigin(entity, sf::Vector2f(_playerNoBallTexture.getSize()) / 2.0f);
 }
 
-core::Entity ClientGameManager::SpawnBullet(const PlayerNumber playerNumber, const core::Vec2f position,
+core::Entity ClientGameManager::SpawnBall(const PlayerNumber playerNumber, const core::Vec2f position,
 	const core::Vec2f velocity)
 {
-	const auto entity = GameManager::SpawnBullet(playerNumber, position, velocity);
+	const auto entity = GameManager::SpawnBall(playerNumber, position, velocity);
 
 	_spriteManager.AddComponent(entity);
 	_spriteManager.SetTexture(entity, _ballTexture);

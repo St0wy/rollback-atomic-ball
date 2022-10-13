@@ -155,6 +155,7 @@ void RollbackManager::ValidateFrame(const Frame newValidateFrame)
 			return;
 		}
 	}
+
 	//Destroying all created Entities after the last validated frame
 	for (const auto& createdEntity : _createdEntities)
 	{
@@ -172,6 +173,7 @@ void RollbackManager::ValidateFrame(const Frame newValidateFrame)
 			_entityManager.RemoveComponent(entity, static_cast<core::EntityMask>(ComponentType::Destroyed));
 		}
 	}
+
 	_createdEntities.clear();
 
 	//We use the current game state as the temporary new validate game state
@@ -197,6 +199,7 @@ void RollbackManager::ValidateFrame(const Frame newValidateFrame)
 		_currentPlayerManager.FixedUpdate(sf::seconds(FIXED_PERIOD));
 		_currentPhysicsManager.FixedUpdate(sf::seconds(FIXED_PERIOD));
 	}
+
 	//Definitely remove DESTROY entities
 	for (core::Entity entity = 0; entity < _entityManager.GetEntitiesSize(); entity++)
 	{
@@ -205,6 +208,7 @@ void RollbackManager::ValidateFrame(const Frame newValidateFrame)
 			_entityManager.DestroyEntity(entity);
 		}
 	}
+
 	//Copy back the new validate game state to the last validated game state
 	_lastValidateBulletManager.CopyAllComponents(_currentBulletManager.GetAllComponents());
 	_lastValidatePlayerManager.CopyAllComponents(_currentPlayerManager.GetAllComponents());
@@ -289,6 +293,7 @@ void RollbackManager::SpawnPlayer(const PlayerNumber playerNumber, const core::E
 
 	PlayerCharacter playerCharacter;
 	playerCharacter.playerNumber = playerNumber;
+	playerCharacter.hasBall = true;
 
 	_currentPlayerManager.AddComponent(entity);
 	_currentPlayerManager.SetComponent(entity, playerCharacter);
@@ -320,23 +325,22 @@ PlayerInput RollbackManager::GetInputAtFrame(const PlayerNumber playerNumber, co
 
 void RollbackManager::OnTrigger(const core::Entity entity1, const core::Entity entity2)
 {
-	const std::function<void(const PlayerCharacter&, core::Entity, const Bullet&, core::Entity)> manageCollision =
-		[this](const auto& player, auto playerEntity, const auto& bullet, auto bulletEntity)
+	const std::function<void(const PlayerCharacter&, core::Entity, const Ball&, core::Entity)> manageCollision =
+		[this](const auto& player, auto playerEntity, const auto& bullet, auto ballEntity)
 	{
 		if (player.playerNumber != bullet.playerNumber)
 		{
-			_gameManager.DestroyBullet(bulletEntity);
-			//lower health point
-			auto& playerCharacter = _currentPlayerManager.GetComponent(playerEntity);
-			if (playerCharacter.invincibilityTime <= 0.0f)
+			PlayerCharacter& playerCharacter = _currentPlayerManager.GetComponent(playerEntity);
+			if (!playerCharacter.hasBall)
 			{
-				core::LogDebug(fmt::format("Player {} is hit by bullet", playerCharacter.playerNumber));
-				--playerCharacter.health;
-				playerCharacter.invincibilityTime = PLAYER_INVINCIBILITY_PERIOD;
+				_gameManager.DestroyBall(ballEntity);
+				core::LogDebug(fmt::format("Player {} caught the ball", playerCharacter.playerNumber));
+				playerCharacter.CatchBall();
+
 			}
-			_currentPlayerManager.SetComponent(playerEntity, playerCharacter);
 		}
 	};
+
 	if (_entityManager.HasComponent(entity1, static_cast<core::EntityMask>(ComponentType::PlayerCharacter)) &&
 		_entityManager.HasComponent(entity2, static_cast<core::EntityMask>(ComponentType::Bullet)))
 	{
@@ -344,6 +348,7 @@ void RollbackManager::OnTrigger(const core::Entity entity1, const core::Entity e
 		const auto& bullet = _currentBulletManager.GetComponent(entity2);
 		manageCollision(player, entity1, bullet, entity2);
 	}
+
 	if (_entityManager.HasComponent(entity2, static_cast<core::EntityMask>(ComponentType::PlayerCharacter)) &&
 		_entityManager.HasComponent(entity1, static_cast<core::EntityMask>(ComponentType::Bullet)))
 	{
@@ -353,34 +358,33 @@ void RollbackManager::OnTrigger(const core::Entity entity1, const core::Entity e
 	}
 }
 
-void RollbackManager::SpawnBullet(const PlayerNumber playerNumber, const core::Entity entity,
+void RollbackManager::SpawnBall(const PlayerNumber playerNumber, const core::Entity entity,
 	const core::Vec2f position, const core::Vec2f velocity)
 {
 	_createdEntities.push_back({ entity, _testedFrame });
 
-	Rigidbody bulletBody;
-	bulletBody.SetPosition(position);
-	bulletBody.SetVelocity(velocity);
-	const auto scale = core::Vec2f::One() * BULLET_SCALE;
-	bulletBody.Trans().scale = scale;
-	bulletBody.SetTakesGravity(false);
-	bulletBody.SetIsTrigger(true);
-	bulletBody.SetBodyType(BodyType::Dynamic);
+	Rigidbody ballBody;
+	ballBody.SetPosition(position);
+	ballBody.SetVelocity(velocity);
+	const auto scale = core::Vec2f::One() * BALL_SCALE;
+	ballBody.Trans().scale = scale;
+	ballBody.SetTakesGravity(false);
+	ballBody.SetIsTrigger(true);
+	ballBody.SetBodyType(BodyType::Dynamic);
 
-	CircleCollider bulletCircle;
-	bulletCircle.radius = 0.25f;
+	CircleCollider ballCircle;
+	ballCircle.radius = 0.25f;
 
 	_currentBulletManager.AddComponent(entity);
-	_currentBulletManager.SetComponent(entity, { BULLET_PERIOD, playerNumber });
+	_currentBulletManager.SetComponent(entity, { playerNumber });
 
 	_currentPhysicsManager.AddRigidbody(entity);
-	_currentPhysicsManager.SetRigidbody(entity, bulletBody);
+	_currentPhysicsManager.SetRigidbody(entity, ballBody);
 	_currentPhysicsManager.AddCircleCollider(entity);
-	_currentPhysicsManager.SetCircleCollider(entity, bulletCircle);
+	_currentPhysicsManager.SetCircleCollider(entity, ballCircle);
 
 	_currentTransformManager.AddComponent(entity);
 	_currentTransformManager.SetPosition(entity, position);
-	//_currentTransformManager.SetScale(entity, scale);
 	_currentTransformManager.SetRotation(entity, core::Degree(0.0f));
 }
 

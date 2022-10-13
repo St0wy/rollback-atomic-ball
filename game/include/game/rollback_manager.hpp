@@ -1,5 +1,5 @@
 #pragma once
-#include "bullet_manager.hpp"
+#include "ball_manager.hpp"
 #include "game_globals.hpp"
 #include "player_character.hpp"
 
@@ -77,7 +77,7 @@ public:
 	[[nodiscard]] const core::TransformManager& GetTransformManager() const { return _currentTransformManager; }
 	[[nodiscard]] const PlayerCharacterManager& GetPlayerCharacterManager() const { return _currentPlayerManager; }
 	void SpawnPlayer(PlayerNumber playerNumber, core::Entity entity, core::Vec2f position, core::Degree rotation);
-	void SpawnBullet(PlayerNumber playerNumber, core::Entity entity, core::Vec2f position, core::Vec2f velocity);
+	void SpawnBall(PlayerNumber playerNumber, core::Entity entity, core::Vec2f position, core::Vec2f velocity);
 
 	/**
 	 * \brief DestroyEntity is a method that does not destroy the entity definitely, but puts the DESTROY flag on.
@@ -105,14 +105,14 @@ private:
 	core::TransformManager _currentTransformManager;
 	PhysicsManager _currentPhysicsManager;
 	PlayerCharacterManager _currentPlayerManager;
-	BulletManager _currentBulletManager;
+	BallManager _currentBulletManager;
 
 	/**
 	 * Last Validate (confirm frame) Component Managers used for rollback
 	 */
 	PhysicsManager _lastValidatePhysicsManager;
 	PlayerCharacterManager _lastValidatePlayerManager;
-	BulletManager _lastValidateBulletManager;
+	BallManager _lastValidateBulletManager;
 
 	/**
 	 * \brief lastValidateFrame_ is the last validated frame from the server side.

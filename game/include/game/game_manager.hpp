@@ -36,8 +36,8 @@ public:
 	GameManager& operator=(GameManager&& other) = delete;
 
 	virtual void SpawnPlayer(PlayerNumber playerNumber, core::Vec2f position, core::Degree rotation);
-	virtual core::Entity SpawnBullet(PlayerNumber, core::Vec2f position, core::Vec2f velocity);
-	virtual void DestroyBullet(core::Entity entity);
+	virtual core::Entity SpawnBall(PlayerNumber, core::Vec2f position, core::Vec2f velocity);
+	virtual void DestroyBall(core::Entity entity);
 	[[nodiscard]] core::Entity GetEntityFromPlayerNumber(PlayerNumber playerNumber) const;
 	[[nodiscard]] Frame GetCurrentFrame() const { return _currentFrame; }
 	[[nodiscard]] Frame GetLastValidateFrame() const { return _rollbackManager.GetLastValidateFrame(); }
@@ -92,7 +92,7 @@ public:
 	 * \param rotation is the spawning angle of the player character
 	 */
 	void SpawnPlayer(PlayerNumber playerNumber, core::Vec2f position, core::Degree rotation) override;
-	core::Entity SpawnBullet(PlayerNumber playerNumber, core::Vec2f position, core::Vec2f velocity) override;
+	core::Entity SpawnBall(PlayerNumber playerNumber, core::Vec2f position, core::Vec2f velocity) override;
 	void FixedUpdate();
 	void SetPlayerInput(PlayerNumber playerNumber, PlayerInput playerInput, std::uint32_t inputFrame) override;
 	void DrawImGui() override;
@@ -103,7 +103,6 @@ public:
 protected:
 	PacketSenderInterface& _packetSenderInterface;
 	sf::Vector2u _windowSize;
-	sf::View _originalView;
 	sf::View _cameraView;
 	PlayerNumber _clientPlayer = INVALID_PLAYER;
 	core::SpriteManager _spriteManager;
@@ -112,6 +111,7 @@ protected:
 	std::uint32_t _state = 0;
 
 	sf::Texture _playerNoBallTexture;
+	sf::Texture _playerBallTexture;
 	sf::Texture _ballTexture;
 	sf::Font _font;
 

@@ -1,4 +1,4 @@
-#include "game/bullet_manager.hpp"
+#include "game/ball_manager.hpp"
 
 #include "game/game_manager.hpp"
 
@@ -8,12 +8,12 @@
 
 namespace game
 {
-BulletManager::BulletManager(core::EntityManager& entityManager, GameManager& gameManager) :
+BallManager::BallManager(core::EntityManager& entityManager, GameManager& gameManager) :
     ComponentManager(entityManager), _gameManager(gameManager)
 {
 }
 
-void BulletManager::FixedUpdate(const sf::Time dt)
+void BallManager::FixedUpdate(const sf::Time)
 {
 
 #ifdef TRACY_ENABLE
@@ -26,12 +26,7 @@ void BulletManager::FixedUpdate(const sf::Time dt)
 
         if (_entityManager.HasComponent(entity, static_cast<core::EntityMask>(ComponentType::Bullet)))
         {
-            auto& [remainingTime, playerNumber] = _components[entity];
-            remainingTime -= dt.asSeconds();
-            if (remainingTime < 0.0f)
-            {
-                _gameManager.DestroyBullet(entity);
-            }
+            //Ball& ball = _components[entity];
         }
     }
 }

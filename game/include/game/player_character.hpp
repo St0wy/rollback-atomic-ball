@@ -10,14 +10,29 @@ class GameManager;
 
 struct PlayerCharacter
 {
-	float shootingTime = 0.0f;
 	PlayerInput input = 0u;
 	PlayerNumber playerNumber = INVALID_PLAYER;
 	short health = PLAYER_HEALTH;
-	float invincibilityTime = 0.0f;
 	bool hasBall = false;
+	bool hadBall = false;
 	core::Radian rotation = 0.0f;
 	core::Vec2f aimDirection{};
+
+	void CatchBall()
+	{
+		if (hasBall) return;
+
+		hadBall = hasBall;
+		hasBall = true;
+	}
+
+	void ThrowBall()
+	{
+		if (!hasBall) return;
+
+		hadBall = hasBall;
+		hasBall = false;
+	}
 };
 
 /**
