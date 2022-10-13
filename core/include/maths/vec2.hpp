@@ -58,6 +58,8 @@ struct Vec2f
      */
     [[nodiscard]] Radian Angle(const Vec2f& other) const;
 
+    [[nodiscard]] Radian GetAngle() const;
+
     /**
      * \brief Gets the biggest component of this vector.
      * \return The biggest component of this vector.

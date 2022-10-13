@@ -205,7 +205,6 @@ void ClientGameManager::Draw(sf::RenderTarget& target)
 	ZoneScoped;
 	#endif
 
-	UpdateCameraView();
 	target.setView(_cameraView);
 
 	_spriteManager.Draw(target);
@@ -310,7 +309,6 @@ void ClientGameManager::SpawnPlayer(PlayerNumber playerNumber, const core::Vec2f
 	_spriteManager.AddComponent(entity);
 	_spriteManager.SetTexture(entity, _playerNoBallTexture);
 	_spriteManager.SetOrigin(entity, sf::Vector2f(_playerNoBallTexture.getSize()) / 2.0f);
-	//_spriteManager.SetColor(entity, PLAYER_COLORS[playerNumber]);
 }
 
 core::Entity ClientGameManager::SpawnBullet(const PlayerNumber playerNumber, const core::Vec2f position,
@@ -321,7 +319,6 @@ core::Entity ClientGameManager::SpawnBullet(const PlayerNumber playerNumber, con
 	_spriteManager.AddComponent(entity);
 	_spriteManager.SetTexture(entity, _ballTexture);
 	_spriteManager.SetOrigin(entity, sf::Vector2f(_ballTexture.getSize()) / 2.0f);
-	//_spriteManager.SetColor(entity, PLAYER_COLORS[playerNumber]);
 
 	return entity;
 }
@@ -449,48 +446,5 @@ void ClientGameManager::WinGame(const PlayerNumber winner)
 {
 	GameManager::WinGame(winner);
 	_state = _state | Finished;
-}
-
-void ClientGameManager::UpdateCameraView()
-{
-	if ((_state & Started) != Started)
-	{
-		_cameraView = _originalView;
-		return;
-	}
-
-	_cameraView = _originalView;
-	const sf::Vector2f extends{ _cameraView.getSize() / 2.0f / core::PIXEL_PER_METER };
-	float currentZoom = 1.0f;
-	for (PlayerNumber playerNumber = 0; playerNumber < MAX_PLAYER_NMB; playerNumber++)
-	{
-		const auto playerEntity = GetEntityFromPlayerNumber(playerNumber);
-		if (playerEntity == core::INVALID_ENTITY)
-		{
-			continue;
-		}
-		if (_entityManager.HasComponent(playerEntity, static_cast<core::EntityMask>(core::ComponentType::Position)))
-		{
-			constexpr float margin = 1.0f;
-			const auto position = _transformManager.GetPosition(playerEntity);
-			if (core::Abs(position.x) + margin > extends.x)
-			{
-				const auto ratio = (std::abs(position.x) + margin) / extends.x;
-				if (ratio > currentZoom)
-				{
-					currentZoom = ratio;
-				}
-			}
-			if (core::Abs(position.y) + margin > extends.y)
-			{
-				const auto ratio = (std::abs(position.y) + margin) / extends.y;
-				if (ratio > currentZoom)
-				{
-					currentZoom = ratio;
-				}
-			}
-		}
-	}
-	_cameraView.zoom(currentZoom);
 }
 }

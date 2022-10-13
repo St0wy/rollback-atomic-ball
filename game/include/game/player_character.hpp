@@ -10,12 +10,14 @@ class GameManager;
 
 struct PlayerCharacter
 {
-    float shootingTime = 0.0f;
-    PlayerInput input = 0u;
-    PlayerNumber playerNumber = INVALID_PLAYER;
-    short health = PLAYER_HEALTH;
-    float invincibilityTime = 0.0f;
-    bool hasBall = false;
+	float shootingTime = 0.0f;
+	PlayerInput input = 0u;
+	PlayerNumber playerNumber = INVALID_PLAYER;
+	short health = PLAYER_HEALTH;
+	float invincibilityTime = 0.0f;
+	bool hasBall = false;
+	core::Radian rotation = 0.0f;
+	core::Vec2f aimDirection{};
 };
 
 /**
@@ -24,11 +26,11 @@ struct PlayerCharacter
 class PlayerCharacterManager final : public core::ComponentManager<PlayerCharacter, static_cast<core::EntityMask>(ComponentType::PlayerCharacter)>
 {
 public:
-    explicit PlayerCharacterManager(core::EntityManager& entityManager, PhysicsManager& physicsManager, GameManager& gameManager);
-    void FixedUpdate(sf::Time deltaTime);
+	explicit PlayerCharacterManager(core::EntityManager& entityManager, PhysicsManager& physicsManager, GameManager& gameManager);
+	void FixedUpdate(sf::Time deltaTime);
 
 private:
-    PhysicsManager& _physicsManager;
-    GameManager& _gameManager;
+	PhysicsManager& _physicsManager;
+	GameManager& _gameManager;
 };
 }

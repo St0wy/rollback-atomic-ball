@@ -10,7 +10,7 @@ Vec2f::Vec2f(const sf::Vector2f v)
 
 Vec2f Vec2f::FromAngle(const Radian angle)
 {
-	return {Sin(angle), Cos(angle) };
+	return { Sin(angle), Cos(angle) };
 }
 
 float Vec2f::Dot(const Vec2f other) const
@@ -141,6 +141,12 @@ float Vec2f::Distance(const Vec2f& other) const
 Radian Vec2f::Angle(const Vec2f& other) const
 {
 	return std::acos(this->Dot(other) / GetMagnitude() * other.GetMagnitude());
+}
+
+Radian Vec2f::GetAngle() const
+{
+	const float angle = std::atan2(y, x);
+	return angle;
 }
 
 float Vec2f::Major() const

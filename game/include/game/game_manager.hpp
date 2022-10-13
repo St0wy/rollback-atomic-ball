@@ -101,8 +101,6 @@ public:
 	void WinGame(PlayerNumber winner) override;
 	[[nodiscard]] std::uint32_t GetState() const { return _state; }
 protected:
-	void UpdateCameraView();
-
 	PacketSenderInterface& _packetSenderInterface;
 	sf::Vector2u _windowSize;
 	sf::View _originalView;

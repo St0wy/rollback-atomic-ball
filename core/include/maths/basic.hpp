@@ -89,4 +89,9 @@ T constexpr Sqrt(T x)
 		? SqrtNewtonRaphson<T>(x, x, 0)
 		: std::numeric_limits<T>::quiet_NaN();
 }
+
+template <typename T>
+T constexpr Sign(T val) {
+	return static_cast<T>(T{0} < val) - (val < T{0});
+}
 }
