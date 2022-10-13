@@ -65,7 +65,8 @@ void PhysicsManager::MoveBodies(const sf::Time deltaTime)
 
 		Rigidbody& rigidbody = GetRigidbody(entity);
 
-		const core::Vec2f vel = rigidbody.Velocity() + rigidbody.Force() * rigidbody.InvMass() * deltaTime.asSeconds();
+		const auto draggedVel = rigidbody.Velocity() * rigidbody.DragFactor();
+		const core::Vec2f vel = draggedVel + rigidbody.Force() * rigidbody.InvMass() * deltaTime.asSeconds();
 		rigidbody.SetVelocity(vel);
 
 		core::Vec2f pos = rigidbody.Position() + rigidbody.Velocity() * deltaTime.asSeconds();

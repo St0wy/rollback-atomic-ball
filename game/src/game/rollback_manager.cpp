@@ -281,6 +281,7 @@ void RollbackManager::SpawnPlayer(const PlayerNumber playerNumber, const core::E
 	playerBody.SetPosition(position);
 	playerBody.SetRotation(rotation);
 	playerBody.SetTakesGravity(false);
+	playerBody.SetDragFactor(0.9f);
 
 	CircleCollider playerCircle;
 	playerCircle.radius = 0.25f;

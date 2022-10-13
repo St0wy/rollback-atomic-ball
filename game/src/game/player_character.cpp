@@ -1,8 +1,6 @@
 #include <game/game_manager.hpp>
 #include <game/player_character.hpp>
 
-#include "maths/basic.hpp"
-
 #include "spdlog/spdlog.h"
 
 #ifdef TRACY_ENABLE
@@ -53,8 +51,6 @@ void PlayerCharacterManager::FixedUpdate(const sf::Time deltaTime)
 				angle = angle * -1.0f;
 
 			playerCharacter.rotation = angle;
-			spdlog::set_level(spdlog::level::debug);
-			spdlog::debug("angle : {}", core::Degree(playerCharacter.rotation).Value());
 			playerBody.SetRotation(playerCharacter.rotation);
 
 			playerCharacter.aimDirection = vel.GetNormalized();

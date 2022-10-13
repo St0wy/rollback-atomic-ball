@@ -13,7 +13,7 @@ namespace game
 struct Rigidbody
 {
 public:
-    Rigidbody();
+	Rigidbody();
 
 	/**
 	 * \brief Gets the transform of the body.
@@ -55,8 +55,8 @@ public:
 	 */
 	void SetPosition(const core::Vec2f& position);
 
-    [[nodiscard]] core::Radian Rotation() const;
-    void SetRotation(core::Radian rotation);
+	[[nodiscard]] core::Radian Rotation() const;
+	void SetRotation(core::Radian rotation);
 
 	/**
 	 * \brief Gets a boolean that indicates if this body will receive a collision response.
@@ -70,125 +70,129 @@ public:
 	 */
 	void SetIsKinematic(bool isKinematic);
 
-    /**
-     * \brief Gets the force of the gravity on this body.
-     * \return The force of the gravity.
-     */
-    [[nodiscard]] const core::Vec2f& GravityForce() const;
-    /**
-     * \brief Sets the gravity force.
-     * \param gravityForce New gravity force.
-     */
-    void SetGravityForce(const core::Vec2f& gravityForce);
+	/**
+	 * \brief Gets the force of the gravity on this body.
+	 * \return The force of the gravity.
+	 */
+	[[nodiscard]] const core::Vec2f& GravityForce() const;
+	/**
+	 * \brief Sets the gravity force.
+	 * \param gravityForce New gravity force.
+	 */
+	void SetGravityForce(const core::Vec2f& gravityForce);
 
-    /**
-     * \brief Gets the force on this body.
-     * \return The force on this body.
-     */
-    [[nodiscard]] const core::Vec2f& Force() const;
-    /**
-     * \brief Adds force to this body.
-     * \param addedForce The force to add to this body.
-     */
-    void ApplyForce(const core::Vec2f& addedForce);
-    /**
-     * \brief Sets the force of this body.
-     * \param force The new force.
-     */
-    void SetForce(const core::Vec2f& force);
+	/**
+	 * \brief Gets the force on this body.
+	 * \return The force on this body.
+	 */
+	[[nodiscard]] const core::Vec2f& Force() const;
+	/**
+	 * \brief Adds force to this body.
+	 * \param addedForce The force to add to this body.
+	 */
+	void ApplyForce(const core::Vec2f& addedForce);
+	/**
+	 * \brief Sets the force of this body.
+	 * \param force The new force.
+	 */
+	void SetForce(const core::Vec2f& force);
 
-    /**
-     * \brief Gets the velocity of this body.
-     * \return The velocity of this body.
-     */
-    [[nodiscard]] const core::Vec2f& Velocity() const;
-    /**
-     * \brief Sets the velocity of this body.
-     * \param velocity The new velocity.
-     */
-    void SetVelocity(const core::Vec2f& velocity);
+	/**
+	 * \brief Gets the velocity of this body.
+	 * \return The velocity of this body.
+	 */
+	[[nodiscard]] const core::Vec2f& Velocity() const;
+	/**
+	 * \brief Sets the velocity of this body.
+	 * \param velocity The new velocity.
+	 */
+	void SetVelocity(const core::Vec2f& velocity);
 
-    /**
-     * \brief Computes the mass of this body. Only the inverted mass is stored,
-     * so it's computed as 1 / InvMass();
-     * \see InvMass()
-     * \return The mass of this body.
-     */
-    [[nodiscard]] float Mass() const;
-    /**
-     * \brief Returns 1 / Mass of this body.
-     * \return The inverted mass of this body.
-     */
-    [[nodiscard]] float InvMass() const;
-    /**
-     * \brief Sets the mass of this body.
-     * \param mass The new mass.
-     */
-    void SetMass(float mass);
+	/**
+	 * \brief Computes the mass of this body. Only the inverted mass is stored,
+	 * so it's computed as 1 / InvMass();
+	 * \see InvMass()
+	 * \return The mass of this body.
+	 */
+	[[nodiscard]] float Mass() const;
+	/**
+	 * \brief Returns 1 / Mass of this body.
+	 * \return The inverted mass of this body.
+	 */
+	[[nodiscard]] float InvMass() const;
+	/**
+	 * \brief Sets the mass of this body.
+	 * \param mass The new mass.
+	 */
+	void SetMass(float mass);
 
-    /**
-     * \brief Gets a boolean indicating whether this body takes gravity.
-     * \return True if this body takes gravity.
-     */
-    [[nodiscard]] bool TakesGravity() const;
-    /**
-     * \brief Sets a boolean indicating whether this body takes gravity.
-     * \param takesGravity The new takesGravity.
-     */
-    void SetTakesGravity(bool takesGravity);
+	/**
+	 * \brief Gets a boolean indicating whether this body takes gravity.
+	 * \return True if this body takes gravity.
+	 */
+	[[nodiscard]] bool TakesGravity() const;
+	/**
+	 * \brief Sets a boolean indicating whether this body takes gravity.
+	 * \param takesGravity The new takesGravity.
+	 */
+	void SetTakesGravity(bool takesGravity);
 
-    /**
-     * \brief Gets the static friction of this body.
-     * \return The static friction.
-     */
-    [[nodiscard]] float StaticFriction() const;
-    /**
-     * \brief Sets the static friction of this body.
-     * \param staticFriction The new static friction.
-     */
-    void SetStaticFriction(float staticFriction);
+	/**
+	 * \brief Gets the static friction of this body.
+	 * \return The static friction.
+	 */
+	[[nodiscard]] float StaticFriction() const;
+	/**
+	 * \brief Sets the static friction of this body.
+	 * \param staticFriction The new static friction.
+	 */
+	void SetStaticFriction(float staticFriction);
 
-    /**
-     * \brief Gets the dynamic friction of this body.
-     * \return The dynamic friction.
-     */
-    [[nodiscard]] float DynamicFriction() const;
-    /**
-     * \brief Sets the dynamic friction of this body.
-     * \param dynamicFriction The new dynamic friction.
-     */
-    void SetDynamicFriction(float dynamicFriction);
+	/**
+	 * \brief Gets the dynamic friction of this body.
+	 * \return The dynamic friction.
+	 */
+	[[nodiscard]] float DynamicFriction() const;
+	/**
+	 * \brief Sets the dynamic friction of this body.
+	 * \param dynamicFriction The new dynamic friction.
+	 */
+	void SetDynamicFriction(float dynamicFriction);
 
-    /**
-     * \brief Gets the restitution of this body. Can be seen as the "Bounciness".
-     * \return The restitution.
-     */
-    [[nodiscard]] float Restitution() const;
-    /**
-     * \brief Sets the restitution of this body. Can be seen as the "Bounciness".
-     * \param restitution The new restitution.
-     */
-    void SetRestitution(float restitution);
+	/**
+	 * \brief Gets the restitution of this body. Can be seen as the "Bounciness".
+	 * \return The restitution.
+	 */
+	[[nodiscard]] float Restitution() const;
+	/**
+	 * \brief Sets the restitution of this body. Can be seen as the "Bounciness".
+	 * \param restitution The new restitution.
+	 */
+	void SetRestitution(float restitution);
 
-    [[nodiscard]] bool IsDynamic() const;
-    void SetIsDynamic(bool isDynamic);
+	[[nodiscard]] bool IsDynamic() const;
+	void SetIsDynamic(bool isDynamic);
+
+	[[nodiscard]] float DragFactor() const { return _dragFactor; }
+	void SetDragFactor(const float dragFactor) { _dragFactor = dragFactor; }
 
 private:
-    core::Vec2f _gravityForce;
-    core::Vec2f _force;
-    core::Vec2f _velocity;
+	core::Vec2f _gravityForce;
+	core::Vec2f _force;
+	core::Vec2f _velocity;
 
-    float _invMass{};
-    bool _takesGravity = false;
+	float _invMass{};
+	bool _takesGravity = false;
 
-    float _staticFriction{};
-    float _dynamicFriction{};
-    float _restitution{};
+	float _staticFriction{};
+	float _dynamicFriction{};
+	float _restitution{};
+	float _dragFactor = 1.0f;
 
-    Transform _transform{};
+	Transform _transform{};
 	//Collider* _collider{};
 
-    bool _isDynamic = true;
+	bool _isDynamic = true;
 	bool _isKinematic = false;
 	bool _isTrigger = false;
 };
