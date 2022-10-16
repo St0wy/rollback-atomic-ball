@@ -93,7 +93,10 @@ enum class ComponentType : core::EntityMask
 	Asteroid = static_cast<core::EntityMask>(core::ComponentType::OtherType) << 2u,
 	PlayerInput = static_cast<core::EntityMask>(core::ComponentType::OtherType) << 3u,
 	Destroyed = static_cast<core::EntityMask>(core::ComponentType::OtherType) << 4u,
+	StaticWall = static_cast<core::EntityMask>(core::ComponentType::OtherType) << 5u,
 };
+
+constexpr core::Vec2f WALL_LEFT_POS{ -10, 0 };
 
 /**
  * \brief PlayerInput is a type defining the input data from a player.

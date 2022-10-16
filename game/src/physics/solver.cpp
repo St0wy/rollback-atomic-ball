@@ -26,8 +26,8 @@ void ImpulseSolver::Solve(const std::vector<Collision>& collisions, float)
 		Rigidbody& bodyB = _rigidbodyManager.GetComponent(entityB);
 
 		// ReSharper disable CppCStyleCast
-		Rigidbody* aBody = bodyA.IsDynamic() ? &bodyA : nullptr;
-		Rigidbody* bBody = bodyB.IsDynamic() ? &bodyB : nullptr;
+		Rigidbody* aBody = bodyA.HasCollisions() ? &bodyA : nullptr;
+		Rigidbody* bBody = bodyB.HasCollisions() ? &bodyB : nullptr;
 		// ReSharper restore CppCStyleCast
 
 		core::Vec2f aVel = aBody ? aBody->Velocity() : core::Vec2f::Zero();
@@ -113,8 +113,8 @@ void SmoothPositionSolver::Solve(const std::vector<Collision>& collisions, float
 		Rigidbody& bodyB = _rigidbodyManager.GetComponent(entityB);
 
 		// ReSharper disable CppCStyleCast
-		Rigidbody* aBody = bodyA.IsDynamic() ? &bodyA : nullptr;
-		Rigidbody* bBody = bodyB.IsDynamic() ? &bodyB : nullptr;
+		Rigidbody* aBody = bodyA.HasCollisions() ? &bodyA : nullptr;
+		Rigidbody* bBody = bodyB.HasCollisions() ? &bodyB : nullptr;
 		// ReSharper restore CppCStyleCast
 
 		const float aInvMass = aBody ? aBody->InvMass() : 0.0f;

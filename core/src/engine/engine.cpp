@@ -30,8 +30,8 @@ void Engine::Run()
 	{
 		try
 		{
-			const auto dt = clock.restart();
-			Update(dt);
+			const auto deltaTime = clock.restart();
+			Update(deltaTime);
 			#ifdef TRACY_ENABLE
 			FrameMark;
 			#endif
@@ -79,9 +79,11 @@ void Engine::Init()
 	ZoneScoped;
 	#endif
 
+	sf::ContextSettings settings;
+	settings.antialiasingLevel = 8;
 	_window = std::make_unique<sf::RenderWindow>(
 		sf::VideoMode(WINDOW_SIZE.x, WINDOW_SIZE.y),
-		"Rollback Game");
+		"Rollback Game", sf::Style::Close, settings);
 	const bool status = ImGui::SFML::Init(*_window);
 	if (!status)
 	{

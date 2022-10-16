@@ -93,6 +93,7 @@ void NetworkServer::Begin()
 	#ifdef TRACY_ENABLE
     ZoneScoped;
 	#endif
+
 	sf::Socket::Status status = sf::Socket::Error;
 	while (status != sf::Socket::Done)
 	{

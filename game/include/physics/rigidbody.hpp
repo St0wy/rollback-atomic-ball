@@ -171,6 +171,7 @@ public:
 	[[nodiscard]] bool IsDynamic() const { return _bodyType == BodyType::Dynamic; }
 	[[nodiscard]] bool IsStatic() const { return _bodyType == BodyType::Static; }
 	[[nodiscard]] bool IsKinematic() const { return _bodyType == BodyType::Kinematic; }
+	[[nodiscard]] bool HasCollisions() const { return IsDynamic() || IsKinematic(); }
 	[[nodiscard]] BodyType GetBodyType() const { return _bodyType; }
 	void SetBodyType(const BodyType bodyType) { _bodyType = bodyType; }
 

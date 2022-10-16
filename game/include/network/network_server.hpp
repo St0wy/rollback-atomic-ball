@@ -51,12 +51,13 @@ protected:
 
 private:
 	void ProcessReceivePacket(std::unique_ptr<Packet> packet,
-							  PacketSocketSource packetSource,
-							  sf::IpAddress address = "localhost",
-							  unsigned short port = 0);
+		PacketSocketSource packetSource,
+		sf::IpAddress address = "localhost",
+		unsigned short port = 0);
+
 	void ReceiveNetPacket(sf::Packet& packet, PacketSocketSource packetSource,
-						  sf::IpAddress address = "localhost",
-						  unsigned short port = 0);
+		sf::IpAddress address = "localhost",
+		unsigned short port = 0);
 
 	enum ServerStatus
 	{
@@ -78,7 +79,7 @@ private:
 	std::uint8_t _status = 0;
 
 	#ifdef ENABLE_SQLITE
-    DebugDatabase db_;
+	DebugDatabase db_;
 	#endif
 };
 }

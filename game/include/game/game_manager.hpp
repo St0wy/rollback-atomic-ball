@@ -35,6 +35,7 @@ public:
 	GameManager& operator=(const GameManager& other) = delete;
 	GameManager& operator=(GameManager&& other) = delete;
 
+	virtual void SetupLevel();
 	virtual void SpawnPlayer(PlayerNumber playerNumber, core::Vec2f position, core::Degree rotation);
 	virtual core::Entity SpawnBall(PlayerNumber, core::Vec2f position, core::Vec2f velocity);
 	virtual void DestroyBall(core::Entity entity);

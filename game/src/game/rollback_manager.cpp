@@ -223,6 +223,7 @@ void RollbackManager::ConfirmFrame(Frame newValidatedFrame,
 	#ifdef TRACY_ENABLE
 	ZoneScoped;
 	#endif
+
 	ValidateFrame(newValidatedFrame);
 	for (PlayerNumber playerNumber = 0; playerNumber < MAX_PLAYER_NMB; playerNumber++)
 	{
@@ -250,20 +251,20 @@ PhysicsState RollbackManager::GetValidatePhysicsState(const PlayerNumber playerN
 	const auto& pos = rigidbody.Position();
 	const auto* posPtr = reinterpret_cast<const PhysicsState*>(&pos);
 
-	//Adding position
+	// Adding position
 	for (size_t i = 0; i < sizeof(core::Vec2f) / sizeof(PhysicsState); i++)
 	{
 		state += posPtr[i];
 	}
 
-	//Adding velocity
+	// Adding velocity
 	const auto* velocityPtr = reinterpret_cast<const PhysicsState*>(&rigidbody.Velocity());
 	for (size_t i = 0; i < sizeof(core::Vec2f) / sizeof(PhysicsState); i++)
 	{
 		state += velocityPtr[i];
 	}
 
-	//Adding rotation
+	// Adding rotation
 	const auto angle = rigidbody.Trans().rotation.Value();
 	const auto* anglePtr = reinterpret_cast<const PhysicsState*>(&angle);
 	for (size_t i = 0; i < sizeof(float) / sizeof(PhysicsState); i++)
@@ -272,6 +273,37 @@ PhysicsState RollbackManager::GetValidatePhysicsState(const PlayerNumber playerN
 	}
 
 	return state;
+}
+
+void RollbackManager::SetupLevel(const core::Entity wallLeftEntity)
+{
+	CreateWall(wallLeftEntity, { -10, 0 }, { 3, 100 });
+}
+
+void RollbackManager::CreateWall(const core::Entity entity, const core::Vec2f position, const core::Vec2f size)
+{
+	Rigidbody wallLeftBody;
+	wallLeftBody.SetPosition(WALL_LEFT_POS);
+	wallLeftBody.SetTakesGravity(false);
+	wallLeftBody.SetBodyType(BodyType::Static);
+	wallLeftBody.SetMass(2000);
+
+	AabbCollider wallLeftCollider;
+	wallLeftCollider.halfHeight = size.y;
+	wallLeftCollider.halfWidth = size.x;
+
+	_currentPhysicsManager.AddRigidbody(entity);
+	_currentPhysicsManager.SetRigidbody(entity, wallLeftBody);
+	_currentPhysicsManager.AddAabbCollider(entity);
+	_currentPhysicsManager.SetAabbCollider(entity, wallLeftCollider);
+
+	_lastValidatePhysicsManager.AddRigidbody(entity);
+	_lastValidatePhysicsManager.SetRigidbody(entity, wallLeftBody);
+	_lastValidatePhysicsManager.AddAabbCollider(entity);
+	_lastValidatePhysicsManager.SetAabbCollider(entity, wallLeftCollider);
+
+	_currentTransformManager.AddComponent(entity);
+	_currentTransformManager.SetPosition(entity, position);
 }
 
 void RollbackManager::SpawnPlayer(const PlayerNumber playerNumber, const core::Entity entity,

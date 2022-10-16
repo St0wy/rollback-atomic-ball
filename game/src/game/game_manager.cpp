@@ -1,3 +1,4 @@
+// ReSharper disable CppUseStructuredBinding
 #include "game/game_manager.hpp"
 
 #include <chrono>
@@ -22,12 +23,22 @@ GameManager::GameManager()
 	_rollbackManager(*this, _entityManager)
 {
 	_playerEntityMap.fill(core::INVALID_ENTITY);
+	SetupLevel();
+}
+
+void GameManager::SetupLevel()
+{
+	const auto wallLeftEntity = _entityManager.CreateEntity();
+	
+	_transformManager.AddComponent(wallLeftEntity);
+	_transformManager.SetPosition(wallLeftEntity, WALL_LEFT_POS);
+	_rollbackManager.SetupLevel(wallLeftEntity);
 }
 
 void GameManager::SpawnPlayer(const PlayerNumber playerNumber, const core::Vec2f position, const core::Degree rotation)
 {
-	if (GetEntityFromPlayerNumber(playerNumber) != core::INVALID_ENTITY)
-		return;
+	if (GetEntityFromPlayerNumber(playerNumber) != core::INVALID_ENTITY) return;
+
 	core::LogDebug("[GameManager] Spawning new player");
 	const auto entity = _entityManager.CreateEntity();
 	_playerEntityMap[playerNumber] = entity;
