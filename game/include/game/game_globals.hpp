@@ -29,7 +29,7 @@ constexpr auto INVALID_PLAYER = std::numeric_limits<PlayerNumber>::max();
  */
 enum class ClientId : std::uint16_t {};
 
-constexpr auto INVALID_CLIENT_ID = ClientId{0};
+constexpr auto INVALID_CLIENT_ID = ClientId{ 0 };
 using Frame = std::uint32_t;
 
 /**
@@ -37,7 +37,7 @@ using Frame = std::uint32_t;
  */
 constexpr std::uint32_t MAX_PLAYER_NMB = 2;
 constexpr short PLAYER_HEALTH = 5;
-constexpr float PLAYER_SPEED = 15.0f;
+constexpr float PLAYER_SPEED = 100.0f;
 constexpr float BULLET_SPEED = 2.0f;
 constexpr float BALL_SCALE = 0.3f;
 
@@ -59,7 +59,7 @@ constexpr std::size_t MAX_INPUT_NMB = 50;
 /**
  * \brief fixedPeriod is the period used in seconds to start a new FixedUpdate method in the game::GameManager
  */
-constexpr float FIXED_PERIOD = 0.02f; //50fps
+constexpr float FIXED_PERIOD = 1.0f / 50.0f; //50fps
 
 
 constexpr std::array PLAYER_COLORS
@@ -73,7 +73,7 @@ constexpr std::array PLAYER_COLORS
 constexpr std::array SPAWN_POSITIONS
 {
 	core::Vec2f(0, 1),
-	core::Vec2f(0, -1),
+	core::Vec2f(0, -0.5f),
 	core::Vec2f(1, 0),
 	core::Vec2f(-1, 0),
 };
@@ -86,17 +86,22 @@ constexpr std::array SPAWN_ROTATIONS
 	core::Degree(90.0f)
 };
 
+constexpr core::EntityMask OTHER_TYPE = static_cast<core::EntityMask>(core::ComponentType::OtherType);
 enum class ComponentType : core::EntityMask
 {
-	PlayerCharacter = static_cast<core::EntityMask>(core::ComponentType::OtherType),
-	Bullet = static_cast<core::EntityMask>(core::ComponentType::OtherType) << 1u,
-	Asteroid = static_cast<core::EntityMask>(core::ComponentType::OtherType) << 2u,
-	PlayerInput = static_cast<core::EntityMask>(core::ComponentType::OtherType) << 3u,
-	Destroyed = static_cast<core::EntityMask>(core::ComponentType::OtherType) << 4u,
-	StaticWall = static_cast<core::EntityMask>(core::ComponentType::OtherType) << 5u,
+	PlayerCharacter = OTHER_TYPE,
+	Bullet = OTHER_TYPE << 1u,
+	Asteroid = OTHER_TYPE << 2u,
+	PlayerInput = OTHER_TYPE << 3u,
+	Destroyed = OTHER_TYPE << 4u,
+	StaticWall = OTHER_TYPE << 5u,
 };
 
-constexpr core::Vec2f WALL_LEFT_POS{ -10, 0 };
+constexpr unsigned WINDOW_SCALE = 70;
+const sf::Vector2u DEBUG_WINDOW_SIZE{ core::WINDOW_RATIO.x * 2 * WINDOW_SCALE , core::WINDOW_RATIO.y * WINDOW_SCALE };
+const sf::Vector2u DEBUG_FRAMEBUFFER_SIZE = core::WINDOW_RATIO * WINDOW_SCALE;
+
+constexpr core::Vec2f WALL_LEFT_POS{ -7.0f, 0.0f };
 
 /**
  * \brief PlayerInput is a type defining the input data from a player.

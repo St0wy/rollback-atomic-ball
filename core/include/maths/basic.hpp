@@ -51,8 +51,10 @@ constexpr float Clamp(T value, T lower, T upper)
 template <typename T>
 std::enable_if_t<std::is_integral_v<T>, T> RandomRange(T start, T end)
 {
-	static std::random_device rd; //Will be used to obtain a seed for the random number engine
-	static std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
+	// Will be used to obtain a seed for the random number engine
+	static std::random_device rd;
+	// Standard mersenne_twister_engine seeded with rd()
+	static std::mt19937 gen(rd()); 
 	std::uniform_int_distribution<T> dis(start, end);
 	return dis(gen);
 }
@@ -60,18 +62,20 @@ std::enable_if_t<std::is_integral_v<T>, T> RandomRange(T start, T end)
 template <typename T>
 std::enable_if_t<std::is_floating_point_v<T>, T> RandomRange(T start, T end)
 {
-	static std::random_device rd; //Will be used to obtain a seed for the random number engine
-	static std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
+	// Will be used to obtain a seed for the random number engine
+	static std::random_device rd;
+	// Standard mersenne_twister_engine seeded with rd()
+	static std::mt19937 gen(rd()); 
 	std::uniform_real_distribution<T> dis(start, end);
 	return dis(gen);
 }
 
 template <typename T>
-T constexpr SqrtNewtonRaphson(T x, T curr, T prev)
+T constexpr SqrtNewtonRaphson(T x, T current, T previous)
 {
-	return curr == prev
-		? curr
-		: SqrtNewtonRaphson<T>(x, (curr + x / curr) * 0.5, curr);
+	return current == previous  // NOLINT(clang-diagnostic-float-equal)
+		? current
+		: SqrtNewtonRaphson<T>(x, (current + x / current) * T(0.5), current);
 }
 
 /**

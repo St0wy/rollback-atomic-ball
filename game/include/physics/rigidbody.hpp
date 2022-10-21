@@ -19,7 +19,6 @@ enum class BodyType : std::uint8_t
 */
 struct Rigidbody
 {
-public:
 	Rigidbody();
 
 	/**

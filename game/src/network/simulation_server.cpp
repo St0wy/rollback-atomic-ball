@@ -122,7 +122,7 @@ void SimulationServer::ProcessReceivePacket(std::unique_ptr<Packet> packet)
 
 void SimulationServer::SpawnNewPlayer(const ClientId clientId, const PlayerNumber playerNumber)
 {
-    core::LogDebug("[Server] Spawn new player");
+    core::LogInfo("[Server] Spawn new player");
     auto spawnPlayer = std::make_unique<SpawnPlayerPacket>();
     spawnPlayer->packetType = PacketType::SpawnPlayer;
     spawnPlayer->clientId = core::ConvertToBinary(clientId);

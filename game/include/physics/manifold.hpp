@@ -6,8 +6,7 @@ namespace game
 {
 struct Manifold
 {
-public:
-    Manifold(const core::Vec2f& a, const core::Vec2f& b, const core::Vec2f& normal, float depth);
+	Manifold(const core::Vec2f& a, const core::Vec2f& b, const core::Vec2f& normal, float depth);
     Manifold(const core::Vec2f& normal, float depth);
     Manifold();
 

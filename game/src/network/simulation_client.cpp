@@ -58,6 +58,7 @@ void SimulationClient::Draw(sf::RenderTarget& renderTarget)
 	#ifdef TRACY_ENABLE
 	ZoneScoped;
 	#endif
+
 	_gameManager.Draw(renderTarget);
 }
 

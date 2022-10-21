@@ -5,7 +5,7 @@
 int main()
 {
 
-	core::Engine engine;
+	core::Engine engine(game::DEBUG_WINDOW_SIZE);
 	game::SimulationApp app;
 	engine.RegisterApp(&app);
 

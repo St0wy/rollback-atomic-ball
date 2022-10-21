@@ -16,6 +16,8 @@ public:
     virtual void Begin() = 0;
     virtual void Update(sf::Time dt) = 0;
     virtual void End() = 0;
+
+    bool hasFocus;
 };
 
 /**

@@ -4,8 +4,6 @@
 #include <chrono>
 #include <imgui.h>
 
-#include <fmt/format.h>
-
 #include "maths/basic.hpp"
 
 #include "utils/conversion.hpp"
@@ -23,13 +21,13 @@ GameManager::GameManager()
 	_rollbackManager(*this, _entityManager)
 {
 	_playerEntityMap.fill(core::INVALID_ENTITY);
-	SetupLevel();
+	GameManager::SetupLevel();
 }
 
 void GameManager::SetupLevel()
 {
 	const auto wallLeftEntity = _entityManager.CreateEntity();
-	
+
 	_transformManager.AddComponent(wallLeftEntity);
 	_transformManager.SetPosition(wallLeftEntity, WALL_LEFT_POS);
 	_rollbackManager.SetupLevel(wallLeftEntity);
@@ -39,7 +37,7 @@ void GameManager::SpawnPlayer(const PlayerNumber playerNumber, const core::Vec2f
 {
 	if (GetEntityFromPlayerNumber(playerNumber) != core::INVALID_ENTITY) return;
 
-	core::LogDebug("[GameManager] Spawning new player");
+	core::LogInfo("[GameManager] Spawning new player");
 	const auto entity = _entityManager.CreateEntity();
 	_playerEntityMap[playerNumber] = entity;
 
@@ -204,18 +202,18 @@ void ClientGameManager::Update(const sf::Time dt)
 
 void ClientGameManager::End() {}
 
-void ClientGameManager::SetWindowSize(const sf::Vector2u windowsSize)
+void ClientGameManager::SetWindowSize(const sf::Vector2u )
 {
-	_windowSize = windowsSize;
+	_windowSize = core::WINDOW_RATIO * 100u;
 	const auto width = static_cast<float>(_windowSize.x);
 	const auto height = static_cast<float>(_windowSize.y);
 	const sf::FloatRect visibleArea(0.0f, 0.0f, width, height);
 	_cameraView = sf::View(visibleArea);
-	_spriteManager.SetWindowSize(sf::Vector2f(windowsSize));
-	_spriteManager.SetCenter(sf::Vector2f(windowsSize) / 2.0f);
+	_spriteManager.SetWindowSize(sf::Vector2f(width, height));
+	_spriteManager.SetCenter(sf::Vector2f(width, height) / 2.0f);
 	auto& currentPhysicsManager = _rollbackManager.GetCurrentPhysicsManager();
-	currentPhysicsManager.SetCenter(sf::Vector2f(windowsSize) / 2.0f);
-	currentPhysicsManager.SetWindowSize(sf::Vector2f(windowsSize));
+	currentPhysicsManager.SetCenter(sf::Vector2f(width, height) / 2.0f);
+	currentPhysicsManager.SetWindowSize(sf::Vector2f(width, height));
 }
 
 void ClientGameManager::Draw(sf::RenderTarget& target)
@@ -319,7 +317,7 @@ void ClientGameManager::SetClientPlayer(const PlayerNumber clientPlayer)
 
 void ClientGameManager::SpawnPlayer(PlayerNumber playerNumber, const core::Vec2f position, const core::Degree rotation)
 {
-	core::LogDebug(fmt::format("Spawn player: {}", playerNumber));
+	core::LogInfo(fmt::format("Spawn player: {}", playerNumber));
 
 	GameManager::SpawnPlayer(playerNumber, position, rotation);
 	const auto entity = GetEntityFromPlayerNumber(playerNumber);
@@ -413,7 +411,7 @@ void ClientGameManager::SetPlayerInput(const PlayerNumber playerNumber, const Pl
 
 void ClientGameManager::StartGame(unsigned long long int startingTime)
 {
-	core::LogDebug(fmt::format("Start game at starting time: {}", startingTime));
+	core::LogInfo(fmt::format("Start game at starting time: {}", startingTime));
 	_startingTime = startingTime;
 }
 

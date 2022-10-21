@@ -111,6 +111,11 @@ void Rigidbody::SetMass(const float mass)
 		_invMass = 0;
 	}
 	_invMass = 1.0f / mass;
+
+	if (std::fpclassify(_invMass) == FP_SUBNORMAL)
+	{
+		_invMass = std::numeric_limits<float>::min();
+	}
 }
 
 bool Rigidbody::TakesGravity() const

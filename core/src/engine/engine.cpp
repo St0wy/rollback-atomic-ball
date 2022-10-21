@@ -8,7 +8,6 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/VideoMode.hpp>
 
-#include "engine/globals.hpp"
 #include "engine/system.hpp"
 
 #include "graphics/graphics.hpp"
@@ -22,6 +21,9 @@
 
 namespace core
 {
+Engine::Engine(const sf::Vector2u size) : _windowSize(size)
+{}
+
 void Engine::Run()
 {
 	Init();
@@ -82,7 +84,7 @@ void Engine::Init()
 	sf::ContextSettings settings;
 	settings.antialiasingLevel = 8;
 	_window = std::make_unique<sf::RenderWindow>(
-		sf::VideoMode(WINDOW_SIZE.x, WINDOW_SIZE.y),
+		sf::VideoMode(_windowSize.x, _windowSize.y),
 		"Rollback Game", sf::Style::Close, settings);
 	const bool status = ImGui::SFML::Init(*_window);
 	if (!status)
@@ -104,6 +106,7 @@ void Engine::Update(const sf::Time dt) const
 	#ifdef TRACY_ENABLE
 	ZoneScoped;
 	#endif
+
 	sf::Event e{};
 	while (_window->pollEvent(e))
 	{
@@ -133,6 +136,7 @@ void Engine::Update(const sf::Time dt) const
 
 	for (auto* system : _systems)
 	{
+		system->hasFocus = _window->hasFocus();
 		system->Update(dt);
 	}
 
@@ -159,6 +163,7 @@ void Engine::Destroy()
 	#ifdef TRACY_ENABLE
 	ZoneScoped;
 	#endif
+
 	for (auto* system : _systems)
 	{
 		system->End();

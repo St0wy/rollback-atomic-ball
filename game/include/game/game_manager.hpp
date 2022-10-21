@@ -81,7 +81,7 @@ public:
 	void Begin() override;
 	void Update(sf::Time dt) override;
 	void End() override;
-	void SetWindowSize(sf::Vector2u windowsSize);
+	void SetWindowSize(sf::Vector2u windowSize);
 	[[nodiscard]] sf::Vector2u GetWindowSize() const { return _windowSize; }
 	void Draw(sf::RenderTarget& target) override;
 	void SetClientPlayer(PlayerNumber clientPlayer);

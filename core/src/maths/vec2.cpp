@@ -18,17 +18,9 @@ float Vec2f::Dot(const Vec2f other) const
 	return Dot(*this, other);
 }
 
-Vec2f Vec2f::TripleProduct(const Vec2f& a, const Vec2f& b, const Vec2f& c)
-{
-	return {
-		a.y * (b.x * c.y - b.y * c.x),
-		a.x * (b.y * c.x - b.x * c.y)
-	};
-}
-
 Vec2f Vec2f::NewMagnitude(const float newMagnitude) const
 {
-	return *this / newMagnitude * GetMagnitude();
+	return (*this * newMagnitude) / GetMagnitude();
 }
 
 void Vec2f::RotateAround(const Vec2f& center, const float angle)
@@ -38,6 +30,11 @@ void Vec2f::RotateAround(const Vec2f& center, const float angle)
 	const float sa = std::sin(angle);
 	const auto rotated = Vec2f(ca * relative.x - sa * relative.y, sa * relative.x + ca * relative.y);
 	(*this) = rotated + center;
+}
+
+bool Vec2f::IsNaN() const
+{
+	return std::isnan(x) || std::isnan(y);
 }
 
 Vec2f Vec2f::operator+(const Vec2f v) const
@@ -91,6 +88,11 @@ Vec2f Vec2f::operator*=(const float scalar)
 Vec2f Vec2f::operator-() const
 {
 	return { -x, -y };
+}
+
+bool Vec2f::operator==(const Vec2f other) const
+{
+	return x == other.x && y == other.y;  // NOLINT(clang-diagnostic-float-equal)
 }
 
 Vec2f operator*(const float f, const Vec2f v)

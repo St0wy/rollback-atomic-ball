@@ -22,36 +22,22 @@ PhysicsManager::PhysicsManager(core::EntityManager& entityManager)
 	_grid(-500, 500, -500, 500, 10, _entityManager, _rigidbodyManager, _aabbManager, _circleManager)
 {}
 
-std::optional<core::ComponentType> PhysicsManager::
-HasCollider(const core::EntityManager& entityManager, const core::Entity entity)
+std::optional<core::ComponentType> PhysicsManager::HasCollider(const core::EntityManager& entityManager,
+	const core::Entity entity)
 {
 	const bool hasAabb = entityManager.HasComponent(entity,
 		static_cast<core::EntityMask>(core::ComponentType::AabbCollider));
 	const bool hasCircle = entityManager.HasComponent(entity,
-		static_cast<core::EntityMask>(core::ComponentType::CircleCollider));
+		static_cast<core::EntityMask>(
+		core::ComponentType::CircleCollider));
 
 	// It is possible that an entity has both an Aabb Collider and a circle collider
 	// but I don't want to handle this case, so Aabb has more priority than the circle
-	if (hasAabb)
-	{
-		return core::ComponentType::AabbCollider;
-	}
+	if (hasAabb) return core::ComponentType::AabbCollider;
 
-	if (hasCircle)
-	{
-		return core::ComponentType::CircleCollider;
-	}
+	if (hasCircle) return core::ComponentType::CircleCollider;
 
 	return {};
-}
-
-constexpr bool Box2Box(const float r1X, const float r1Y, const float r1W, const float r1H, const float r2X,
-	const float r2Y, const float r2W, const float r2H)
-{
-	return r1X + r1W >= r2X && // r1 right edge past r2 left
-		r1X <= r2X + r2W && // r1 left edge past r2 right
-		r1Y + r1H >= r2Y && // r1 top edge past r2 bottom
-		r1Y <= r2Y + r2H;
 }
 
 void PhysicsManager::MoveBodies(const sf::Time deltaTime)
@@ -59,7 +45,8 @@ void PhysicsManager::MoveBodies(const sf::Time deltaTime)
 	for (core::Entity entity = 0; entity < _entityManager.GetEntitiesSize(); entity++)
 	{
 		const bool hasRigidbody = _entityManager.HasComponent(entity,
-			static_cast<core::EntityMask>(core::ComponentType::Rigidbody));
+			static_cast<core::EntityMask>(
+			core::ComponentType::Rigidbody));
 
 		if (!hasRigidbody) continue;
 
@@ -178,13 +165,16 @@ void PhysicsManager::Draw(sf::RenderTarget& renderTarget)
 	for (core::Entity entity = 0; entity < _entityManager.GetEntitiesSize(); entity++)
 	{
 		const bool hasRigidbody = _entityManager.HasComponent(entity,
-			static_cast<core::EntityMask>(core::ComponentType::Rigidbody));
+			static_cast<core::EntityMask>(
+			core::ComponentType::Rigidbody));
 		const bool isDestroyed = _entityManager.HasComponent(entity,
 			static_cast<core::EntityMask>(ComponentType::Destroyed));
 		const bool hasAabbCollider = _entityManager.HasComponent(entity,
-			static_cast<core::EntityMask>(core::ComponentType::AabbCollider));
+			static_cast<core::EntityMask>(
+			core::ComponentType::AabbCollider));
 		const bool hasCircleCollider = _entityManager.HasComponent(entity,
-			static_cast<core::EntityMask>(core::ComponentType::CircleCollider));
+			static_cast<core::EntityMask>(
+			core::ComponentType::CircleCollider));
 		const bool hasCollider = hasAabbCollider || hasCircleCollider;
 
 		if (!hasRigidbody || isDestroyed || !hasCollider) continue;
@@ -201,12 +191,16 @@ void PhysicsManager::Draw(sf::RenderTarget& renderTarget)
 			rectShape.setOutlineThickness(2.0f);
 			rectShape.setScale(rigidbody.Trans().scale);
 
-			rectShape.setOrigin({ aabbCollider.halfWidth * core::PIXEL_PER_METER, aabbCollider.halfHeight * core::PIXEL_PER_METER });
+			rectShape.setOrigin({
+				aabbCollider.halfWidth * core::PIXEL_PER_METER, aabbCollider.halfHeight * core::PIXEL_PER_METER
+				});
 			rectShape.setPosition(
 				position.x * core::PIXEL_PER_METER + _center.x,
 				_windowSize.y - (position.y * core::PIXEL_PER_METER + _center.y));
-			rectShape.setSize({ aabbCollider.halfWidth * 2.0f * core::PIXEL_PER_METER,
-				aabbCollider.halfHeight * 2.0f * core::PIXEL_PER_METER });
+			rectShape.setSize({
+				aabbCollider.halfWidth * 2.0f * core::PIXEL_PER_METER,
+				aabbCollider.halfHeight * 2.0f * core::PIXEL_PER_METER
+				});
 
 			renderTarget.draw(rectShape);
 		}
@@ -219,7 +213,9 @@ void PhysicsManager::Draw(sf::RenderTarget& renderTarget)
 			circleShape.setOutlineColor(core::Color::Green());
 			circleShape.setOutlineThickness(2.0f);
 			circleShape.setScale(rigidbody.Trans().scale);
-			circleShape.setOrigin({ circleCollider.radius * core::PIXEL_PER_METER, circleCollider.radius * core::PIXEL_PER_METER });
+			circleShape.setOrigin({
+				circleCollider.radius * core::PIXEL_PER_METER, circleCollider.radius * core::PIXEL_PER_METER
+				});
 			circleShape.setPosition(
 				position.x * core::PIXEL_PER_METER + _center.x,
 				_windowSize.y - (position.y * core::PIXEL_PER_METER + _center.y));
@@ -235,13 +231,15 @@ void PhysicsManager::ApplyGravity()
 	for (core::Entity entity = 0; entity < _entityManager.GetEntitiesSize(); entity++)
 	{
 		const bool hasRigidbody = _entityManager.HasComponent(entity,
-			static_cast<core::EntityMask>(core::ComponentType::Rigidbody));
+			static_cast<core::EntityMask>(
+			core::ComponentType::Rigidbody));
 
 		if (!hasRigidbody) continue;
 
 		Rigidbody& rigidbody = GetRigidbody(entity);
 
 		if (!rigidbody.IsDynamic()) continue;
+		if (rigidbody.InvMass() == 0.0f) continue;
 
 		const core::Vec2f force = rigidbody.GravityForce() * rigidbody.Mass();
 		rigidbody.ApplyForce(force);
@@ -265,9 +263,11 @@ void PhysicsManager::ResolveCollisions(const sf::Time deltaTime)
 	for (auto& [firstEntity, secondEntity] : collisionPairs)
 	{
 		const bool firstHasRigidbody = _entityManager.HasComponent(firstEntity,
-			static_cast<core::EntityMask>(core::ComponentType::Rigidbody));
+			static_cast<core::EntityMask>(
+			core::ComponentType::Rigidbody));
 		const bool secondHasRigidbody = _entityManager.HasComponent(secondEntity,
-			static_cast<core::EntityMask>(core::ComponentType::Rigidbody));
+			static_cast<core::EntityMask>(
+			core::ComponentType::Rigidbody));
 
 		const Collider* firstCollider = GetCollider(firstEntity);
 		const Collider* secondCollider = GetCollider(secondEntity);

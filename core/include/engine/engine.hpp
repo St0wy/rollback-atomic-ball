@@ -4,6 +4,7 @@
 
 #include <SFML/Graphics/RenderWindow.hpp>
 
+#include "globals.hpp"
 #include "engine/app.hpp"
 
 namespace core
@@ -14,6 +15,9 @@ namespace core
 class Engine
 {
 public:
+	Engine() = default;
+	explicit Engine(sf::Vector2u size);
+
 	/**
 	 * \brief Run is a method that runs the Engine game loop.
 	 */
@@ -34,5 +38,6 @@ protected:
 	std::vector<DrawInterface*> _drawInterfaces;
 	std::vector<DrawImGuiInterface*> _drawImGuiInterfaces;
 	std::unique_ptr<sf::RenderWindow> _window;
+	sf::Vector2u _windowSize = WINDOW_SIZE;
 };
 } // namespace core

@@ -33,7 +33,7 @@ void Server::ReceivePacket(std::unique_ptr<Packet> packet)
 			//Player joined twice!
 			return;
 		}
-		core::LogDebug("Managing Received Packet Join from: " + std::to_string(static_cast<unsigned>(clientId)));
+		core::LogInfo("Managing Received Packet Join from: " + std::to_string(static_cast<unsigned>(clientId)));
 		_clientMap[_lastPlayerNumber] = clientId;
 		SpawnNewPlayer(clientId, _lastPlayerNumber);
 
@@ -43,7 +43,7 @@ void Server::ReceivePacket(std::unique_ptr<Packet> packet)
 		{
 			auto startGamePacket = std::make_unique<StartGamePacket>();
 			startGamePacket->packetType = PacketType::StartGame;
-			core::LogDebug("Send Start Game Packet");
+			core::LogInfo("Send Start Game Packet");
 			SendReliablePacket(std::move(startGamePacket));
 		}
 
@@ -101,7 +101,7 @@ void Server::ReceivePacket(std::unique_ptr<Packet> packet)
 			const auto winner = _gameManager.CheckWinner();
 			if (winner != INVALID_PLAYER)
 			{
-				core::LogDebug(fmt::format("Server declares P{} a winner", static_cast<unsigned>(winner) + 1));
+				core::LogInfo(fmt::format("Server declares P{} a winner", static_cast<unsigned>(winner) + 1));
 				auto winGamePacket = std::make_unique<WinGamePacket>();
 				winGamePacket->winner = winner;
 				SendReliablePacket(std::move(winGamePacket));

@@ -13,13 +13,13 @@ namespace game
 Manifold CircleCollider::TestCollision(const Transform* transform, const Collider* collider,
 									   const Transform* colliderTransform) const
 {
-	return collider->TestCollision(colliderTransform, this, transform);
+	return collider->TestCollision(colliderTransform, this, transform).Swaped();
 }
 
 Manifold CircleCollider::TestCollision(const Transform* transform, const CircleCollider* collider,
 									   const Transform* circleTransform) const
 {
-	return algo::FindCircleCircleManifold(this, transform, collider, circleTransform);
+	return algo::FindCircleCircleManifold(this, transform, collider, circleTransform).Swaped();
 }
 
 Manifold CircleCollider::TestCollision(const Transform* transform, const AabbCollider* collider,
@@ -43,7 +43,7 @@ core::Vec2f CircleCollider::GetBoundingBoxSize() const
 Manifold AabbCollider::TestCollision(const Transform* transform, const Collider* collider,
 									 const Transform* colliderTransform) const
 {
-	return collider->TestCollision(colliderTransform, this, transform);
+	return collider->TestCollision(colliderTransform, this, transform).Swaped();
 }
 
 Manifold AabbCollider::TestCollision(const Transform* transform, const CircleCollider* collider,

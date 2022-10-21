@@ -88,12 +88,26 @@ void ImpulseSolver::Solve(const std::vector<Collision>& collisions, float)
 
 		if (aBody ? !aBody->IsKinematic() : false)
 		{
-			aBody->SetVelocity(aVel - friction * aInvMass);
+			if (friction.IsNaN())
+			{
+				aBody->SetVelocity(aVel);
+			}
+			else
+			{
+				aBody->SetVelocity(aVel - friction * aInvMass);
+			}
 		}
 
 		if (bBody ? !bBody->IsKinematic() : false)
 		{
-			bBody->SetVelocity(bVel + friction * bInvMass);
+			if (friction.IsNaN())
+			{
+				bBody->SetVelocity(bVel);
+			}
+			else
+			{
+				bBody->SetVelocity(bVel + friction * bInvMass);
+			}
 		}
 	}
 }

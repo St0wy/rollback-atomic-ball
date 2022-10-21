@@ -28,16 +28,6 @@ struct Vec2f
 	static Vec2f Lerp(Vec2f a, Vec2f b, float t);
     static Vec2f Normalize(Vec2f v);
 
-    /**
-     * \brief Compute the triple product with all of these vectors as 3d vectors with z = 0.
-     * p = a x (b x c)
-     * \param a Vector a.
-     * \param b Vector b.
-     * \param c Vector c.
-     * \return The triple product with a, b and c.
-     */
-    static Vec2f TripleProduct(const Vec2f& a, const Vec2f& b, const Vec2f& c);
-
 	[[nodiscard]] float GetMagnitude() const;
 	void Normalize();
 	[[nodiscard]] Vec2f GetNormalized() const;
@@ -93,6 +83,8 @@ struct Vec2f
      */
     void RotateAround(const Vec2f& center, float angle);
 
+    [[nodiscard]] bool IsNaN() const;
+
 	// ReSharper disable once CppNonExplicitConversionOperator
 	[[nodiscard]] operator sf::Vector2f() const { return {x, y}; }
 
@@ -105,6 +97,7 @@ struct Vec2f
     Vec2f operator/=(float scalar);
     Vec2f operator*=(float scalar);
 	Vec2f operator-() const;
+    bool operator==(Vec2f other) const;
 
 	static constexpr Vec2f Zero() { return {}; }
 	static constexpr Vec2f One() { return {1, 1}; }

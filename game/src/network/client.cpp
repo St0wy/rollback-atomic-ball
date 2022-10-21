@@ -39,7 +39,7 @@ void Client::ReceivePacket(const Packet* packet)
 	}
 	case PacketType::StartGame:
 	{
-		core::LogDebug("Start Game Packet Received");
+		core::LogInfo("Start Game Packet Received");
 		using namespace std::chrono;
 		const auto startingTime = (duration_cast<duration<long long, std::milli>>(
 			system_clock::now().time_since_epoch()

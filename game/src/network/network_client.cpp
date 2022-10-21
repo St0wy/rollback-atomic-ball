@@ -59,10 +59,10 @@ void NetworkClient::Update(const sf::Time dt)
 				ReceiveNetPacket(packet, PacketSource::Tcp);
 				break;
 			case sf::Socket::NotReady:
-				//core::LogDebug("[Client] Error while receiving tcp socket is not ready");
+				//core::LogInfo("[Client] Error while receiving tcp socket is not ready");
 				break;
 			case sf::Socket::Partial:
-				core::LogDebug("[Client] Error while receiving TCP packet, PARTIAL");
+				core::LogInfo("[Client] Error while receiving TCP packet, PARTIAL");
 				break;
 			case sf::Socket::Disconnected:
 			case sf::Socket::Error:
@@ -87,13 +87,13 @@ void NetworkClient::Update(const sf::Time dt)
 			case sf::Socket::NotReady:
 				break;
 			case sf::Socket::Partial:
-				core::LogDebug("[Client] Error while receiving UDP packet, PARTIAL");
+				core::LogInfo("[Client] Error while receiving UDP packet, PARTIAL");
 				break;
 			case sf::Socket::Disconnected:
-				core::LogDebug("[Client] Error while receiving UDP packet, DISCONNECTED");
+				core::LogInfo("[Client] Error while receiving UDP packet, DISCONNECTED");
 				break;
 			case sf::Socket::Error:
-				core::LogDebug("[Client] Error while receiving UDP packet, ERROR");
+				core::LogInfo("[Client] Error while receiving UDP packet, ERROR");
 				break;
 			}
 		}
@@ -160,7 +160,7 @@ void NetworkClient::DrawImGui()
 		_tcpSocket.setBlocking(false);
 		if (status == sf::Socket::Done)
 		{
-			core::LogDebug(
+			core::LogInfo(
 				"[Client] Connect to server " + _serverAddress + " with port: " + std::to_string(_serverTcpPort));
 			auto joinPacket = std::make_unique<JoinPacket>();
 			joinPacket->clientId = core::ConvertToBinary<ClientId>(_clientId);
@@ -192,7 +192,7 @@ void NetworkClient::Draw(sf::RenderTarget& renderTarget)
 
 void NetworkClient::SendReliablePacket(const std::unique_ptr<Packet> packet)
 {
-	//core::LogDebug("[Client] Sending reliable packet to server");
+	//core::LogInfo("[Client] Sending reliable packet to server");
 	sf::Packet tcpPacket;
 	GeneratePacket(tcpPacket, *packet);
 	auto status = sf::Socket::Partial;
@@ -214,20 +214,20 @@ void NetworkClient::SendUnreliablePacket(const std::unique_ptr<Packet> packet)
 	switch (_udpSocket.send(udpPacket, _serverAddress, _serverUdpPort))
 	{
 	case sf::Socket::Done:
-		//core::LogDebug("[Client] Sending UDP packet to server at host: " +
+		//core::LogInfo("[Client] Sending UDP packet to server at host: " +
 		//	serverAddress_.toString() + " port: " + std::to_string(serverUdpPort_));
 		break;
 	case sf::Socket::NotReady:
-		core::LogDebug("[Client] Error sending UDP to server, NOT READY");
+		core::LogInfo("[Client] Error sending UDP to server, NOT READY");
 		break;
 	case sf::Socket::Partial:
-		core::LogDebug("[Client] Error sending UDP to server, PARTIAL");
+		core::LogInfo("[Client] Error sending UDP to server, PARTIAL");
 		break;
 	case sf::Socket::Disconnected:
-		core::LogDebug("[Client] Error sending UDP to server, DISCONNECTED");
+		core::LogInfo("[Client] Error sending UDP to server, DISCONNECTED");
 		break;
 	case sf::Socket::Error:
-		core::LogDebug("[Client] Error sending UDP to server, ERROR");
+		core::LogInfo("[Client] Error sending UDP to server, ERROR");
 		break;
 	default:
 		break;
@@ -295,7 +295,7 @@ void NetworkClient::ReceiveNetPacket(sf::Packet& packet, const PacketSource sour
 	{
 	case PacketType::JoinAck:
 	{
-		core::LogDebug(
+		core::LogInfo(
 			"[Client] Receive " + std::string(source == PacketSource::Udp ? "UDP" : "TCP") + " Join ACK Packet");
 		const auto* joinAckPacket = static_cast<JoinAckPacket*>(receivePacket.get());
 

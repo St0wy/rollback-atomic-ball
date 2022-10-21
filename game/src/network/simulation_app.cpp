@@ -22,36 +22,23 @@ SimulationApp::SimulationApp()
 	}
 }
 
-void SimulationApp::OnEvent(const sf::Event& event)
-{
-	if (event.type == sf::Event::Resized)
-	{
-		_windowSize = sf::Vector2u(event.size.width, event.size.height);
-		for (auto& framebuffer : _clientsFramebuffers)
-		{
-			framebuffer.create(_windowSize.x / 2u, _windowSize.y);
-		}
-
-		for (const auto& client : _clients)
-		{
-			client->SetWindowSize(sf::Vector2u(_windowSize.x / 2u, _windowSize.y));
-		}
-	}
-}
+void SimulationApp::OnEvent(const sf::Event&)
+{}
 
 void SimulationApp::Begin()
 {
 	#ifdef TRACY_ENABLE
 	ZoneScoped;
 	#endif
-	_windowSize = core::WINDOW_SIZE;
+
+	_windowSize = DEBUG_WINDOW_SIZE;
 	for (auto& framebuffer : _clientsFramebuffers)
 	{
-		framebuffer.create(_windowSize.x / 2u, _windowSize.y);
-}
+		framebuffer.create(DEBUG_FRAMEBUFFER_SIZE.x, DEBUG_FRAMEBUFFER_SIZE.y);
+	}
 	for (const auto& client : _clients)
 	{
-		client->SetWindowSize(sf::Vector2u(_windowSize.x / 2u, _windowSize.y));
+		client->SetWindowSize(DEBUG_FRAMEBUFFER_SIZE);
 		client->Begin();
 	}
 	_server.Begin();
@@ -62,12 +49,13 @@ void SimulationApp::Update(const sf::Time dt)
 	#ifdef TRACY_ENABLE
 	ZoneScoped;
 	#endif
-	//Checking if keys are down
+
+	// Read keyboard inputs
 	for (std::size_t i = 0; i < _clients.size(); i++)
 	{
-		_clients[i]->SetPlayerInput(GetPlayerInput(static_cast<int>(i)));
-}
-
+		const PlayerInput playerInput = hasFocus ? GetPlayerInput(static_cast<int>(i)) : PlayerInput{};
+		_clients[i]->SetPlayerInput(playerInput);
+	}
 
 	_server.Update(dt);
 	for (const auto& client : _clients)
@@ -81,10 +69,11 @@ void SimulationApp::End()
 	#ifdef TRACY_ENABLE
 	ZoneScoped;
 	#endif
+
 	for (const auto& client : _clients)
 	{
 		client->End();
-}
+	}
 	_server.End();
 }
 
@@ -93,11 +82,12 @@ void SimulationApp::DrawImGui()
 	#ifdef TRACY_ENABLE
 	ZoneScoped;
 	#endif
+
 	_server.DrawImGui();
 	for (const auto& client : _clients)
 	{
 		client->DrawImGui();
-}
+	}
 }
 
 void SimulationApp::Draw(sf::RenderTarget& window)
@@ -105,18 +95,29 @@ void SimulationApp::Draw(sf::RenderTarget& window)
 	#ifdef TRACY_ENABLE
 	ZoneScoped;
 	#endif
+
 	for (PlayerNumber playerNumber = 0; playerNumber < MAX_PLAYER_NMB; playerNumber++)
 	{
 		_clientsFramebuffers[playerNumber].clear(sf::Color::Black);
 		_clients[playerNumber]->Draw(_clientsFramebuffers[playerNumber]);
 		_clientsFramebuffers[playerNumber].display();
-}
+	}
 	_screenQuad = sf::Sprite();
 	_screenQuad.setTexture(_clientsFramebuffers[0].getTexture());
+
+	const float windowWidth = static_cast<float>(DEBUG_WINDOW_SIZE.x) / 2.0f;
+	const float windowHeight = static_cast<float>(DEBUG_WINDOW_SIZE.y);
+	const float framebufferWidth = static_cast<float>(DEBUG_FRAMEBUFFER_SIZE.x);
+	const float framebufferHeight = static_cast<float>(DEBUG_FRAMEBUFFER_SIZE.y);
+
+	_screenQuad.setScale({
+		windowWidth / framebufferWidth,
+		windowHeight / framebufferHeight
+		});
 	window.draw(_screenQuad);
 
 	_screenQuad.setTexture(_clientsFramebuffers[1].getTexture());
-	_screenQuad.setPosition(sf::Vector2f(static_cast<float>(_windowSize.x / 2u), 0.0f));
+	_screenQuad.setPosition(sf::Vector2f(static_cast<float>(_windowSize.x) / 2u, 0.0f));
 	window.draw(_screenQuad);
 }
 }

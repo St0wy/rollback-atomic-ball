@@ -16,7 +16,7 @@ namespace game
 {
 void NetworkServer::SendReliablePacket(const std::unique_ptr<Packet> packet)
 {
-	core::LogDebug(fmt::format("[Server] Sending TCP packet: {}",
+	core::LogInfo(fmt::format("[Server] Sending TCP packet: {}",
 		std::to_string(static_cast<int>(packet->packetType))));
 	for (PlayerNumber playerNumber = 0; playerNumber < MAX_PLAYER_NMB;
 		 playerNumber++)
@@ -31,7 +31,7 @@ void NetworkServer::SendReliablePacket(const std::unique_ptr<Packet> packet)
 			switch (status)
 			{
 			case sf::Socket::NotReady:
-				core::LogDebug(fmt::format(
+				core::LogInfo(fmt::format(
 					"[Server] Error trying to send packet to Player: {} socket is not ready",
 					playerNumber));
 				break;
@@ -51,7 +51,7 @@ void NetworkServer::SendUnreliablePacket(const std::unique_ptr<Packet> packet)
 	{
 		if (_clientInfoMap[playerNumber].udpRemotePort == 0)
 		{
-			core::LogDebug(fmt::format("[Warning] Trying to send UDP packet, but missing port!"));
+			core::LogInfo(fmt::format("[Warning] Trying to send UDP packet, but missing port!"));
 			continue;
 		}
 
@@ -64,22 +64,22 @@ void NetworkServer::SendUnreliablePacket(const std::unique_ptr<Packet> packet)
 		switch (status)
 		{
 		case sf::Socket::Done:
-			//core::LogDebug("[Server] Sending UDP packet: " +
+			//core::LogInfo("[Server] Sending UDP packet: " +
 			//std::to_string(static_cast<int>(packet->packetType)));
 			break;
 
 		case sf::Socket::Disconnected:
 		{
-			core::LogDebug("[Server] Error while sending UDP packet, DISCONNECTED");
+			core::LogInfo("[Server] Error while sending UDP packet, DISCONNECTED");
 			break;
 		}
 		case sf::Socket::NotReady:
-			core::LogDebug("[Server] Error while sending UDP packet, NOT READY");
+			core::LogInfo("[Server] Error while sending UDP packet, NOT READY");
 
 			break;
 
 		case sf::Socket::Error:
-			core::LogDebug("[Server] Error while sending UDP packet, DISCONNECTED");
+			core::LogInfo("[Server] Error while sending UDP packet, DISCONNECTED");
 			break;
 		case sf::Socket::Partial:
 		default:
@@ -111,7 +111,7 @@ void NetworkServer::Begin()
 		socket.setBlocking(false);
 	}
 
-	core::LogDebug(fmt::format("[Server] Tcp Socket on port: {}", _tcpPort));
+	core::LogInfo(fmt::format("[Server] Tcp Socket on port: {}", _tcpPort));
 
 	status = sf::Socket::Error;
 	while (status != sf::Socket::Done)
@@ -124,7 +124,7 @@ void NetworkServer::Begin()
 	}
 
 	_udpSocket.setBlocking(false);
-	core::LogDebug(fmt::format("[Server] Udp Socket on port: {}", _udpPort));
+	core::LogInfo(fmt::format("[Server] Udp Socket on port: {}", _udpPort));
 
 	_status = _status | Open;
 }
@@ -142,7 +142,7 @@ void NetworkServer::Update([[maybe_unused]] sf::Time dt)
 		{
 			const auto remoteAddress = _tcpSockets[_lastSocketIndex].
 				getRemoteAddress();
-			core::LogDebug(fmt::format("[Server] New player connection with address: {} and port: {}",
+			core::LogInfo(fmt::format("[Server] New player connection with address: {} and port: {}",
 				remoteAddress.toString(),
 				_tcpSockets[_lastSocketIndex].getRemotePort()));
 			_status = _status | (FirstPlayerConnect << _lastSocketIndex);
@@ -161,7 +161,7 @@ void NetworkServer::Update([[maybe_unused]] sf::Time dt)
 			break;
 		case sf::Socket::Disconnected:
 		{
-			core::LogDebug(fmt::format(
+			core::LogInfo(fmt::format(
 				"[Error] Player Number {} is disconnected when receiving",
 				playerNumber + 1));
 			_status = _status & ~(FirstPlayerConnect << playerNumber);
@@ -232,7 +232,7 @@ void NetworkServer::ProcessReceivePacket(
 		const auto joinPacket = *static_cast<JoinPacket*>(packet.get());
 		Server::ReceivePacket(std::move(packet));
 		auto clientId = core::ConvertFromBinary<ClientId>(joinPacket.clientId);
-		core::LogDebug(fmt::format("[Server] Received Join Packet from: {} {}",
+		core::LogInfo(fmt::format("[Server] Received Join Packet from: {} {}",
 			static_cast<unsigned>(clientId),
 			(packetSource == PacketSocketSource::Udp ? fmt::format(" UDP with port: {}", port) : " TCP")));
 		const auto it = std::find(_clientMap.begin(), _clientMap.end(), clientId);
@@ -266,7 +266,7 @@ void NetworkServer::ProcessReceivePacket(
 			using namespace std::chrono;
 			const unsigned long deltaTime = static_cast<unsigned long>((duration_cast<milliseconds>(
 				system_clock::now().time_since_epoch()).count())) - clientTime;
-			core::LogDebug(fmt::format("[Server] Client Server deltaTime: {}", deltaTime));
+			core::LogInfo(fmt::format("[Server] Client Server deltaTime: {}", deltaTime));
 			_clientInfoMap[playerNumber].timeDifference = deltaTime;
 		}
 		break;
