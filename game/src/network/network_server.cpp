@@ -127,6 +127,8 @@ void NetworkServer::Begin()
 	core::LogInfo(fmt::format("[Server] Udp Socket on port: {}", _udpPort));
 
 	_status = _status | Open;
+
+	_gameManager.SetupLevel();
 }
 
 void NetworkServer::Update([[maybe_unused]] sf::Time dt)
@@ -134,6 +136,7 @@ void NetworkServer::Update([[maybe_unused]] sf::Time dt)
 	#ifdef TRACY_ENABLE
     ZoneScoped;
 	#endif
+
 	if (_lastSocketIndex < MAX_PLAYER_NMB)
 	{
 		const sf::Socket::Status status = _tcpListener.accept(
@@ -196,7 +199,6 @@ bool NetworkServer::IsOpen() const
 	return _status & Open;
 }
 
-
 void NetworkServer::SpawnNewPlayer(
 	[[maybe_unused]] ClientId clientId, [[maybe_unused]] PlayerNumber newPlayerNumber)
 {
@@ -217,7 +219,6 @@ void NetworkServer::SpawnNewPlayer(
 		SendReliablePacket(std::move(spawnPlayer));
 	}
 }
-
 
 void NetworkServer::ProcessReceivePacket(
 	std::unique_ptr<Packet> packet,

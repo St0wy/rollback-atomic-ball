@@ -15,12 +15,12 @@ namespace game
 {
 RollbackManager::RollbackManager(GameManager& gameManager, core::EntityManager& entityManager)
 	: OnTriggerInterface(), _gameManager(gameManager), _entityManager(entityManager),
-	  _currentTransformManager(entityManager),
-	  _currentPhysicsManager(entityManager), _currentPlayerManager(entityManager, _currentPhysicsManager, _gameManager),
-	  _currentBulletManager(entityManager, gameManager),
-	  _lastValidatePhysicsManager(entityManager),
-	  _lastValidatePlayerManager(entityManager, _lastValidatePhysicsManager, _gameManager),
-	  _lastValidateBulletManager(entityManager, gameManager)
+	_currentTransformManager(entityManager),
+	_currentPhysicsManager(entityManager), _currentPlayerManager(entityManager, _currentPhysicsManager, _gameManager),
+	_currentBulletManager(entityManager, gameManager),
+	_lastValidatePhysicsManager(entityManager),
+	_lastValidatePlayerManager(entityManager, _lastValidatePhysicsManager, _gameManager),
+	_lastValidateBulletManager(entityManager, gameManager)
 {
 	for (auto& input : _inputs)
 	{
@@ -93,8 +93,8 @@ void RollbackManager::SimulateToCurrentFrame()
 	for (core::Entity entity = 0; entity < _entityManager.GetEntitiesSize(); entity++)
 	{
 		if (!_entityManager.HasComponent(entity,
-		                                 static_cast<core::EntityMask>(core::ComponentType::Rigidbody) |
-		                                 static_cast<core::EntityMask>(core::ComponentType::Transform)))
+			static_cast<core::EntityMask>(core::ComponentType::Rigidbody) |
+			static_cast<core::EntityMask>(core::ComponentType::Transform)))
 			continue;
 		const auto& body = _currentPhysicsManager.GetRigidbody(entity);
 		_currentTransformManager.SetPosition(entity, body.Position());
@@ -103,7 +103,7 @@ void RollbackManager::SimulateToCurrentFrame()
 }
 
 void RollbackManager::SetPlayerInput(const PlayerNumber playerNumber, const PlayerInput playerInput,
-                                     const Frame inputFrame)
+	const Frame inputFrame)
 {
 	// Should only be called on the server
 	if (_currentFrame < inputFrame)
@@ -235,7 +235,7 @@ void RollbackManager::ValidateFrame(const Frame newValidateFrame)
 }
 
 void RollbackManager::ConfirmFrame(Frame newValidatedFrame,
-                                   const std::array<PhysicsState, MAX_PLAYER_NMB>& serverPhysicsState)
+	const std::array<PhysicsState, MAX_PLAYER_NMB>& serverPhysicsState)
 {
 	#ifdef TRACY_ENABLE
 	ZoneScoped;
@@ -248,13 +248,13 @@ void RollbackManager::ConfirmFrame(Frame newValidatedFrame,
 		if (serverPhysicsState[playerNumber] != lastPhysicsState)
 		{
 			gpr_assert(false,
-			           fmt::format(
-				           "Physics State are not equal for player {} (server frame: {}, client frame: {}, server: {}, client: {})",
-				           playerNumber + 1,
-				           newValidatedFrame,
-				           _lastValidateFrame,
-				           serverPhysicsState[playerNumber],
-				           lastPhysicsState));
+				fmt::format(
+				"Physics State are not equal for player {} (server frame: {}, client frame: {}, server: {}, client: {})",
+				playerNumber + 1,
+				newValidatedFrame,
+				_lastValidateFrame,
+				serverPhysicsState[playerNumber],
+				lastPhysicsState));
 		}
 	}
 }
@@ -292,15 +292,20 @@ PhysicsState RollbackManager::GetValidatePhysicsState(const PlayerNumber playerN
 	return state;
 }
 
-void RollbackManager::SetupLevel(const core::Entity wallLeftEntity)
+void RollbackManager::SetupLevel(const core::Entity wallLeftEntity, const core::Entity wallRightEntity, const core::Entity wallMiddleEntity,
+                                 const core::Entity wallBottomEntity, const core::Entity wallTopEntity)
 {
-	CreateWall(wallLeftEntity, WALL_LEFT_POS, {1, 100});
+	CreateWall(wallLeftEntity, WALL_LEFT_POS, VERTICAL_WALLS_SIZE);
+	CreateWall(wallRightEntity, WALL_RIGHT_POS, VERTICAL_WALLS_SIZE);
+	CreateWall(wallMiddleEntity, WALL_MIDDLE_POS, MIDDLE_WALL_SIZE);
+	CreateWall(wallBottomEntity, WALL_BOTTOM_POS, HORIZONTAL_WALLS_SIZE);
+	CreateWall(wallTopEntity, WALL_TOP_POS, HORIZONTAL_WALLS_SIZE);
 }
 
 void RollbackManager::CreateWall(const core::Entity entity, const core::Vec2f position, const core::Vec2f size)
 {
 	Rigidbody wallLeftBody;
-	wallLeftBody.SetPosition(WALL_LEFT_POS);
+	wallLeftBody.SetPosition(position);
 	wallLeftBody.SetTakesGravity(false);
 	wallLeftBody.SetBodyType(BodyType::Static);
 	wallLeftBody.SetMass(std::numeric_limits<float>::max());
@@ -325,7 +330,7 @@ void RollbackManager::CreateWall(const core::Entity entity, const core::Vec2f po
 }
 
 void RollbackManager::SpawnPlayer(const PlayerNumber playerNumber, const core::Entity entity,
-                                  const core::Vec2f position, const core::Degree rotation)
+	const core::Vec2f position, const core::Degree rotation)
 {
 	#ifdef TRACY_ENABLE
 	ZoneScoped;
@@ -373,7 +378,7 @@ PlayerInput RollbackManager::GetInputAtFrame(const PlayerNumber playerNumber, co
 	const std::size_t frameDifference = static_cast<std::size_t>(_currentFrame) - frame;
 
 	gpr_assert(frameDifference < _inputs[playerNumber].size(),
-	           "Trying to get input too far in the past");
+		"Trying to get input too far in the past");
 	return _inputs[playerNumber][frameDifference];
 }
 
@@ -412,9 +417,9 @@ void RollbackManager::OnTrigger(const core::Entity entity1, const core::Entity e
 }
 
 void RollbackManager::SpawnBall(const PlayerNumber playerNumber, const core::Entity entity,
-                                const core::Vec2f position, const core::Vec2f velocity)
+	const core::Vec2f position, const core::Vec2f velocity)
 {
-	_createdEntities.push_back({entity, _testedFrame});
+	_createdEntities.push_back({ entity, _testedFrame });
 
 	Rigidbody ballBody;
 	ballBody.SetPosition(position);
@@ -429,7 +434,7 @@ void RollbackManager::SpawnBall(const PlayerNumber playerNumber, const core::Ent
 	ballCircle.radius = 0.25f;
 
 	_currentBulletManager.AddComponent(entity);
-	_currentBulletManager.SetComponent(entity, {playerNumber});
+	_currentBulletManager.SetComponent(entity, { playerNumber });
 
 	_currentPhysicsManager.AddRigidbody(entity);
 	_currentPhysicsManager.SetRigidbody(entity, ballBody);

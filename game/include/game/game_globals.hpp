@@ -72,18 +72,14 @@ constexpr std::array PLAYER_COLORS
 
 constexpr std::array SPAWN_POSITIONS
 {
-	core::Vec2f(0, 1),
-	core::Vec2f(0, -0.5f),
-	core::Vec2f(1, 0),
-	core::Vec2f(-1, 0),
+	core::Vec2f(-0.5f, 0.0f),
+	core::Vec2f(0.5f, 0.0f),
 };
 
 constexpr std::array SPAWN_ROTATIONS
 {
 	core::Degree(0.0f),
-	core::Degree(180.0f),
-	core::Degree(-90.0f),
-	core::Degree(90.0f)
+	core::Degree(0.0f),
 };
 
 constexpr core::EntityMask OTHER_TYPE = static_cast<core::EntityMask>(core::ComponentType::OtherType);
@@ -97,11 +93,18 @@ enum class ComponentType : core::EntityMask
 	StaticWall = OTHER_TYPE << 5u,
 };
 
-constexpr unsigned WINDOW_SCALE = 70;
+constexpr unsigned WINDOW_SCALE = 60;
 const sf::Vector2u DEBUG_WINDOW_SIZE{ core::WINDOW_RATIO.x * 2 * WINDOW_SCALE , core::WINDOW_RATIO.y * WINDOW_SCALE };
 const sf::Vector2u DEBUG_FRAMEBUFFER_SIZE = core::WINDOW_RATIO * WINDOW_SCALE;
 
-constexpr core::Vec2f WALL_LEFT_POS{ -7.0f, 0.0f };
+constexpr core::Vec2f VERTICAL_WALLS_SIZE{ 1, 100 };
+constexpr core::Vec2f HORIZONTAL_WALLS_SIZE{ 100, 1 };
+constexpr core::Vec2f MIDDLE_WALL_SIZE{ 0.1f, 100 };
+constexpr core::Vec2f WALL_LEFT_POS{ -9.0f, 0.0f };
+constexpr core::Vec2f WALL_RIGHT_POS{ 9.0f, 0.0f };
+constexpr core::Vec2f WALL_BOTTOM_POS{ 0.0f, -5.5f };
+constexpr core::Vec2f WALL_TOP_POS{ 0.0f, 5.5f };
+constexpr core::Vec2f WALL_MIDDLE_POS{ 0.0f, 0.0f };
 
 /**
  * \brief PlayerInput is a type defining the input data from a player.

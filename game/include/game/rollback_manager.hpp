@@ -76,7 +76,8 @@ public:
 	[[nodiscard]] Frame GetCurrentFrame() const { return _currentFrame; }
 	[[nodiscard]] const core::TransformManager& GetTransformManager() const { return _currentTransformManager; }
 	[[nodiscard]] const PlayerCharacterManager& GetPlayerCharacterManager() const { return _currentPlayerManager; }
-	void SetupLevel(core::Entity wallLeftEntity);
+	void SetupLevel(core::Entity wallLeftEntity, core::Entity wallRightEntity, core::Entity wallMiddleEntity, core::Entity wallBottomEntity, core
+	                ::Entity wallTopEntity);
 	void CreateWall(core::Entity entity, core::Vec2f position, core::Vec2f size);
 	void SpawnPlayer(PlayerNumber playerNumber, core::Entity entity, core::Vec2f position, core::Degree rotation);
 	void SpawnBall(PlayerNumber playerNumber, core::Entity entity, core::Vec2f position, core::Vec2f velocity);

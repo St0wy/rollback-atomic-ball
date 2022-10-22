@@ -21,16 +21,34 @@ GameManager::GameManager()
 	_rollbackManager(*this, _entityManager)
 {
 	_playerEntityMap.fill(core::INVALID_ENTITY);
-	GameManager::SetupLevel();
 }
 
-void GameManager::SetupLevel()
+Walls GameManager::SetupLevel()
 {
 	const auto wallLeftEntity = _entityManager.CreateEntity();
+	const auto wallRightEntity = _entityManager.CreateEntity();
+	const auto wallMiddleEntity = _entityManager.CreateEntity();
+	const auto wallBottomEntity = _entityManager.CreateEntity();
+	const auto wallTopEntity = _entityManager.CreateEntity();
 
 	_transformManager.AddComponent(wallLeftEntity);
 	_transformManager.SetPosition(wallLeftEntity, WALL_LEFT_POS);
-	_rollbackManager.SetupLevel(wallLeftEntity);
+
+	_transformManager.AddComponent(wallRightEntity);
+	_transformManager.SetPosition(wallRightEntity, WALL_RIGHT_POS);
+
+	_transformManager.AddComponent(wallMiddleEntity);
+	_transformManager.SetPosition(wallMiddleEntity, WALL_MIDDLE_POS);
+
+	_transformManager.AddComponent(wallBottomEntity);
+	_transformManager.SetPosition(wallBottomEntity, WALL_BOTTOM_POS);
+
+	_transformManager.AddComponent(wallTopEntity);
+	_transformManager.SetPosition(wallTopEntity, WALL_TOP_POS);
+
+	_rollbackManager.SetupLevel(wallLeftEntity, wallRightEntity, wallMiddleEntity, wallBottomEntity, wallTopEntity);
+
+	return { wallLeftEntity, wallRightEntity, wallMiddleEntity, wallBottomEntity, wallTopEntity };
 }
 
 void GameManager::SpawnPlayer(const PlayerNumber playerNumber, const core::Vec2f position, const core::Degree rotation)
@@ -120,7 +138,8 @@ void GameManager::WinGame(const PlayerNumber winner)
 ClientGameManager::ClientGameManager(PacketSenderInterface& packetSenderInterface)
 	: GameManager(),
 	_packetSenderInterface(packetSenderInterface),
-	_spriteManager(_entityManager, _transformManager)
+	_spriteManager(_entityManager, _transformManager),
+	_rectangleShapeManager(_entityManager, _transformManager)
 {}
 
 void ClientGameManager::Begin()
@@ -150,6 +169,8 @@ void ClientGameManager::Begin()
 		core::LogError("Could not load font");
 	}
 	_textRenderer.setFont(_font);
+
+	SetupLevel();
 }
 
 void ClientGameManager::Update(const sf::Time dt)
@@ -202,15 +223,21 @@ void ClientGameManager::Update(const sf::Time dt)
 
 void ClientGameManager::End() {}
 
-void ClientGameManager::SetWindowSize(const sf::Vector2u )
+void ClientGameManager::SetWindowSize(const sf::Vector2u)
 {
 	_windowSize = core::WINDOW_RATIO * 100u;
 	const auto width = static_cast<float>(_windowSize.x);
 	const auto height = static_cast<float>(_windowSize.y);
+
 	const sf::FloatRect visibleArea(0.0f, 0.0f, width, height);
 	_cameraView = sf::View(visibleArea);
+
 	_spriteManager.SetWindowSize(sf::Vector2f(width, height));
 	_spriteManager.SetCenter(sf::Vector2f(width, height) / 2.0f);
+
+	_rectangleShapeManager.SetWindowSize(sf::Vector2f(width, height));
+	_rectangleShapeManager.SetCenter(sf::Vector2f(width, height) / 2.0f);
+
 	auto& currentPhysicsManager = _rollbackManager.GetCurrentPhysicsManager();
 	currentPhysicsManager.SetCenter(sf::Vector2f(width, height) / 2.0f);
 	currentPhysicsManager.SetWindowSize(sf::Vector2f(width, height));
@@ -225,6 +252,7 @@ void ClientGameManager::Draw(sf::RenderTarget& target)
 	// Draw texts on screen
 	target.setView(_cameraView);
 	_spriteManager.Draw(target);
+	_rectangleShapeManager.Draw(target);
 
 	if (_drawPhysics)
 	{
@@ -315,6 +343,18 @@ void ClientGameManager::SetClientPlayer(const PlayerNumber clientPlayer)
 	_clientPlayer = clientPlayer;
 }
 
+Walls ClientGameManager::SetupLevel()
+{
+	const Walls walls = GameManager::SetupLevel();
+
+	_rectangleShapeManager.AddComponent(walls.middle);
+	_rectangleShapeManager.SetFillColor(walls.middle, sf::Color(255, 0, 243));
+	_rectangleShapeManager.SetSize(walls.middle, MIDDLE_WALL_SIZE);
+	_rectangleShapeManager.SetOrigin(walls.middle, sf::Vector2f(MIDDLE_WALL_SIZE) / 2.0f);
+
+	return walls;
+}
+
 void ClientGameManager::SpawnPlayer(PlayerNumber playerNumber, const core::Vec2f position, const core::Degree rotation)
 {
 	core::LogInfo(fmt::format("Spawn player: {}", playerNumber));
@@ -337,7 +377,6 @@ core::Entity ClientGameManager::SpawnBall(const PlayerNumber playerNumber, const
 
 	return entity;
 }
-
 
 void ClientGameManager::FixedUpdate()
 {

@@ -14,9 +14,11 @@
 #include "engine/transform.hpp"
 
 #include "graphics/graphics.hpp"
+#include "graphics/shape_manager.hpp"
 #include "graphics/sprite.hpp"
 
 #include "network/packet_type.hpp"
+#include "walls.hpp"
 
 namespace game
 {
@@ -35,7 +37,7 @@ public:
 	GameManager& operator=(const GameManager& other) = delete;
 	GameManager& operator=(GameManager&& other) = delete;
 
-	virtual void SetupLevel();
+	virtual Walls SetupLevel();
 	virtual void SpawnPlayer(PlayerNumber playerNumber, core::Vec2f position, core::Degree rotation);
 	virtual core::Entity SpawnBall(PlayerNumber, core::Vec2f position, core::Vec2f velocity);
 	virtual void DestroyBall(core::Entity entity);
@@ -86,6 +88,7 @@ public:
 	void Draw(sf::RenderTarget& target) override;
 	void SetClientPlayer(PlayerNumber clientPlayer);
 
+	Walls SetupLevel() override;
 	/**
 	 * \brief SpawnPlayer is method that is called when receiving a SpawnPlayerPacket from the server.
 	 * \param playerNumber is the player number to be spawned
@@ -107,6 +110,7 @@ protected:
 	sf::View _cameraView;
 	PlayerNumber _clientPlayer = INVALID_PLAYER;
 	core::SpriteManager _spriteManager;
+	core::RectangleShapeManager _rectangleShapeManager;
 	float _fixedTimer = 0.0f;
 	unsigned long long _startingTime = 0;
 	std::uint32_t _state = 0;

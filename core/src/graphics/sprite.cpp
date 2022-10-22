@@ -1,10 +1,10 @@
-#include <engine/transform.hpp>
+#include "graphics/sprite.hpp"
 
-#include <graphics/sprite.hpp>
+#include "engine/transform.hpp"
 
 namespace core
 {
-void SpriteManager::SetOrigin(const Entity entity, sf::Vector2f origin)
+void SpriteManager::SetOrigin(const Entity entity, const sf::Vector2f origin)
 {
 	_components[entity].setOrigin(origin);
 }
