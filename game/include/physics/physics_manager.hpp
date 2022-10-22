@@ -7,6 +7,8 @@
 #include "collision.hpp"
 #include "rigidbody.hpp"
 #include "solver.hpp"
+#include "event_interfaces.hpp"
+#include "layers.hpp"
 
 #include "engine/component.hpp"
 #include "engine/entity.hpp"
@@ -22,32 +24,6 @@ class TransformManager;
 
 namespace game
 {
-class OnTriggerInterface
-{
-public:
-	OnTriggerInterface() = default;
-	virtual ~OnTriggerInterface() = default;
-	OnTriggerInterface(const OnTriggerInterface& other) = default;
-	OnTriggerInterface(OnTriggerInterface&& other) = default;
-	OnTriggerInterface& operator=(const OnTriggerInterface& other) = default;
-	OnTriggerInterface& operator=(OnTriggerInterface&& other) = default;
-
-	virtual void OnTrigger(core::Entity entity1, core::Entity entity2) = 0;
-};
-
-class OnCollisionInterface
-{
-public:
-	OnCollisionInterface() = default;
-	virtual ~OnCollisionInterface() = default;
-	OnCollisionInterface(const OnCollisionInterface& other) = default;
-	OnCollisionInterface(OnCollisionInterface&& other) = default;
-	OnCollisionInterface& operator=(const OnCollisionInterface& other) = default;
-	OnCollisionInterface& operator=(OnCollisionInterface&& other) = default;
-
-	virtual void OnCollision(core::Entity entity1, core::Entity entity2) = 0;
-};
-
 /**
  * \brief PhysicsManager is a class that holds both BodyManager and BoxManager and manages the physics fixed update.
  * It allows to register OnTriggerInterface to be called when a trigger occurs.
@@ -116,6 +92,8 @@ private:
 	BroadPhaseGrid _grid;
 
 	core::Vec2f _gravity = { 0, -9.81f };
+
+	LayerCollisionMatrix _layerCollisionMatrix;
 
 	// Used for debug
 	sf::Vector2f _center{};

@@ -369,7 +369,7 @@ void ClientGameManager::SpawnPlayer(PlayerNumber playerNumber, const core::Vec2f
 core::Entity ClientGameManager::SpawnBall(const core::Vec2f position,
                                           const core::Vec2f velocity)
 {
-	const auto entity = GameManager::SpawnBall(position, velocity);
+	const core::Entity entity = GameManager::SpawnBall(position, velocity);
 
 	_spriteManager.AddComponent(entity);
 	_spriteManager.SetTexture(entity, _ballTexture);

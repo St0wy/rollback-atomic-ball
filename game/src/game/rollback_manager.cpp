@@ -295,38 +295,40 @@ PhysicsState RollbackManager::GetValidatePhysicsState(const PlayerNumber playerN
 }
 
 void RollbackManager::SetupLevel(const core::Entity wallLeftEntity, const core::Entity wallRightEntity,
-	const core::Entity wallMiddleEntity,
-	const core::Entity wallBottomEntity, const core::Entity wallTopEntity)
+	const core::Entity wallMiddleEntity, const core::Entity wallBottomEntity,
+	const core::Entity wallTopEntity)
 {
 	CreateWall(wallLeftEntity, WALL_LEFT_POS, VERTICAL_WALLS_SIZE);
 	CreateWall(wallRightEntity, WALL_RIGHT_POS, VERTICAL_WALLS_SIZE);
-	CreateWall(wallMiddleEntity, WALL_MIDDLE_POS, MIDDLE_WALL_SIZE);
+	CreateWall(wallMiddleEntity, WALL_MIDDLE_POS, MIDDLE_WALL_SIZE, Layer::MiddleWall);
 	CreateWall(wallBottomEntity, WALL_BOTTOM_POS, HORIZONTAL_WALLS_SIZE);
 	CreateWall(wallTopEntity, WALL_TOP_POS, HORIZONTAL_WALLS_SIZE);
 }
 
-void RollbackManager::CreateWall(const core::Entity entity, const core::Vec2f position, const core::Vec2f size)
+void RollbackManager::CreateWall(const core::Entity entity, const core::Vec2f position, const core::Vec2f size,
+	const Layer layer)
 {
-	Rigidbody wallLeftBody;
-	wallLeftBody.SetPosition(position);
-	wallLeftBody.SetTakesGravity(false);
-	wallLeftBody.SetBodyType(BodyType::Static);
-	wallLeftBody.SetMass(std::numeric_limits<float>::max());
-	wallLeftBody.SetRestitution(1.0f);
+	Rigidbody wallBody;
+	wallBody.SetPosition(position);
+	wallBody.SetTakesGravity(false);
+	wallBody.SetBodyType(BodyType::Static);
+	wallBody.SetMass(std::numeric_limits<float>::max());
+	wallBody.SetRestitution(1.0f);
+	wallBody.SetLayer(layer);
 
-	AabbCollider wallLeftCollider;
-	wallLeftCollider.halfHeight = size.y;
-	wallLeftCollider.halfWidth = size.x;
+	AabbCollider wallCollider;
+	wallCollider.halfHeight = size.y;
+	wallCollider.halfWidth = size.x;
 
 	_currentPhysicsManager.AddRigidbody(entity);
-	_currentPhysicsManager.SetRigidbody(entity, wallLeftBody);
+	_currentPhysicsManager.SetRigidbody(entity, wallBody);
 	_currentPhysicsManager.AddAabbCollider(entity);
-	_currentPhysicsManager.SetAabbCollider(entity, wallLeftCollider);
+	_currentPhysicsManager.SetAabbCollider(entity, wallCollider);
 
 	_lastValidatePhysicsManager.AddRigidbody(entity);
-	_lastValidatePhysicsManager.SetRigidbody(entity, wallLeftBody);
+	_lastValidatePhysicsManager.SetRigidbody(entity, wallBody);
 	_lastValidatePhysicsManager.AddAabbCollider(entity);
-	_lastValidatePhysicsManager.SetAabbCollider(entity, wallLeftCollider);
+	_lastValidatePhysicsManager.SetAabbCollider(entity, wallCollider);
 
 	_currentTransformManager.AddComponent(entity);
 	_currentTransformManager.SetPosition(entity, position);
@@ -347,6 +349,7 @@ void RollbackManager::SpawnPlayer(const PlayerNumber playerNumber, const core::E
 	playerBody.SetBodyType(BodyType::Dynamic);
 	playerBody.SetRestitution(1.0f);
 	playerBody.SetMass(10);
+	playerBody.SetLayer(Layer::Player);
 
 	CircleCollider playerCircle;
 	playerCircle.radius = 0.25f;
@@ -386,9 +389,7 @@ PlayerInput RollbackManager::GetInputAtFrame(const PlayerNumber playerNumber, co
 }
 
 void RollbackManager::OnTrigger(const core::Entity, const core::Entity)
-{
-
-}
+{}
 
 void RollbackManager::OnCollision(const core::Entity entity1, const core::Entity entity2)
 {
@@ -405,7 +406,8 @@ void RollbackManager::OnCollision(const core::Entity entity1, const core::Entity
 
 	const auto arePlayerAndBullet = [this](const core::Entity firstEntity, const core::Entity secondEntity)
 	{
-		return _entityManager.HasComponent(firstEntity, static_cast<core::EntityMask>(ComponentType::PlayerCharacter)) &&
+		return _entityManager.HasComponent(firstEntity, static_cast<core::EntityMask>(ComponentType::PlayerCharacter))
+			&&
 			_entityManager.HasComponent(secondEntity, static_cast<core::EntityMask>(ComponentType::Bullet));
 	};
 
@@ -432,6 +434,7 @@ void RollbackManager::SpawnBall(const core::Entity entity, const core::Vec2f pos
 	ballBody.SetTakesGravity(false);
 	ballBody.SetIsTrigger(false);
 	ballBody.SetBodyType(BodyType::Dynamic);
+	ballBody.SetLayer(Layer::Ball);
 
 	CircleCollider ballCircle;
 	ballCircle.radius = 0.25f;

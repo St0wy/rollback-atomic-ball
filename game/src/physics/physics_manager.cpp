@@ -20,7 +20,10 @@ PhysicsManager::PhysicsManager(core::EntityManager& entityManager)
 	_circleManager(entityManager), _impulseSolver(_entityManager, _rigidbodyManager),
 	_smoothPositionSolver(_entityManager, _rigidbodyManager),
 	_grid(-500, 500, -500, 500, 10, _entityManager, _rigidbodyManager, _aabbManager, _circleManager)
-{}
+{
+	_layerCollisionMatrix.SetCollision(Layer::Ball, Layer::MiddleWall, false);
+	_layerCollisionMatrix.SetCollision(Layer::Wall, Layer::Wall, false);
+}
 
 std::optional<core::ComponentType> PhysicsManager::HasCollider(const core::EntityManager& entityManager,
 	const core::Entity entity)
@@ -273,22 +276,32 @@ void PhysicsManager::ResolveCollisions(const sf::Time deltaTime)
 		const Collider* secondCollider = GetCollider(secondEntity);
 
 		const bool hasColliders = firstCollider && secondCollider;
-		const bool hasRigibodies = firstHasRigidbody && secondHasRigidbody;
+		const bool hasRigidbodies = firstHasRigidbody && secondHasRigidbody;
 
-		if (!hasColliders || !hasRigibodies) continue;
+		if (!hasColliders || !hasRigidbodies) continue;
 
-		Rigidbody& firstRigibody = GetRigidbody(firstEntity);
+		Rigidbody& firstRigidbody = GetRigidbody(firstEntity);
 		Rigidbody& secondRigidbody = GetRigidbody(secondEntity);
 
+		const Layer firstLayer = firstRigidbody.GetLayer();
+		const Layer secondLayer = secondRigidbody.GetLayer();
+
+		if (!_layerCollisionMatrix.HasCollision(firstLayer, secondLayer)) continue;
+
 		const Manifold manifold = firstCollider->TestCollision(
-			&firstRigibody.Trans(),
+			&firstRigidbody.Trans(),
 			secondCollider,
 			&secondRigidbody.Trans()
 		);
 
 		if (!manifold.hasCollision) continue;
 
-		if (firstRigibody.IsTrigger() || secondRigidbody.IsTrigger())
+		if ((firstLayer == Layer::Ball && secondLayer == Layer::MiddleWall) || (firstLayer == Layer::MiddleWall && secondLayer == Layer::Ball))
+		{
+			core::LogInfo("Found col between Ball and WallMiddle");
+		}
+
+		if (firstRigidbody.IsTrigger() || secondRigidbody.IsTrigger())
 		{
 			triggers.emplace_back(firstEntity, secondEntity, manifold);
 		}

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "layers.hpp"
 #include "engine/component.hpp"
 #include "engine/entity.hpp"
 
@@ -167,6 +168,9 @@ struct Rigidbody
 	[[nodiscard]] float DragFactor() const { return _dragFactor; }
 	void SetDragFactor(const float dragFactor) { _dragFactor = dragFactor; }
 
+	[[nodiscard]] Layer GetLayer() const { return _layer; }
+	void SetLayer(const Layer layer) { _layer = layer; }
+
 	[[nodiscard]] bool IsDynamic() const { return _bodyType == BodyType::Dynamic; }
 	[[nodiscard]] bool IsStatic() const { return _bodyType == BodyType::Static; }
 	[[nodiscard]] bool IsKinematic() const { return _bodyType == BodyType::Kinematic; }
@@ -192,6 +196,7 @@ private:
 	bool _isTrigger = false;
 
 	BodyType _bodyType = BodyType::Static;
+	Layer _layer = Layer::None;
 };
 
 /**
