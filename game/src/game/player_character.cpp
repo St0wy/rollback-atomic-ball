@@ -61,9 +61,8 @@ void PlayerCharacterManager::FixedUpdate(const sf::Time deltaTime)
 				((core::Vec2f::Dot(playerBody.Velocity(), playerCharacter.aimDirection) > 0.0f ? currentPlayerSpeed : 0.0f)
 				+ BULLET_SPEED);
 			const auto ballPosition = playerBody.Position() + playerCharacter.aimDirection * 0.5f + playerBody.Position() * deltaTime.asSeconds();
-			_gameManager.SpawnBall(playerCharacter.playerNumber,
-				ballPosition,
-				ballVelocity);
+			_gameManager.SpawnBall(ballPosition,
+			                       ballVelocity);
 			playerCharacter.ThrowBall();
 		}
 	}

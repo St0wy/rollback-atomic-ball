@@ -14,11 +14,11 @@ void core::RectangleShapeManager::Draw(sf::RenderTarget& window)
 		const bool hasShape = _entityManager.HasComponent(entity, static_cast<Component>(ComponentType::RectangleShape));
 		if (!hasShape) continue;
 
+		auto& rectangleShape = _components[entity];
+
 		const bool hasPosition = _entityManager.HasComponent(entity, static_cast<Component>(ComponentType::Position));
 		const bool hasScale = _entityManager.HasComponent(entity, static_cast<Component>(ComponentType::Scale));
 		const bool hasRotation = _entityManager.HasComponent(entity, static_cast<Component>(ComponentType::Rotation));
-
-		auto& rectangleShape = _components[entity];
 
 		if (hasPosition)
 		{

@@ -38,6 +38,7 @@ public:
 class OnCollisionInterface
 {
 public:
+	OnCollisionInterface() = default;
 	virtual ~OnCollisionInterface() = default;
 	OnCollisionInterface(const OnCollisionInterface& other) = default;
 	OnCollisionInterface(OnCollisionInterface&& other) = default;

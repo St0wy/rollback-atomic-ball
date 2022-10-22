@@ -14,7 +14,7 @@
 namespace game
 {
 RollbackManager::RollbackManager(GameManager& gameManager, core::EntityManager& entityManager)
-	: OnTriggerInterface(), _gameManager(gameManager), _entityManager(entityManager),
+	: OnTriggerInterface(), OnCollisionInterface(), _gameManager(gameManager), _entityManager(entityManager),
 	_currentTransformManager(entityManager),
 	_currentPhysicsManager(entityManager), _currentPlayerManager(entityManager, _currentPhysicsManager, _gameManager),
 	_currentBulletManager(entityManager, gameManager),
@@ -26,7 +26,9 @@ RollbackManager::RollbackManager(GameManager& gameManager, core::EntityManager& 
 	{
 		std::ranges::fill(input, '\0');
 	}
+
 	_currentPhysicsManager.RegisterTriggerListener(*this);
+	_currentPhysicsManager.RegisterCollisionListener(*this);
 }
 
 void RollbackManager::SimulateToCurrentFrame()
@@ -292,8 +294,9 @@ PhysicsState RollbackManager::GetValidatePhysicsState(const PlayerNumber playerN
 	return state;
 }
 
-void RollbackManager::SetupLevel(const core::Entity wallLeftEntity, const core::Entity wallRightEntity, const core::Entity wallMiddleEntity,
-                                 const core::Entity wallBottomEntity, const core::Entity wallTopEntity)
+void RollbackManager::SetupLevel(const core::Entity wallLeftEntity, const core::Entity wallRightEntity,
+	const core::Entity wallMiddleEntity,
+	const core::Entity wallBottomEntity, const core::Entity wallTopEntity)
 {
 	CreateWall(wallLeftEntity, WALL_LEFT_POS, VERTICAL_WALLS_SIZE);
 	CreateWall(wallRightEntity, WALL_RIGHT_POS, VERTICAL_WALLS_SIZE);
@@ -350,7 +353,7 @@ void RollbackManager::SpawnPlayer(const PlayerNumber playerNumber, const core::E
 
 	PlayerCharacter playerCharacter;
 	playerCharacter.playerNumber = playerNumber;
-	playerCharacter.hasBall = true;
+	playerCharacter.hasBall = playerNumber == 0;
 
 	_currentPlayerManager.AddComponent(entity);
 	_currentPlayerManager.SetComponent(entity, playerCharacter);
@@ -382,42 +385,42 @@ PlayerInput RollbackManager::GetInputAtFrame(const PlayerNumber playerNumber, co
 	return _inputs[playerNumber][frameDifference];
 }
 
-void RollbackManager::OnTrigger(const core::Entity entity1, const core::Entity entity2)
+void RollbackManager::OnTrigger(const core::Entity, const core::Entity)
 {
-	const std::function<void(const PlayerCharacter&, core::Entity, const Ball&, core::Entity)> manageCollision =
-		[this](const auto& player, auto playerEntity, const auto& bullet, auto ballEntity)
+
+}
+
+void RollbackManager::OnCollision(const core::Entity entity1, const core::Entity entity2)
+{
+	const auto manageCollision =
+		[this](const core::Entity playerEntity, const core::Entity ballEntity)
 	{
-		if (player.playerNumber != bullet.playerNumber)
+		PlayerCharacter& playerCharacter = _currentPlayerManager.GetComponent(playerEntity);
+		if (!playerCharacter.hasBall)
 		{
-			PlayerCharacter& playerCharacter = _currentPlayerManager.GetComponent(playerEntity);
-			if (!playerCharacter.hasBall)
-			{
-				_gameManager.DestroyBall(ballEntity);
-				core::LogInfo(fmt::format("Player {} caught the ball", playerCharacter.playerNumber));
-				playerCharacter.CatchBall();
-			}
+			_gameManager.DestroyBall(ballEntity);
+			playerCharacter.CatchBall();
 		}
 	};
 
-	if (_entityManager.HasComponent(entity1, static_cast<core::EntityMask>(ComponentType::PlayerCharacter)) &&
-		_entityManager.HasComponent(entity2, static_cast<core::EntityMask>(ComponentType::Bullet)))
+	const auto arePlayerAndBullet = [this](const core::Entity firstEntity, const core::Entity secondEntity)
 	{
-		const auto& player = _currentPlayerManager.GetComponent(entity1);
-		const auto& bullet = _currentBulletManager.GetComponent(entity2);
-		manageCollision(player, entity1, bullet, entity2);
+		return _entityManager.HasComponent(firstEntity, static_cast<core::EntityMask>(ComponentType::PlayerCharacter)) &&
+			_entityManager.HasComponent(secondEntity, static_cast<core::EntityMask>(ComponentType::Bullet));
+	};
+
+	if (arePlayerAndBullet(entity1, entity2))
+	{
+		manageCollision(entity1, entity2);
 	}
 
-	if (_entityManager.HasComponent(entity2, static_cast<core::EntityMask>(ComponentType::PlayerCharacter)) &&
-		_entityManager.HasComponent(entity1, static_cast<core::EntityMask>(ComponentType::Bullet)))
+	if (arePlayerAndBullet(entity2, entity1))
 	{
-		const auto& player = _currentPlayerManager.GetComponent(entity2);
-		const auto& bullet = _currentBulletManager.GetComponent(entity1);
-		manageCollision(player, entity2, bullet, entity1);
+		manageCollision(entity2, entity1);
 	}
 }
 
-void RollbackManager::SpawnBall(const PlayerNumber playerNumber, const core::Entity entity,
-	const core::Vec2f position, const core::Vec2f velocity)
+void RollbackManager::SpawnBall(const core::Entity entity, const core::Vec2f position, const core::Vec2f velocity)
 {
 	_createdEntities.push_back({ entity, _testedFrame });
 
@@ -427,14 +430,14 @@ void RollbackManager::SpawnBall(const PlayerNumber playerNumber, const core::Ent
 	const auto scale = core::Vec2f::One() * BALL_SCALE;
 	ballBody.Trans().scale = scale;
 	ballBody.SetTakesGravity(false);
-	ballBody.SetIsTrigger(true);
+	ballBody.SetIsTrigger(false);
 	ballBody.SetBodyType(BodyType::Dynamic);
 
 	CircleCollider ballCircle;
 	ballCircle.radius = 0.25f;
 
 	_currentBulletManager.AddComponent(entity);
-	_currentBulletManager.SetComponent(entity, { playerNumber });
+	_currentBulletManager.SetComponent(entity, {});
 
 	_currentPhysicsManager.AddRigidbody(entity);
 	_currentPhysicsManager.SetRigidbody(entity, ballBody);

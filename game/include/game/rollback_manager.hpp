@@ -29,7 +29,7 @@ struct CreatedEntity
  * It contains two copies of the world (PhysicsManager, TransformManager, etc...), the current one and the validated one.
  * When receiving new information, it can reupdate the current copy of the world.
  */
-class RollbackManager final : public OnTriggerInterface
+class RollbackManager final : public OnTriggerInterface, OnCollisionInterface
 {
 public:
 	RollbackManager(GameManager& gameManager, core::EntityManager& entityManager);
@@ -80,7 +80,7 @@ public:
 	                ::Entity wallTopEntity);
 	void CreateWall(core::Entity entity, core::Vec2f position, core::Vec2f size);
 	void SpawnPlayer(PlayerNumber playerNumber, core::Entity entity, core::Vec2f position, core::Degree rotation);
-	void SpawnBall(PlayerNumber playerNumber, core::Entity entity, core::Vec2f position, core::Vec2f velocity);
+	void SpawnBall(core::Entity entity, core::Vec2f position, core::Vec2f velocity);
 
 	/**
 	 * \brief DestroyEntity is a method that does not destroy the entity definitely, but puts the DESTROY flag on.
@@ -90,6 +90,7 @@ public:
 	void DestroyEntity(core::Entity entity);
 
 	void OnTrigger(core::Entity entity1, core::Entity entity2) override;
+	void OnCollision(core::Entity entity1, core::Entity entity2) override;
 
 	[[nodiscard]] const std::array<PlayerInput, WINDOW_BUFFER_SIZE>& GetInputs(const PlayerNumber playerNumber) const
 	{
@@ -99,6 +100,7 @@ public:
 	PhysicsManager& GetCurrentPhysicsManager() { return _currentPhysicsManager; }
 private:
 	[[nodiscard]] PlayerInput GetInputAtFrame(PlayerNumber playerNumber, Frame frame) const;
+
 	GameManager& _gameManager;
 	core::EntityManager& _entityManager;
 

@@ -39,7 +39,7 @@ public:
 
 	virtual Walls SetupLevel();
 	virtual void SpawnPlayer(PlayerNumber playerNumber, core::Vec2f position, core::Degree rotation);
-	virtual core::Entity SpawnBall(PlayerNumber, core::Vec2f position, core::Vec2f velocity);
+	virtual core::Entity SpawnBall(core::Vec2f position, core::Vec2f velocity);
 	virtual void DestroyBall(core::Entity entity);
 	[[nodiscard]] core::Entity GetEntityFromPlayerNumber(PlayerNumber playerNumber) const;
 	[[nodiscard]] Frame GetCurrentFrame() const { return _currentFrame; }
@@ -96,7 +96,7 @@ public:
 	 * \param rotation is the spawning angle of the player character
 	 */
 	void SpawnPlayer(PlayerNumber playerNumber, core::Vec2f position, core::Degree rotation) override;
-	core::Entity SpawnBall(PlayerNumber playerNumber, core::Vec2f position, core::Vec2f velocity) override;
+	core::Entity SpawnBall(core::Vec2f position, core::Vec2f velocity) override;
 	void FixedUpdate();
 	void SetPlayerInput(PlayerNumber playerNumber, PlayerInput playerInput, std::uint32_t inputFrame) override;
 	void DrawImGui() override;

@@ -10,7 +10,6 @@ namespace game
  */
 struct Ball
 {
-    PlayerNumber playerNumber = INVALID_PLAYER;
 };
 
 class GameManager;
