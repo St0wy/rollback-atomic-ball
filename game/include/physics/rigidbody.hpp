@@ -69,12 +69,12 @@ struct Rigidbody
 	 * \brief Gets the force of the gravity on this body.
 	 * \return The force of the gravity.
 	 */
-	[[nodiscard]] const core::Vec2f& GravityForce() const;
+	[[nodiscard]] const core::Vec2f& GravityAcceleration() const;
 	/**
 	 * \brief Sets the gravity force.
-	 * \param gravityForce New gravity force.
+	 * \param gravityAcceleration New gravity force.
 	 */
-	void SetGravityForce(const core::Vec2f& gravityForce);
+	void SetGravityAcceleration(const core::Vec2f& gravityAcceleration);
 
 	/**
 	 * \brief Gets the force on this body.
@@ -179,7 +179,7 @@ struct Rigidbody
 	void SetBodyType(const BodyType bodyType) { _bodyType = bodyType; }
 
 private:
-	core::Vec2f _gravityForce;
+	core::Vec2f _gravityAcceleration;
 	core::Vec2f _force;
 	core::Vec2f _velocity;
 

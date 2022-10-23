@@ -1,5 +1,6 @@
 #pragma once
 #include "ball_manager.hpp"
+#include "falling_wall_manager.hpp"
 #include "game_globals.hpp"
 #include "player_character.hpp"
 
@@ -98,6 +99,7 @@ public:
 	}
 
 	PhysicsManager& GetCurrentPhysicsManager() { return _currentPhysicsManager; }
+	FallingWallManager& GetCurrentFallingWallManager() { return _currentFallingWallManager; }
 private:
 	[[nodiscard]] PlayerInput GetInputAtFrame(PlayerNumber playerNumber, Frame frame) const;
 
@@ -111,6 +113,7 @@ private:
 	PhysicsManager _currentPhysicsManager;
 	PlayerCharacterManager _currentPlayerManager;
 	BallManager _currentBulletManager;
+	FallingWallManager _currentFallingWallManager;
 
 	/**
 	 * Last Validate (confirm frame) Component Managers used for rollback
@@ -118,6 +121,7 @@ private:
 	PhysicsManager _lastValidatePhysicsManager;
 	PlayerCharacterManager _lastValidatePlayerManager;
 	BallManager _lastValidateBulletManager;
+	FallingWallManager _lastValidateFallingWallManager;
 
 	/**
 	 * \brief lastValidateFrame_ is the last validated frame from the server side.

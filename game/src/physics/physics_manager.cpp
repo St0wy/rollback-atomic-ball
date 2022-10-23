@@ -84,7 +84,7 @@ void PhysicsManager::SetRigidbody(const core::Entity entity, Rigidbody& body)
 	_rigidbodyManager.SetComponent(entity, body);
 	if (body.TakesGravity())
 	{
-		body.SetGravityForce(_gravity);
+		body.SetGravityAcceleration(_gravity);
 	}
 }
 
@@ -104,7 +104,7 @@ void PhysicsManager::AddRigidbody(const core::Entity entity)
 	Rigidbody& rb = _rigidbodyManager.GetComponent(entity);
 	if (rb.TakesGravity())
 	{
-		rb.SetGravityForce(_gravity);
+		rb.SetGravityAcceleration(_gravity);
 	}
 }
 
@@ -244,7 +244,7 @@ void PhysicsManager::ApplyGravity()
 		if (!rigidbody.IsDynamic()) continue;
 		if (rigidbody.InvMass() == 0.0f) continue;
 
-		const core::Vec2f force = rigidbody.GravityForce() * rigidbody.Mass();
+		const core::Vec2f force = rigidbody.GravityAcceleration() * rigidbody.Mass();
 		rigidbody.ApplyForce(force);
 		_rigidbodyManager.SetComponent(entity, rigidbody);
 	}

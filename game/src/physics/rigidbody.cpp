@@ -57,16 +57,16 @@ void Rigidbody::SetRotation(const core::Radian rotation)
 	_transform.rotation = rotation;
 }
 
-const core::Vec2f& Rigidbody::GravityForce() const
+const core::Vec2f& Rigidbody::GravityAcceleration() const
 {
-	return _gravityForce;
+	return _gravityAcceleration;
 }
 
-void Rigidbody::SetGravityForce(const core::Vec2f& gravityForce)
+void Rigidbody::SetGravityAcceleration(const core::Vec2f& gravityAcceleration)
 {
 	if (!TakesGravity()) return;
 
-	_gravityForce = gravityForce;
+	_gravityAcceleration = gravityAcceleration;
 }
 
 const core::Vec2f& Rigidbody::Force() const
@@ -128,7 +128,7 @@ void Rigidbody::SetTakesGravity(const bool takesGravity)
 	_takesGravity = takesGravity;
 	if (!_takesGravity)
 	{
-		SetGravityForce(core::Vec2f(0, 0));
+		SetGravityAcceleration(core::Vec2f(0, 0));
 	}
 }
 

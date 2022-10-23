@@ -93,7 +93,7 @@ void GameManager::Validate(const Frame newValidateFrame)
 }
 
 core::Entity GameManager::SpawnBall(const core::Vec2f position,
-                                    const core::Vec2f velocity)
+	const core::Vec2f velocity)
 {
 	const core::Entity entity = _entityManager.CreateEntity();
 
@@ -366,8 +366,7 @@ void ClientGameManager::SpawnPlayer(PlayerNumber playerNumber, const core::Vec2f
 	_spriteManager.SetOrigin(entity, sf::Vector2f(_playerNoBallTexture.getSize()) / 2.0f);
 }
 
-core::Entity ClientGameManager::SpawnBall(const core::Vec2f position,
-                                          const core::Vec2f velocity)
+core::Entity ClientGameManager::SpawnBall(const core::Vec2f position, const core::Vec2f velocity)
 {
 	const core::Entity entity = GameManager::SpawnBall(position, velocity);
 

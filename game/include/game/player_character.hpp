@@ -41,7 +41,7 @@ struct PlayerCharacter
 class PlayerCharacterManager final : public core::ComponentManager<PlayerCharacter, static_cast<core::EntityMask>(ComponentType::PlayerCharacter)>
 {
 public:
-	explicit PlayerCharacterManager(core::EntityManager& entityManager, PhysicsManager& physicsManager, GameManager& gameManager);
+	PlayerCharacterManager(core::EntityManager& entityManager, PhysicsManager& physicsManager, GameManager& gameManager);
 	void FixedUpdate(sf::Time deltaTime);
 
 private:

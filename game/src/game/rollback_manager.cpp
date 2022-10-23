@@ -18,9 +18,11 @@ RollbackManager::RollbackManager(GameManager& gameManager, core::EntityManager& 
 	_currentTransformManager(entityManager),
 	_currentPhysicsManager(entityManager), _currentPlayerManager(entityManager, _currentPhysicsManager, _gameManager),
 	_currentBulletManager(entityManager, gameManager),
+	_currentFallingWallManager(entityManager, _currentPhysicsManager),
 	_lastValidatePhysicsManager(entityManager),
 	_lastValidatePlayerManager(entityManager, _lastValidatePhysicsManager, _gameManager),
-	_lastValidateBulletManager(entityManager, gameManager)
+	_lastValidateBulletManager(entityManager, gameManager),
+	_lastValidateFallingWallManager(entityManager, _lastValidatePhysicsManager)
 {
 	for (auto& input : _inputs)
 	{
@@ -29,6 +31,8 @@ RollbackManager::RollbackManager(GameManager& gameManager, core::EntityManager& 
 
 	_currentPhysicsManager.RegisterTriggerListener(*this);
 	_currentPhysicsManager.RegisterCollisionListener(*this);
+	_currentPhysicsManager.RegisterCollisionListener(_currentFallingWallManager);
+	_lastValidatePhysicsManager.RegisterCollisionListener(_lastValidateFallingWallManager);
 }
 
 void RollbackManager::SimulateToCurrentFrame()

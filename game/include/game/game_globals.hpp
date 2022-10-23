@@ -91,6 +91,7 @@ enum class ComponentType : core::EntityMask
 	PlayerInput = OTHER_TYPE << 3u,
 	Destroyed = OTHER_TYPE << 4u,
 	StaticWall = OTHER_TYPE << 5u,
+	FallingWall = OTHER_TYPE << 6u,
 };
 
 constexpr unsigned WINDOW_SCALE = 60;
