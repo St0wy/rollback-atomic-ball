@@ -111,9 +111,9 @@ constexpr core::Vec2f WALL_BOTTOM_POS{ 0.0f, -5.5f };
 constexpr core::Vec2f WALL_TOP_POS{ 0.0f, 5.5f };
 constexpr core::Vec2f WALL_MIDDLE_POS{ 0.0f, 0.0f };
 
-constexpr core::Vec2f FALLING_WALL_SIZE{ 100.0f, 0.01f };
-constexpr core::Vec2f FALLING_WALL_DOOR_SIZE{ 0.1f, FALLING_WALL_SIZE.y };
-constexpr float FALLING_WALL_DOOR_COLLIDER_OFFSET = 0.1f;
+constexpr core::Vec2f FALLING_WALL_SIZE{ 100.0f, 0.3f };
+constexpr float FALLING_WALL_DOOR_COLLIDER_OFFSET = 0.2f;
+constexpr core::Vec2f FALLING_WALL_DOOR_SIZE{ 1.5f, FALLING_WALL_SIZE.y + FALLING_WALL_DOOR_COLLIDER_OFFSET };
 
 /**
  * \brief PlayerInput is a type defining the input data from a player.

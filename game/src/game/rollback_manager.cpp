@@ -317,9 +317,10 @@ void RollbackManager::SpawnFallingWall(const core::Entity backgroundWall, core::
 	const core::Vec2f position = { 0, 0 };
 
 	float doorPosition = 1.0f;
-	const FallingWall fallingWall{ false, doorPosition };
+	const FallingWall fallingWall{ };
+
 	Rigidbody wallBody;
-	wallBody.SetPosition(position);
+	wallBody.SetPosition({ 0,0 });
 	wallBody.SetTakesGravity(false);
 	wallBody.SetDragFactor(0);
 	wallBody.SetBodyType(BodyType::Kinematic);
@@ -327,10 +328,40 @@ void RollbackManager::SpawnFallingWall(const core::Entity backgroundWall, core::
 	wallBody.SetMass(100);
 	wallBody.SetLayer(Layer::Wall);
 
+	AabbCollider wallCollider;
+	wallCollider.halfWidth = FALLING_WALL_SIZE.x / 2.0f;
+	wallCollider.halfHeight = FALLING_WALL_SIZE.y / 2.0f;
+
+	_currentPhysicsManager.AddRigidbody(backgroundWall);
+	_currentPhysicsManager.SetRigidbody(backgroundWall, wallBody);
+	_currentPhysicsManager.AddAabbCollider(backgroundWall);
+	_currentPhysicsManager.SetAabbCollider(backgroundWall, wallCollider);
+	_lastValidatePhysicsManager.AddRigidbody(backgroundWall);
+	_lastValidatePhysicsManager.SetRigidbody(backgroundWall, wallBody);
+	_lastValidatePhysicsManager.AddAabbCollider(backgroundWall);
+	_lastValidatePhysicsManager.SetAabbCollider(backgroundWall, wallCollider);
+
+	Rigidbody doorBody;
+	doorBody.SetPosition({ doorPosition,0 });
+	doorBody.SetTakesGravity(false);
+	doorBody.SetDragFactor(0);
+	doorBody.SetBodyType(BodyType::Kinematic);
+	doorBody.SetRestitution(1.0f);
+	doorBody.SetMass(10);
+	doorBody.SetLayer(Layer::Wall);
+
 	AabbCollider doorCollider;
-	doorCollider.center = { doorPosition, 0 };
 	doorCollider.halfWidth = FALLING_WALL_DOOR_SIZE.x / 2.0f;
-	doorCollider.halfHeight = FALLING_WALL_DOOR_SIZE.y / 2.0f + FALLING_WALL_DOOR_COLLIDER_OFFSET;
+	doorCollider.halfHeight = FALLING_WALL_DOOR_SIZE.y / 2.0f;
+
+	_currentPhysicsManager.AddRigidbody(door);
+	_currentPhysicsManager.SetRigidbody(door, doorBody);
+	_currentPhysicsManager.AddAabbCollider(door);
+	_currentPhysicsManager.SetAabbCollider(door, doorCollider);
+	_lastValidatePhysicsManager.AddRigidbody(door);
+	_lastValidatePhysicsManager.SetRigidbody(door, doorBody);
+	_lastValidatePhysicsManager.AddAabbCollider(door);
+	_lastValidatePhysicsManager.SetAabbCollider(door, doorCollider);
 
 	_currentFallingWallManager.AddComponent(backgroundWall);
 	_currentFallingWallManager.SetFallingWall(backgroundWall, fallingWall);

@@ -114,8 +114,9 @@ std::pair<core::Entity, core::Entity> GameManager::SpawnFallingWall()
 
 	// Todo random pos
 	const core::Vec2f position = { 0, 0 };
+	float doorPosition = 1.0f;
 	_transformManager.SetPosition(backgroundWall, position);
-	_transformManager.SetPosition(door, position);
+	_transformManager.SetPosition(door, { doorPosition, position.y });
 
 	_rollbackManager.SpawnFallingWall(backgroundWall, door);
 
@@ -258,7 +259,6 @@ void ClientGameManager::Draw(sf::RenderTarget& target)
 	target.setView(_cameraView);
 	_spriteManager.Draw(target);
 	_rectangleShapeManager.Draw(target);
-	_rollbackManager.GetCurrentFallingWallManager().Draw(target);
 
 	if (_drawPhysics)
 	{
@@ -413,7 +413,15 @@ std::pair<core::Entity, core::Entity> ClientGameManager::SpawnFallingWall()
 {
 	auto [backgroundWall, door] = GameManager::SpawnFallingWall();
 
-	// TODO : Add rectangle shape to entities
+	_rectangleShapeManager.AddComponent(backgroundWall);
+	_rectangleShapeManager.SetFillColor(backgroundWall, WALL_COLOR);
+	_rectangleShapeManager.SetSize(backgroundWall, FALLING_WALL_SIZE);
+	_rectangleShapeManager.SetOrigin(backgroundWall, sf::Vector2f(FALLING_WALL_SIZE) / 2.0f);
+
+	_rectangleShapeManager.AddComponent(door);
+	_rectangleShapeManager.SetFillColor(door, NO_BALL_DOOR_COLOR);
+	_rectangleShapeManager.SetSize(door, FALLING_WALL_DOOR_SIZE);
+	_rectangleShapeManager.SetOrigin(door, sf::Vector2f(FALLING_WALL_DOOR_SIZE) / 2.0f);
 
 	return std::make_pair(backgroundWall, door);
 }
