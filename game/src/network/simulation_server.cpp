@@ -20,6 +20,7 @@ SimulationServer::SimulationServer(std::array<std::unique_ptr<SimulationClient>,
 
 void SimulationServer::Begin()
 {
+	_gameManager.SpawnFallingWall();
 	_gameManager.SetupLevel();
 }
 

@@ -98,6 +98,10 @@ constexpr unsigned WINDOW_SCALE = 60;
 const sf::Vector2u DEBUG_WINDOW_SIZE{ core::WINDOW_RATIO.x * 2 * WINDOW_SCALE , core::WINDOW_RATIO.y * WINDOW_SCALE };
 const sf::Vector2u DEBUG_FRAMEBUFFER_SIZE = core::WINDOW_RATIO * WINDOW_SCALE;
 
+constexpr core::Color WALL_COLOR{ 255, 0, 243 };
+constexpr core::Color BALL_DOOR_COLOR{ 6, 255, 0 };
+constexpr core::Color NO_BALL_DOOR_COLOR{ 0, 234, 251 };
+
 constexpr core::Vec2f VERTICAL_WALLS_SIZE{ 1, 100 };
 constexpr core::Vec2f HORIZONTAL_WALLS_SIZE{ 100, 1 };
 constexpr core::Vec2f MIDDLE_WALL_SIZE{ 0.1f, 100 };
@@ -106,6 +110,10 @@ constexpr core::Vec2f WALL_RIGHT_POS{ 9.0f, 0.0f };
 constexpr core::Vec2f WALL_BOTTOM_POS{ 0.0f, -5.5f };
 constexpr core::Vec2f WALL_TOP_POS{ 0.0f, 5.5f };
 constexpr core::Vec2f WALL_MIDDLE_POS{ 0.0f, 0.0f };
+
+constexpr core::Vec2f FALLING_WALL_SIZE{ 100.0f, 0.01f };
+constexpr core::Vec2f FALLING_WALL_DOOR_SIZE{ 0.1f, FALLING_WALL_SIZE.y };
+constexpr float FALLING_WALL_DOOR_COLLIDER_OFFSET = 0.1f;
 
 /**
  * \brief PlayerInput is a type defining the input data from a player.

@@ -128,6 +128,7 @@ void NetworkServer::Begin()
 
 	_status = _status | Open;
 
+	_gameManager.SpawnFallingWall();
 	_gameManager.SetupLevel();
 }
 

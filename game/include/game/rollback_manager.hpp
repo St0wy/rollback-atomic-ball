@@ -79,6 +79,7 @@ public:
 	[[nodiscard]] const PlayerCharacterManager& GetPlayerCharacterManager() const { return _currentPlayerManager; }
 	void SetupLevel(core::Entity wallLeftEntity, core::Entity wallRightEntity, core::Entity wallMiddleEntity, core::Entity wallBottomEntity, core
 	                ::Entity wallTopEntity);
+	void SpawnFallingWall(core::Entity backgroundWall, core::Entity door);
 	void CreateWall(core::Entity entity, core::Vec2f position, core::Vec2f size, Layer layer = Layer::Wall);
 	void SpawnPlayer(PlayerNumber playerNumber, core::Entity entity, core::Vec2f position, core::Degree rotation);
 	void SpawnBall(core::Entity entity, core::Vec2f position, core::Vec2f velocity);

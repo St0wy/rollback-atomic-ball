@@ -18,11 +18,11 @@ RollbackManager::RollbackManager(GameManager& gameManager, core::EntityManager& 
 	_currentTransformManager(entityManager),
 	_currentPhysicsManager(entityManager), _currentPlayerManager(entityManager, _currentPhysicsManager, _gameManager),
 	_currentBulletManager(entityManager, gameManager),
-	_currentFallingWallManager(entityManager, _currentPhysicsManager),
+	_currentFallingWallManager(entityManager, _currentPhysicsManager, _currentTransformManager),
 	_lastValidatePhysicsManager(entityManager),
 	_lastValidatePlayerManager(entityManager, _lastValidatePhysicsManager, _gameManager),
 	_lastValidateBulletManager(entityManager, gameManager),
-	_lastValidateFallingWallManager(entityManager, _lastValidatePhysicsManager)
+	_lastValidateFallingWallManager(entityManager, _lastValidatePhysicsManager, _currentTransformManager)
 {
 	for (auto& input : _inputs)
 	{
@@ -307,6 +307,36 @@ void RollbackManager::SetupLevel(const core::Entity wallLeftEntity, const core::
 	CreateWall(wallMiddleEntity, WALL_MIDDLE_POS, MIDDLE_WALL_SIZE, Layer::MiddleWall);
 	CreateWall(wallBottomEntity, WALL_BOTTOM_POS, HORIZONTAL_WALLS_SIZE);
 	CreateWall(wallTopEntity, WALL_TOP_POS, HORIZONTAL_WALLS_SIZE);
+}
+
+void RollbackManager::SpawnFallingWall(const core::Entity backgroundWall, core::Entity door)
+{
+	_createdEntities.push_back({ backgroundWall, _testedFrame });
+	_createdEntities.push_back({ door, _testedFrame });
+
+	const core::Vec2f position = { 0, 0 };
+
+	float doorPosition = 1.0f;
+	const FallingWall fallingWall{ false, doorPosition };
+	Rigidbody wallBody;
+	wallBody.SetPosition(position);
+	wallBody.SetTakesGravity(false);
+	wallBody.SetDragFactor(0);
+	wallBody.SetBodyType(BodyType::Kinematic);
+	wallBody.SetRestitution(1.0f);
+	wallBody.SetMass(100);
+	wallBody.SetLayer(Layer::Wall);
+
+	AabbCollider doorCollider;
+	doorCollider.center = { doorPosition, 0 };
+	doorCollider.halfWidth = FALLING_WALL_DOOR_SIZE.x / 2.0f;
+	doorCollider.halfHeight = FALLING_WALL_DOOR_SIZE.y / 2.0f + FALLING_WALL_DOOR_COLLIDER_OFFSET;
+
+	_currentFallingWallManager.AddComponent(backgroundWall);
+	_currentFallingWallManager.SetFallingWall(backgroundWall, fallingWall);
+
+	_lastValidateFallingWallManager.AddComponent(backgroundWall);
+	_lastValidateFallingWallManager.SetFallingWall(backgroundWall, fallingWall);
 }
 
 void RollbackManager::CreateWall(const core::Entity entity, const core::Vec2f position, const core::Vec2f size,

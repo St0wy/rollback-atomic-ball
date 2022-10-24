@@ -92,8 +92,7 @@ void GameManager::Validate(const Frame newValidateFrame)
 	_rollbackManager.ValidateFrame(newValidateFrame);
 }
 
-core::Entity GameManager::SpawnBall(const core::Vec2f position,
-	const core::Vec2f velocity)
+core::Entity GameManager::SpawnBall(const core::Vec2f position, const core::Vec2f velocity)
 {
 	const core::Entity entity = _entityManager.CreateEntity();
 
@@ -103,6 +102,24 @@ core::Entity GameManager::SpawnBall(const core::Vec2f position,
 	_transformManager.SetRotation(entity, core::Degree(0.0f));
 	_rollbackManager.SpawnBall(entity, position, velocity);
 	return entity;
+}
+
+std::pair<core::Entity, core::Entity> GameManager::SpawnFallingWall()
+{
+	const core::Entity backgroundWall = _entityManager.CreateEntity();
+	const core::Entity door = _entityManager.CreateEntity();
+
+	_transformManager.AddComponent(backgroundWall);
+	_transformManager.AddComponent(door);
+
+	// Todo random pos
+	const core::Vec2f position = { 0, 0 };
+	_transformManager.SetPosition(backgroundWall, position);
+	_transformManager.SetPosition(door, position);
+
+	_rollbackManager.SpawnFallingWall(backgroundWall, door);
+
+	return std::make_pair(backgroundWall, door);
 }
 
 void GameManager::DestroyBall(const core::Entity entity)
@@ -147,29 +164,10 @@ void ClientGameManager::Begin()
 	#ifdef TRACY_ENABLE
 	ZoneScoped;
 	#endif
-	//load textures
-	if (!_ballTexture.loadFromFile("data/sprites/ball.png"))
-	{
-		core::LogError("Could not load bullet sprite");
-	}
 
-	if (!_playerNoBallTexture.loadFromFile("data/sprites/char_idle.png"))
-	{
-		core::LogError("Could not load Player no ball sprite");
-	}
+	LoadData();
 
-	if (!_playerBallTexture.loadFromFile("data/sprites/char_idle_ball.png"))
-	{
-		core::LogError("Could not load Player ball sprite");
-	}
-
-	//load fonts
-	if (!_font.loadFromFile("data/fonts/8-bit-hud.ttf"))
-	{
-		core::LogError("Could not load font");
-	}
-	_textRenderer.setFont(_font);
-
+	SpawnFallingWall();
 	SetupLevel();
 }
 
@@ -190,6 +188,7 @@ void ClientGameManager::Update(const sf::Time dt)
 			const bool isPlayerWithSprite = _entityManager.HasComponent(entity,
 				static_cast<core::EntityMask>(ComponentType::PlayerCharacter) |
 				static_cast<core::EntityMask>(core::ComponentType::Sprite));
+
 			if (isPlayerWithSprite)
 			{
 				// ReSharper disable once CppUseStructuredBinding
@@ -232,15 +231,21 @@ void ClientGameManager::SetWindowSize(const sf::Vector2u)
 	const sf::FloatRect visibleArea(0.0f, 0.0f, width, height);
 	_cameraView = sf::View(visibleArea);
 
-	_spriteManager.SetWindowSize(sf::Vector2f(width, height));
-	_spriteManager.SetCenter(sf::Vector2f(width, height) / 2.0f);
+	const sf::Vector2f windowSize{ width, height };
+	const sf::Vector2f center = windowSize / 2.0f;
+	_spriteManager.SetWindowSize(windowSize);
+	_spriteManager.SetCenter(center);
 
-	_rectangleShapeManager.SetWindowSize(sf::Vector2f(width, height));
-	_rectangleShapeManager.SetCenter(sf::Vector2f(width, height) / 2.0f);
+	_rectangleShapeManager.SetWindowSize(windowSize);
+	_rectangleShapeManager.SetCenter(center);
+
+	auto& fallingWallManager = _rollbackManager.GetCurrentFallingWallManager();
+	fallingWallManager.SetWindowSize(windowSize);
+	fallingWallManager.SetCenter(center);
 
 	auto& currentPhysicsManager = _rollbackManager.GetCurrentPhysicsManager();
-	currentPhysicsManager.SetCenter(sf::Vector2f(width, height) / 2.0f);
-	currentPhysicsManager.SetWindowSize(sf::Vector2f(width, height));
+	currentPhysicsManager.SetWindowSize(windowSize);
+	currentPhysicsManager.SetCenter(center);
 }
 
 void ClientGameManager::Draw(sf::RenderTarget& target)
@@ -253,6 +258,7 @@ void ClientGameManager::Draw(sf::RenderTarget& target)
 	target.setView(_cameraView);
 	_spriteManager.Draw(target);
 	_rectangleShapeManager.Draw(target);
+	_rollbackManager.GetCurrentFallingWallManager().Draw(target);
 
 	if (_drawPhysics)
 	{
@@ -343,12 +349,38 @@ void ClientGameManager::SetClientPlayer(const PlayerNumber clientPlayer)
 	_clientPlayer = clientPlayer;
 }
 
+void ClientGameManager::LoadData()
+{
+	// load textures
+	if (!_ballTexture.loadFromFile("data/sprites/ball.png"))
+	{
+		core::LogError("Could not load bullet sprite");
+	}
+
+	if (!_playerNoBallTexture.loadFromFile("data/sprites/char_idle.png"))
+	{
+		core::LogError("Could not load Player no ball sprite");
+	}
+
+	if (!_playerBallTexture.loadFromFile("data/sprites/char_idle_ball.png"))
+	{
+		core::LogError("Could not load Player ball sprite");
+	}
+
+	// load fonts
+	if (!_font.loadFromFile("data/fonts/8-bit-hud.ttf"))
+	{
+		core::LogError("Could not load font");
+	}
+	_textRenderer.setFont(_font);
+}
+
 Walls ClientGameManager::SetupLevel()
 {
 	const Walls walls = GameManager::SetupLevel();
 
 	_rectangleShapeManager.AddComponent(walls.middle);
-	_rectangleShapeManager.SetFillColor(walls.middle, sf::Color(255, 0, 243));
+	_rectangleShapeManager.SetFillColor(walls.middle, WALL_COLOR);
 	_rectangleShapeManager.SetSize(walls.middle, MIDDLE_WALL_SIZE);
 	_rectangleShapeManager.SetOrigin(walls.middle, sf::Vector2f(MIDDLE_WALL_SIZE) / 2.0f);
 
@@ -375,6 +407,15 @@ core::Entity ClientGameManager::SpawnBall(const core::Vec2f position, const core
 	_spriteManager.SetOrigin(entity, sf::Vector2f(_ballTexture.getSize()) / 2.0f);
 
 	return entity;
+}
+
+std::pair<core::Entity, core::Entity> ClientGameManager::SpawnFallingWall()
+{
+	auto [backgroundWall, door] = GameManager::SpawnFallingWall();
+
+	// TODO : Add rectangle shape to entities
+
+	return std::make_pair(backgroundWall, door);
 }
 
 void ClientGameManager::FixedUpdate()
@@ -437,7 +478,6 @@ void ClientGameManager::FixedUpdate()
 	_currentFrame++;
 	_rollbackManager.StartNewFrame(_currentFrame);
 }
-
 
 void ClientGameManager::SetPlayerInput(const PlayerNumber playerNumber, const PlayerInput playerInput,
 	const std::uint32_t inputFrame)
