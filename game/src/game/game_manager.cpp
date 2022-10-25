@@ -113,7 +113,7 @@ std::pair<core::Entity, core::Entity> GameManager::SpawnFallingWall()
 	_transformManager.AddComponent(door);
 
 	// Todo random pos
-	const core::Vec2f position = { 0, 0 };
+	const core::Vec2f position = { 0, 3.0f };
 	float doorPosition = 1.0f;
 	_transformManager.SetPosition(backgroundWall, position);
 	_transformManager.SetPosition(door, { doorPosition, position.y });
@@ -123,7 +123,7 @@ std::pair<core::Entity, core::Entity> GameManager::SpawnFallingWall()
 	return std::make_pair(backgroundWall, door);
 }
 
-void GameManager::DestroyBall(const core::Entity entity)
+void GameManager::DestroyEntity(const core::Entity entity)
 {
 	_rollbackManager.DestroyEntity(entity);
 }
@@ -239,10 +239,6 @@ void ClientGameManager::SetWindowSize(const sf::Vector2u)
 
 	_rectangleShapeManager.SetWindowSize(windowSize);
 	_rectangleShapeManager.SetCenter(center);
-
-	auto& fallingWallManager = _rollbackManager.GetCurrentFallingWallManager();
-	fallingWallManager.SetWindowSize(windowSize);
-	fallingWallManager.SetCenter(center);
 
 	auto& currentPhysicsManager = _rollbackManager.GetCurrentPhysicsManager();
 	currentPhysicsManager.SetWindowSize(windowSize);

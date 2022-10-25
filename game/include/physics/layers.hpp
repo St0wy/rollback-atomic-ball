@@ -7,6 +7,7 @@ enum class Layer : std::uint8_t
 {
 	None = 0,
 	Wall,
+	Door,
 	MiddleWall,
 	Player,
 	Ball,
@@ -16,6 +17,7 @@ struct LayerMask
 {
 	std::uint8_t player : 1 = 1;
 	std::uint8_t wall : 1 = 1;
+	std::uint8_t door : 1 = 1;
 	std::uint8_t middleWall : 1 = 1;
 	std::uint8_t ball : 1 = 1;
 
@@ -28,6 +30,7 @@ struct LayerCollisionMatrix
 {
 	LayerMask player{};
 	LayerMask wall{};
+	LayerMask door{};
 	LayerMask middleWall{};
 	LayerMask ball{};
 

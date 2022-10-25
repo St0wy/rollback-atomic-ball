@@ -10,6 +10,8 @@ bool game::LayerMask::HasCollision(const Layer layer) const
 		return player;
 	case Layer::Wall:
 		return wall;
+	case Layer::Door:
+		return door;
 	case Layer::MiddleWall:
 		return middleWall;
 	case Layer::Ball:
@@ -29,6 +31,9 @@ void game::LayerMask::SetCollision(const Layer layer, const bool value)
 		break;
 	case Layer::Wall:
 		wall = value;
+		break;
+	case Layer::Door:
+		door = value;
 		break;
 	case Layer::MiddleWall:
 		middleWall = value;
@@ -50,6 +55,8 @@ std::optional<game::LayerMask> game::LayerCollisionMatrix::GetMask(const Layer l
 		return player;
 	case Layer::Wall:
 		return wall;
+	case Layer::Door:
+		return door;
 	case Layer::MiddleWall:
 		return middleWall;
 	case Layer::Ball:
@@ -68,6 +75,8 @@ game::LayerMask& game::LayerCollisionMatrix::GetMaskRef(const Layer layer)
 		return player;
 	case Layer::Wall:
 		return wall;
+	case Layer::Door:
+		return door;
 	case Layer::MiddleWall:
 		return middleWall;
 	case Layer::Ball:

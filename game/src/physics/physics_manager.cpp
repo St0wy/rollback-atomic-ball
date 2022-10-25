@@ -23,6 +23,9 @@ PhysicsManager::PhysicsManager(core::EntityManager& entityManager)
 {
 	_layerCollisionMatrix.SetCollision(Layer::Ball, Layer::MiddleWall, false);
 	_layerCollisionMatrix.SetCollision(Layer::Wall, Layer::Wall, false);
+	_layerCollisionMatrix.SetCollision(Layer::Wall, Layer::Door, false);
+	_layerCollisionMatrix.SetCollision(Layer::Wall, Layer::MiddleWall, false);
+	_layerCollisionMatrix.SetCollision(Layer::MiddleWall, Layer::Door, false);
 }
 
 std::optional<core::ComponentType> PhysicsManager::HasCollider(const core::EntityManager& entityManager,
@@ -48,8 +51,7 @@ void PhysicsManager::MoveBodies(const sf::Time deltaTime)
 	for (core::Entity entity = 0; entity < _entityManager.GetEntitiesSize(); entity++)
 	{
 		const bool hasRigidbody = _entityManager.HasComponent(entity,
-			static_cast<core::EntityMask>(
-			core::ComponentType::Rigidbody));
+			static_cast<core::EntityMask>(core::ComponentType::Rigidbody));
 
 		if (!hasRigidbody) continue;
 
@@ -81,11 +83,11 @@ void PhysicsManager::FixedUpdate(const sf::Time deltaTime)
 
 void PhysicsManager::SetRigidbody(const core::Entity entity, Rigidbody& body)
 {
-	_rigidbodyManager.SetComponent(entity, body);
 	if (body.TakesGravity())
 	{
 		body.SetGravityAcceleration(_gravity);
 	}
+	_rigidbodyManager.SetComponent(entity, body);
 }
 
 const Rigidbody& PhysicsManager::GetRigidbody(const core::Entity entity) const
@@ -295,11 +297,6 @@ void PhysicsManager::ResolveCollisions(const sf::Time deltaTime)
 		);
 
 		if (!manifold.hasCollision) continue;
-
-		if ((firstLayer == Layer::Ball && secondLayer == Layer::MiddleWall) || (firstLayer == Layer::MiddleWall && secondLayer == Layer::Ball))
-		{
-			core::LogInfo("Found col between Ball and WallMiddle");
-		}
 
 		if (firstRigidbody.IsTrigger() || secondRigidbody.IsTrigger())
 		{

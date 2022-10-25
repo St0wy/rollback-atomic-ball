@@ -18,11 +18,14 @@ RollbackManager::RollbackManager(GameManager& gameManager, core::EntityManager& 
 	_currentTransformManager(entityManager),
 	_currentPhysicsManager(entityManager), _currentPlayerManager(entityManager, _currentPhysicsManager, _gameManager),
 	_currentBulletManager(entityManager, gameManager),
-	_currentFallingWallManager(entityManager, _currentPhysicsManager, _currentTransformManager),
+	_currentFallingObjectManager(entityManager, _currentPhysicsManager),
+	_currentFallingDoorManager(entityManager, _currentPhysicsManager, _currentPlayerManager, _gameManager),
 	_lastValidatePhysicsManager(entityManager),
 	_lastValidatePlayerManager(entityManager, _lastValidatePhysicsManager, _gameManager),
 	_lastValidateBulletManager(entityManager, gameManager),
-	_lastValidateFallingWallManager(entityManager, _lastValidatePhysicsManager, _currentTransformManager)
+	_lastValidateFallingObjectManager(entityManager, _lastValidatePhysicsManager),
+	_lastValidateFallingDoorManager(entityManager, _lastValidatePhysicsManager, _lastValidatePlayerManager, _gameManager)
+
 {
 	for (auto& input : _inputs)
 	{
@@ -31,8 +34,8 @@ RollbackManager::RollbackManager(GameManager& gameManager, core::EntityManager& 
 
 	_currentPhysicsManager.RegisterTriggerListener(*this);
 	_currentPhysicsManager.RegisterCollisionListener(*this);
-	_currentPhysicsManager.RegisterCollisionListener(_currentFallingWallManager);
-	_lastValidatePhysicsManager.RegisterCollisionListener(_lastValidateFallingWallManager);
+	_currentPhysicsManager.RegisterCollisionListener(_currentFallingDoorManager);
+	_lastValidatePhysicsManager.RegisterCollisionListener(_lastValidateFallingDoorManager);
 }
 
 void RollbackManager::SimulateToCurrentFrame()
@@ -68,6 +71,9 @@ void RollbackManager::SimulateToCurrentFrame()
 	_currentBulletManager.CopyAllComponents(_lastValidateBulletManager.GetAllComponents());
 	_currentPhysicsManager.CopyAllComponents(_lastValidatePhysicsManager);
 	_currentPlayerManager.CopyAllComponents(_lastValidatePlayerManager.GetAllComponents());
+	_currentFallingObjectManager.CopyAllComponents(_lastValidateFallingObjectManager.GetAllComponents());
+	_currentFallingDoorManager.CopyAllComponents(_lastValidateFallingDoorManager.GetAllComponents());
+
 
 	for (Frame frame = lastValidateFrame + 1; frame <= currentFrame; frame++)
 	{
@@ -90,9 +96,11 @@ void RollbackManager::SimulateToCurrentFrame()
 		}
 
 		// Simulate one frame of the game
-		_currentBulletManager.FixedUpdate(sf::seconds(FIXED_PERIOD));
-		_currentPlayerManager.FixedUpdate(sf::seconds(FIXED_PERIOD));
-		_currentPhysicsManager.FixedUpdate(sf::seconds(FIXED_PERIOD));
+		const sf::Time period = sf::seconds(FIXED_PERIOD);
+		_currentBulletManager.FixedUpdate(period);
+		_currentPlayerManager.FixedUpdate(period);
+		_currentFallingObjectManager.FixedUpdate(period);
+		_currentPhysicsManager.FixedUpdate(period);
 	}
 
 	// Copy the physics states to the transforms
@@ -218,9 +226,11 @@ void RollbackManager::ValidateFrame(const Frame newValidateFrame)
 		}
 
 		// We simulate one frame
-		_currentBulletManager.FixedUpdate(sf::seconds(FIXED_PERIOD));
-		_currentPlayerManager.FixedUpdate(sf::seconds(FIXED_PERIOD));
-		_currentPhysicsManager.FixedUpdate(sf::seconds(FIXED_PERIOD));
+		const sf::Time period = sf::seconds(FIXED_PERIOD);
+		_currentBulletManager.FixedUpdate(period);
+		_currentPlayerManager.FixedUpdate(period);
+		_currentFallingObjectManager.FixedUpdate(period);
+		_currentPhysicsManager.FixedUpdate(period);
 	}
 
 	// Definitely remove DESTROY entities
@@ -309,19 +319,15 @@ void RollbackManager::SetupLevel(const core::Entity wallLeftEntity, const core::
 	CreateWall(wallTopEntity, WALL_TOP_POS, HORIZONTAL_WALLS_SIZE);
 }
 
-void RollbackManager::SpawnFallingWall(const core::Entity backgroundWall, core::Entity door)
+void RollbackManager::SpawnFallingWall(const core::Entity backgroundWall, const core::Entity door)
 {
 	_createdEntities.push_back({ backgroundWall, _testedFrame });
 	_createdEntities.push_back({ door, _testedFrame });
 
-	const core::Vec2f position = { 0, 0 };
-
 	float doorPosition = 1.0f;
-	const FallingWall fallingWall{ };
 
 	Rigidbody wallBody;
-	wallBody.SetPosition({ 0,0 });
-	wallBody.SetTakesGravity(false);
+	wallBody.SetPosition({ 0,3.0f });
 	wallBody.SetDragFactor(0);
 	wallBody.SetBodyType(BodyType::Kinematic);
 	wallBody.SetRestitution(1.0f);
@@ -341,14 +347,16 @@ void RollbackManager::SpawnFallingWall(const core::Entity backgroundWall, core::
 	_lastValidatePhysicsManager.AddAabbCollider(backgroundWall);
 	_lastValidatePhysicsManager.SetAabbCollider(backgroundWall, wallCollider);
 
+	_currentFallingObjectManager.AddComponent(backgroundWall);
+	_lastValidateFallingObjectManager.AddComponent(backgroundWall);
+
 	Rigidbody doorBody;
-	doorBody.SetPosition({ doorPosition,0 });
-	doorBody.SetTakesGravity(false);
+	doorBody.SetPosition({ doorPosition,-5.0f });
 	doorBody.SetDragFactor(0);
 	doorBody.SetBodyType(BodyType::Kinematic);
 	doorBody.SetRestitution(1.0f);
 	doorBody.SetMass(10);
-	doorBody.SetLayer(Layer::Wall);
+	doorBody.SetLayer(Layer::Door);
 
 	AabbCollider doorCollider;
 	doorCollider.halfWidth = FALLING_WALL_DOOR_SIZE.x / 2.0f;
@@ -363,11 +371,13 @@ void RollbackManager::SpawnFallingWall(const core::Entity backgroundWall, core::
 	_lastValidatePhysicsManager.AddAabbCollider(door);
 	_lastValidatePhysicsManager.SetAabbCollider(door, doorCollider);
 
-	_currentFallingWallManager.AddComponent(backgroundWall);
-	_currentFallingWallManager.SetFallingWall(backgroundWall, fallingWall);
+	_currentFallingObjectManager.AddComponent(door);
+	_lastValidateFallingObjectManager.AddComponent(door);
 
-	_lastValidateFallingWallManager.AddComponent(backgroundWall);
-	_lastValidateFallingWallManager.SetFallingWall(backgroundWall, fallingWall);
+	//_currentFallingDoorManager.AddComponent(door);
+	//_currentFallingDoorManager.SetFallingDoor(door, { backgroundWall, false });
+	//_lastValidateFallingDoorManager.AddComponent(door);
+	//_lastValidateFallingDoorManager.SetFallingDoor(door, { backgroundWall, false });
 }
 
 void RollbackManager::CreateWall(const core::Entity entity, const core::Vec2f position, const core::Vec2f size,
@@ -464,7 +474,7 @@ void RollbackManager::OnCollision(const core::Entity entity1, const core::Entity
 		PlayerCharacter& playerCharacter = _currentPlayerManager.GetComponent(playerEntity);
 		if (!playerCharacter.hasBall)
 		{
-			_gameManager.DestroyBall(ballEntity);
+			_gameManager.DestroyEntity(ballEntity);
 			playerCharacter.CatchBall();
 		}
 	};

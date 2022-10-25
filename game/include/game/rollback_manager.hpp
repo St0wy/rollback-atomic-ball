@@ -59,7 +59,7 @@ public:
 	void ValidateFrame(Frame newValidateFrame);
 
 	/**
-	 * \brief ConfirmFrame is a method that confirms the new validate frame by checking the Physics State checksums
+	 * \brief ConfirmFrame is a method that confirms the new validate frame by checking the Physics State checksum
 	 * It is called by the clients when receiving Confirm Frame packet
 	 * \param newValidatedFrame is the new frame that is validated
 	 * \param serverPhysicsState is the physics state given by the server through a packet
@@ -100,7 +100,6 @@ public:
 	}
 
 	PhysicsManager& GetCurrentPhysicsManager() { return _currentPhysicsManager; }
-	FallingWallManager& GetCurrentFallingWallManager() { return _currentFallingWallManager; }
 private:
 	[[nodiscard]] PlayerInput GetInputAtFrame(PlayerNumber playerNumber, Frame frame) const;
 
@@ -114,7 +113,8 @@ private:
 	PhysicsManager _currentPhysicsManager;
 	PlayerCharacterManager _currentPlayerManager;
 	BallManager _currentBulletManager;
-	FallingWallManager _currentFallingWallManager;
+	FallingObjectManager _currentFallingObjectManager;
+	FallingDoorManager _currentFallingDoorManager;
 
 	/**
 	 * Last Validate (confirm frame) Component Managers used for rollback
@@ -122,7 +122,8 @@ private:
 	PhysicsManager _lastValidatePhysicsManager;
 	PlayerCharacterManager _lastValidatePlayerManager;
 	BallManager _lastValidateBulletManager;
-	FallingWallManager _lastValidateFallingWallManager;
+	FallingObjectManager _lastValidateFallingObjectManager;
+	FallingDoorManager _lastValidateFallingDoorManager;
 
 	/**
 	 * \brief lastValidateFrame_ is the last validated frame from the server side.

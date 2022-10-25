@@ -7,6 +7,22 @@
 
 namespace game
 {
+void PlayerCharacter::CatchBall()
+{
+	if (hasBall) return;
+
+	hadBall = hasBall;
+	hasBall = true;
+}
+
+void PlayerCharacter::ThrowBall()
+{
+	if (!hasBall) return;
+
+	hadBall = hasBall;
+	hasBall = false;
+}
+
 PlayerCharacterManager::PlayerCharacterManager(core::EntityManager& entityManager, PhysicsManager& physicsManager,
 	GameManager& gameManager)
 	: ComponentManager(entityManager),
@@ -62,7 +78,7 @@ void PlayerCharacterManager::FixedUpdate(const sf::Time deltaTime)
 				+ BULLET_SPEED);
 			const auto ballPosition = playerBody.Position() + playerCharacter.aimDirection * 0.5f + playerBody.Position() * deltaTime.asSeconds();
 			_gameManager.SpawnBall(ballPosition,
-			                       ballVelocity);
+				ballVelocity);
 			playerCharacter.ThrowBall();
 		}
 	}

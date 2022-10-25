@@ -18,21 +18,8 @@ struct PlayerCharacter
 	core::Radian rotation = 0.0f;
 	core::Vec2f aimDirection{};
 
-	void CatchBall()
-	{
-		if (hasBall) return;
-
-		hadBall = hasBall;
-		hasBall = true;
-	}
-
-	void ThrowBall()
-	{
-		if (!hasBall) return;
-
-		hadBall = hasBall;
-		hasBall = false;
-	}
+	void CatchBall();
+	void ThrowBall();
 };
 
 /**
