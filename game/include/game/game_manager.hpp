@@ -122,6 +122,7 @@ protected:
 	sf::Texture _playerNoBallTexture;
 	sf::Texture _playerBallTexture;
 	sf::Texture _ballTexture;
+	sf::Texture _deadWallTexture;
 	sf::Font _font;
 
 	sf::Text _textRenderer;

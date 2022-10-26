@@ -72,8 +72,8 @@ constexpr std::array PLAYER_COLORS
 
 constexpr std::array SPAWN_POSITIONS
 {
-	core::Vec2f(-0.5f, 0.0f),
-	core::Vec2f(0.5f, 0.0f),
+	core::Vec2f(-0.5f, -1.0f),
+	core::Vec2f(0.5f, -1.0f),
 };
 
 constexpr std::array SPAWN_ROTATIONS
@@ -104,11 +104,11 @@ constexpr core::Color BALL_DOOR_COLOR{ 6, 255, 0 };
 constexpr core::Color NO_BALL_DOOR_COLOR{ 0, 234, 251 };
 
 constexpr core::Vec2f VERTICAL_WALLS_SIZE{ 1, 100 };
-constexpr core::Vec2f HORIZONTAL_WALLS_SIZE{ 100, 1 };
+constexpr core::Vec2f HORIZONTAL_WALLS_SIZE{ 100, 0.4f };
 constexpr core::Vec2f MIDDLE_WALL_SIZE{ 0.1f, 100 };
 constexpr core::Vec2f WALL_LEFT_POS{ -9.0f, 0.0f };
 constexpr core::Vec2f WALL_RIGHT_POS{ 9.0f, 0.0f };
-constexpr core::Vec2f WALL_BOTTOM_POS{ 0.0f, -5.5f };
+constexpr core::Vec2f WALL_BOTTOM_POS{ 0.0f, -4.1f };
 constexpr core::Vec2f WALL_TOP_POS{ 0.0f, 5.5f };
 constexpr core::Vec2f WALL_MIDDLE_POS{ 0.0f, 0.0f };
 

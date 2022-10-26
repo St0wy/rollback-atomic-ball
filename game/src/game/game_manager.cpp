@@ -113,10 +113,10 @@ std::pair<core::Entity, core::Entity> GameManager::SpawnFallingWall()
 	_transformManager.AddComponent(door);
 
 	// Todo random pos
-	const core::Vec2f position = { 0, 3.0f };
-	float doorPosition = 1.0f;
+	/*const core::Vec2f position = { 0, 0 };
+	float doorPosition = 0.0f;
 	_transformManager.SetPosition(backgroundWall, position);
-	_transformManager.SetPosition(door, { doorPosition, position.y });
+	_transformManager.SetPosition(door, { doorPosition, position.y });*/
 
 	_rollbackManager.SpawnFallingWall(backgroundWall, door);
 
@@ -363,6 +363,11 @@ void ClientGameManager::LoadData()
 		core::LogError("Could not load Player ball sprite");
 	}
 
+	if (!_deadWallTexture.loadFromFile("data/sprites/dead_line.png"))
+	{
+		core::LogError("Could not load Player ball sprite");
+	}
+
 	// load fonts
 	if (!_font.loadFromFile("data/fonts/8-bit-hud.ttf"))
 	{
@@ -380,6 +385,9 @@ Walls ClientGameManager::SetupLevel()
 	_rectangleShapeManager.SetSize(walls.middle, MIDDLE_WALL_SIZE);
 	_rectangleShapeManager.SetOrigin(walls.middle, sf::Vector2f(MIDDLE_WALL_SIZE) / 2.0f);
 
+	_spriteManager.AddComponent(walls.bottom);
+	_spriteManager.SetTexture(walls.bottom, _deadWallTexture);
+	_spriteManager.SetOrigin(walls.bottom, sf::Vector2f(_deadWallTexture.getSize()) / 2.0f);
 	return walls;
 }
 

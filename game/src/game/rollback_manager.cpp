@@ -110,7 +110,7 @@ void RollbackManager::SimulateToCurrentFrame()
 			static_cast<core::EntityMask>(core::ComponentType::Rigidbody) |
 			static_cast<core::EntityMask>(core::ComponentType::Transform)))
 			continue;
-		const auto& body = _currentPhysicsManager.GetRigidbody(entity);
+		const Rigidbody& body = _currentPhysicsManager.GetRigidbody(entity);
 		_currentTransformManager.SetPosition(entity, body.Position());
 		_currentTransformManager.SetRotation(entity, body.Rotation());
 	}
@@ -351,7 +351,7 @@ void RollbackManager::SpawnFallingWall(const core::Entity backgroundWall, const 
 	_lastValidateFallingObjectManager.AddComponent(backgroundWall);
 
 	Rigidbody doorBody;
-	doorBody.SetPosition({ doorPosition,-5.0f });
+	doorBody.SetPosition({ doorPosition,3.0f });
 	doorBody.SetDragFactor(0);
 	doorBody.SetBodyType(BodyType::Kinematic);
 	doorBody.SetRestitution(1.0f);
@@ -374,10 +374,10 @@ void RollbackManager::SpawnFallingWall(const core::Entity backgroundWall, const 
 	_currentFallingObjectManager.AddComponent(door);
 	_lastValidateFallingObjectManager.AddComponent(door);
 
-	//_currentFallingDoorManager.AddComponent(door);
-	//_currentFallingDoorManager.SetFallingDoor(door, { backgroundWall, false });
-	//_lastValidateFallingDoorManager.AddComponent(door);
-	//_lastValidateFallingDoorManager.SetFallingDoor(door, { backgroundWall, false });
+	_currentFallingDoorManager.AddComponent(door);
+	_currentFallingDoorManager.SetFallingDoor(door, { backgroundWall, false });
+	_lastValidateFallingDoorManager.AddComponent(door);
+	_lastValidateFallingDoorManager.SetFallingDoor(door, { backgroundWall, false });
 }
 
 void RollbackManager::CreateWall(const core::Entity entity, const core::Vec2f position, const core::Vec2f size,
