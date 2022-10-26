@@ -36,7 +36,6 @@ using Frame = std::uint32_t;
  * \brief maxPlayerNmb is a integer constant that defines the maximum number of player per game
  */
 constexpr std::uint32_t MAX_PLAYER_NMB = 2;
-constexpr short PLAYER_HEALTH = 1000;
 constexpr float PLAYER_SPEED = 400.0f;
 constexpr float BULLET_SPEED = 2.0f;
 constexpr float BALL_SCALE = 0.3f;

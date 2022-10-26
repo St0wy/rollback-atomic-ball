@@ -15,8 +15,6 @@ Log::Log()
 	_fileSink->set_level(spdlog::level::trace);
 
 	_logger.set_level(spdlog::level::debug);
-	_logger.warn("this should appear in both console and file");
-	_logger.info("this message should not appear in the console, only in the file");
 }
 
 void Log::Debug(const std::string_view msg)

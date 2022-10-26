@@ -128,29 +128,27 @@ void GameManager::DestroyEntity(const core::Entity entity)
 	_rollbackManager.DestroyEntity(entity);
 }
 
-PlayerNumber GameManager::CheckWinner() const
+bool GameManager::CheckIfLost() const
 {
 	int alivePlayer = 0;
-	PlayerNumber winner = INVALID_PLAYER;
-	const auto& playerManager = _rollbackManager.GetPlayerCharacterManager();
+	const PlayerCharacterManager& playerManager = _rollbackManager.GetPlayerCharacterManager();
 	for (core::Entity entity = 0; entity < _entityManager.GetEntitiesSize(); entity++)
 	{
 		if (!_entityManager.HasComponent(entity, static_cast<core::EntityMask>(ComponentType::PlayerCharacter)))
 			continue;
 		const auto& player = playerManager.GetComponent(entity);
-		if (player.health > 0)
+		if (!player.isDead)
 		{
 			alivePlayer++;
-			winner = player.playerNumber;
 		}
 	}
 
-	return alivePlayer == 1 ? winner : INVALID_PLAYER;
+	return alivePlayer <= 1;
 }
 
-void GameManager::WinGame(const PlayerNumber winner)
+void GameManager::LoseGame()
 {
-	_winner = winner;
+	_hasLost = true;
 }
 
 ClientGameManager::ClientGameManager(PacketSenderInterface& packetSenderInterface)
@@ -264,20 +262,9 @@ void ClientGameManager::Draw(sf::RenderTarget& target)
 
 	if (_state & Finished)
 	{
-		if (_winner == GetPlayerNumber())
+		if (_hasLost)
 		{
-			const std::string winnerText = fmt::format("You won!");
-			_textRenderer.setFillColor(sf::Color::White);
-			_textRenderer.setString(winnerText);
-			_textRenderer.setCharacterSize(32);
-			const auto textBounds = _textRenderer.getLocalBounds();
-			_textRenderer.setPosition(static_cast<float>(_windowSize.x) / 2.0f - textBounds.width / 2.0f,
-				static_cast<float>(_windowSize.y) / 2.0f - textBounds.height / 2.0f);
-			target.draw(_textRenderer);
-		}
-		else if (_winner != INVALID_PLAYER)
-		{
-			const std::string winnerText = fmt::format("P{} won!", _winner + 1);
+			const std::string winnerText = fmt::format("You Lost!");
 			_textRenderer.setFillColor(sf::Color::White);
 			_textRenderer.setString(winnerText);
 			_textRenderer.setCharacterSize(32);
@@ -298,6 +285,7 @@ void ClientGameManager::Draw(sf::RenderTarget& target)
 			target.draw(_textRenderer);
 		}
 	}
+
 	if (!(_state & Started))
 	{
 		if (_startingTime != 0)
@@ -321,7 +309,7 @@ void ClientGameManager::Draw(sf::RenderTarget& target)
 	}
 	else
 	{
-		std::string health;
+		std::string isDead;
 		const auto& playerManager = _rollbackManager.GetPlayerCharacterManager();
 		for (PlayerNumber playerNumber = 0; playerNumber < MAX_PLAYER_NMB; playerNumber++)
 		{
@@ -330,10 +318,10 @@ void ClientGameManager::Draw(sf::RenderTarget& target)
 			{
 				continue;
 			}
-			health += fmt::format("P{} health: {} ", playerNumber + 1, playerManager.GetComponent(playerEntity).health);
+			isDead += fmt::format("P{} is dead: {} ", playerNumber + 1, playerManager.GetComponent(playerEntity).isDead);
 		}
 		_textRenderer.setFillColor(sf::Color::White);
-		_textRenderer.setString(health);
+		_textRenderer.setString(isDead);
 		_textRenderer.setPosition(10, 10);
 		_textRenderer.setCharacterSize(20);
 		target.draw(_textRenderer);
@@ -456,7 +444,7 @@ void ClientGameManager::FixedUpdate()
 		{
 			return;
 		}
-	}
+}
 
 	if (_state & Finished) return;
 
@@ -542,9 +530,9 @@ void ClientGameManager::ConfirmValidateFrame(Frame newValidateFrame,
 	_rollbackManager.ConfirmFrame(newValidateFrame, physicsStates);
 }
 
-void ClientGameManager::WinGame(const PlayerNumber winner)
+void ClientGameManager::LoseGame()
 {
-	GameManager::WinGame(winner);
+	GameManager::LoseGame();
 	_state = _state | Finished;
 }
 }

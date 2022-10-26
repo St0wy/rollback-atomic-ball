@@ -20,13 +20,13 @@ RollbackManager::RollbackManager(GameManager& gameManager, core::EntityManager& 
 	_currentBulletManager(entityManager, gameManager),
 	_currentFallingObjectManager(entityManager, _currentPhysicsManager),
 	_currentFallingDoorManager(entityManager, _currentPhysicsManager, _currentPlayerManager, _gameManager),
-	_currentDamageManager(entityManager),
+	_currentDamageManager(entityManager, _currentPlayerManager),
 	_lastValidatePhysicsManager(entityManager),
 	_lastValidatePlayerManager(entityManager, _lastValidatePhysicsManager, _gameManager),
 	_lastValidateBulletManager(entityManager, gameManager),
 	_lastValidateFallingObjectManager(entityManager, _lastValidatePhysicsManager),
 	_lastValidateFallingDoorManager(entityManager, _lastValidatePhysicsManager, _lastValidatePlayerManager, _gameManager),
-	_lastValidateDamageManager(entityManager)
+	_lastValidateDamageManager(entityManager, _lastValidatePlayerManager)
 {
 	for (auto& input : _inputs)
 	{
@@ -93,7 +93,6 @@ void RollbackManager::SimulateToCurrentFrame()
 
 			auto& playerCharacter = _currentPlayerManager.GetComponent(playerEntity);
 			playerCharacter.input = playerInput;
-			_currentPlayerManager.SetComponent(playerEntity, playerCharacter);
 		}
 
 		// Simulate one frame of the game
@@ -213,6 +212,7 @@ void RollbackManager::ValidateFrame(const Frame newValidateFrame)
 	_currentPlayerManager.CopyAllComponents(_lastValidatePlayerManager.GetAllComponents());
 	_currentFallingObjectManager.CopyAllComponents(_lastValidateFallingObjectManager.GetAllComponents());
 	_currentFallingDoorManager.CopyAllComponents(_lastValidateFallingDoorManager.GetAllComponents());
+	_currentDamageManager.CopyAllComponents(_lastValidateDamageManager.GetAllComponents());
 
 	// We simulate the frames until the new validated frame
 	for (Frame frame = _lastValidateFrame + 1; frame <= newValidateFrame; frame++)
@@ -225,7 +225,6 @@ void RollbackManager::ValidateFrame(const Frame newValidateFrame)
 			const auto playerEntity = _gameManager.GetEntityFromPlayerNumber(playerNumber);
 			auto& playerCharacter = _currentPlayerManager.GetComponent(playerEntity);
 			playerCharacter.input = playerInput;
-			_currentPlayerManager.SetComponent(playerEntity, playerCharacter);
 		}
 
 		// We simulate one frame
@@ -251,6 +250,7 @@ void RollbackManager::ValidateFrame(const Frame newValidateFrame)
 	_lastValidatePhysicsManager.CopyAllComponents(_currentPhysicsManager);
 	_lastValidateFallingObjectManager.CopyAllComponents(_currentFallingObjectManager.GetAllComponents());
 	_lastValidateFallingDoorManager.CopyAllComponents(_currentFallingDoorManager.GetAllComponents());
+	_lastValidateDamageManager.CopyAllComponents(_currentDamageManager.GetAllComponents());
 	_lastValidateFrame = newValidateFrame;
 	_createdEntities.clear();
 }
@@ -322,6 +322,9 @@ void RollbackManager::SetupLevel(const core::Entity wallLeftEntity, const core::
 	CreateWall(wallMiddleEntity, WALL_MIDDLE_POS, MIDDLE_WALL_SIZE, Layer::MiddleWall);
 	CreateWall(wallBottomEntity, WALL_BOTTOM_POS, HORIZONTAL_WALLS_SIZE);
 	CreateWall(wallTopEntity, WALL_TOP_POS, HORIZONTAL_WALLS_SIZE);
+
+	_currentDamageManager.AddComponent(wallBottomEntity);
+	_lastValidateDamageManager.AddComponent(wallBottomEntity);
 }
 
 void RollbackManager::SpawnFallingWall(const core::Entity backgroundWall, const core::Entity door)

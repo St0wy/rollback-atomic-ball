@@ -58,7 +58,7 @@ void Client::ReceivePacket(const Packet* packet)
 
 		if (playerNumber == _gameManager.GetPlayerNumber())
 		{
-			//Verify the inputs coming back from the server
+			// Verify the inputs coming back from the server
 			const auto& inputs = _gameManager.GetRollbackManager().GetInputs(playerNumber);
 			const auto currentFrame = _gameManager.GetRollbackManager().GetCurrentFrame();
 			for (size_t i = 0; i < playerInputPacket->inputs.size(); i++)
@@ -109,10 +109,13 @@ void Client::ReceivePacket(const Packet* packet)
 		//logDebug("Client received validate frame " + std::to_string(newValidateFrame));
 		break;
 	}
-	case PacketType::WinGame:
+	case PacketType::LoseGame:
 	{
-		const auto* winGamePacket = static_cast<const WinGamePacket*>(packet);
-		_gameManager.WinGame(winGamePacket->winner);
+		const auto* loseGamePacket = static_cast<const LoseGamePacket*>(packet);
+		if (loseGamePacket->hasLost)
+		{
+			_gameManager.LoseGame();
+		}
 		break;
 	}
 	case PacketType::Ping:
@@ -170,6 +173,6 @@ void Client::Update(const sf::Time dt)
 			SendUnreliablePacket(std::move(pingPacket));
 		}
 		_pingTimer = PING_PERIOD_;
-}
+	}
 }
 }

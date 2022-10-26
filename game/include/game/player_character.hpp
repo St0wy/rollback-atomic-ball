@@ -12,7 +12,7 @@ struct PlayerCharacter
 {
 	PlayerInput input = 0u;
 	PlayerNumber playerNumber = INVALID_PLAYER;
-	short health = PLAYER_HEALTH;
+	bool isDead = false;
 	bool hasBall = false;
 	bool hadBall = false;
 	core::Radian rotation = 0.0f;
@@ -30,6 +30,7 @@ class PlayerCharacterManager final : public core::ComponentManager<PlayerCharact
 public:
 	PlayerCharacterManager(core::EntityManager& entityManager, PhysicsManager& physicsManager, GameManager& gameManager);
 	void FixedUpdate(sf::Time deltaTime);
+	void AddComponent(core::Entity entity) override;
 
 private:
 	PhysicsManager& _physicsManager;

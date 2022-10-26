@@ -83,4 +83,10 @@ void PlayerCharacterManager::FixedUpdate(const sf::Time deltaTime)
 		}
 	}
 }
+
+void PlayerCharacterManager::AddComponent(core::Entity entity)
+{
+	core::LogInfo(fmt::format("Creating player : id{}", entity));
+	ComponentManager<PlayerCharacter, 512>::AddComponent(entity);
+}
 }

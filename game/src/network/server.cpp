@@ -1,7 +1,5 @@
 #include <cstdint>
 
-#include <fmt/format.h>
-
 #include <network/server.hpp>
 
 #include <utils/conversion.hpp>
@@ -16,7 +14,7 @@ namespace game
 void Server::ReceivePacket(std::unique_ptr<Packet> packet)
 {
 	#ifdef TRACY_ENABLE
-    ZoneScoped;
+	ZoneScoped;
 	#endif
 	switch (packet->packetType)
 	{
@@ -26,9 +24,9 @@ void Server::ReceivePacket(std::unique_ptr<Packet> packet)
 		const auto clientId = core::ConvertFromBinary<ClientId>(joinPacket->clientId);
 		if (std::ranges::any_of(_clientMap,
 			[clientId](const auto clientMapId)
-			{
-				return clientMapId == clientId;
-			}))
+		{
+			return clientMapId == clientId;
+		}))
 		{
 			//Player joined twice!
 			return;
@@ -98,14 +96,13 @@ void Server::ReceivePacket(std::unique_ptr<Packet> packet)
 				}
 			}
 			SendUnreliablePacket(std::move(validatePacket));
-			const auto winner = _gameManager.CheckWinner();
-			if (winner != INVALID_PLAYER)
+			if (_gameManager.CheckIfLost())
 			{
-				core::LogInfo(fmt::format("Server declares P{} a winner", static_cast<unsigned>(winner) + 1));
-				auto winGamePacket = std::make_unique<WinGamePacket>();
-				winGamePacket->winner = winner;
+				core::LogInfo("Server declares everyone lost");
+				auto winGamePacket = std::make_unique<LoseGamePacket>();
+				winGamePacket->hasLost = true;
 				SendReliablePacket(std::move(winGamePacket));
-				_gameManager.WinGame(winner);
+				_gameManager.LoseGame();
 			}
 		}
 

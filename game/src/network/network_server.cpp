@@ -164,7 +164,7 @@ void NetworkServer::Update([[maybe_unused]] sf::Time dt)
 				"[Error] Player Number {} is disconnected when receiving",
 				playerNumber + 1));
 			_status = _status & ~(FirstPlayerConnect << playerNumber);
-			auto endGame = std::make_unique<WinGamePacket>();
+			auto endGame = std::make_unique<LoseGamePacket>();
 			SendReliablePacket(std::move(endGame));
 			_status = _status & ~Open; //Close the server
 			break;

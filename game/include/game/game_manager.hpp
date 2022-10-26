@@ -53,8 +53,8 @@ public:
 	 * \brief Validate is a method called by the server to validate a frame.
 	 */
 	void Validate(Frame newValidateFrame);
-	[[nodiscard]] PlayerNumber CheckWinner() const;
-	virtual void WinGame(PlayerNumber winner);
+	[[nodiscard]] bool CheckIfLost() const;
+	virtual void LoseGame();
 
 protected:
 	core::EntityManager _entityManager;
@@ -62,7 +62,7 @@ protected:
 	RollbackManager _rollbackManager;
 	std::array<core::Entity, MAX_PLAYER_NMB> _playerEntityMap{};
 	Frame _currentFrame = 0;
-	PlayerNumber _winner = INVALID_PLAYER;
+	bool _hasLost = false;
 };
 
 /**
@@ -106,7 +106,7 @@ public:
 	void DrawImGui() override;
 	void ConfirmValidateFrame(Frame newValidateFrame, const std::array<PhysicsState, MAX_PLAYER_NMB>& physicsStates);
 	[[nodiscard]] PlayerNumber GetPlayerNumber() const { return _clientPlayer; }
-	void WinGame(PlayerNumber winner) override;
+	void LoseGame() override;
 	[[nodiscard]] std::uint32_t GetState() const { return _state; }
 protected:
 	PacketSenderInterface& _packetSenderInterface;

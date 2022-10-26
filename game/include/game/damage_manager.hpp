@@ -7,7 +7,7 @@ namespace game
 {
 struct Damager
 {
-	short damageAmount = 1;
+	short damageAmount = 10;
 };
 
 class DamageManager final :
@@ -15,7 +15,14 @@ class DamageManager final :
 	public OnCollisionInterface
 {
 public:
-	explicit DamageManager(core::EntityManager& entityManager) : ComponentManager(entityManager) {}
+	explicit DamageManager(core::EntityManager& entityManager, PlayerCharacterManager& playerCharacterManager)
+		: ComponentManager(entityManager), _playerCharacterManager(playerCharacterManager)
+	{}
 	void OnCollision(core::Entity entity1, core::Entity entity2) override;
+
+private:
+	void HandleCollision(core::Entity playerEntity) const;
+
+	PlayerCharacterManager& _playerCharacterManager;
 };
 }

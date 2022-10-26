@@ -19,7 +19,7 @@ enum class PacketType : std::uint8_t
 	ValidateState,
 	StartGame,
 	JoinAck,
-	WinGame,
+	LoseGame,
 	Ping,
 	None,
 };
@@ -195,19 +195,19 @@ inline sf::Packet& operator>>(sf::Packet& packet, ValidateFramePacket& validateF
 /**
  * \brief WinGamePacket is a TCP Packet sent by the server to notify the clients that a certain player has won.
  */
-struct WinGamePacket final : TypedPacket<PacketType::WinGame>
+struct LoseGamePacket final : TypedPacket<PacketType::LoseGame>
 {
-	PlayerNumber winner = INVALID_PLAYER;
+	bool hasLost = true;
 };
 
-inline sf::Packet& operator<<(sf::Packet& packet, const WinGamePacket& winGamePacket)
+inline sf::Packet& operator<<(sf::Packet& packet, const LoseGamePacket& winGamePacket)
 {
-	return packet << winGamePacket.winner;
+	return packet << winGamePacket.hasLost;
 }
 
-inline sf::Packet& operator>>(sf::Packet& packet, WinGamePacket& winGamePacket)
+inline sf::Packet& operator>>(sf::Packet& packet, LoseGamePacket& winGamePacket)
 {
-	return packet >> winGamePacket.winner;
+	return packet >> winGamePacket.hasLost;
 }
 
 /**
@@ -268,9 +268,9 @@ inline void GeneratePacket(sf::Packet& packet, Packet& sendingPacket)
 		packet << packetTmp;
 		break;
 	}
-	case PacketType::WinGame:
+	case PacketType::LoseGame:
 	{
-		const auto& packetTmp = static_cast<WinGamePacket&>(sendingPacket);
+		const auto& packetTmp = static_cast<LoseGamePacket&>(sendingPacket);
 		packet << packetTmp;
 		break;
 	}
@@ -332,9 +332,9 @@ inline std::unique_ptr<Packet> GenerateReceivedPacket(sf::Packet& packet)
 		packet >> *joinAckPacket;
 		return joinAckPacket;
 	}
-	case PacketType::WinGame:
+	case PacketType::LoseGame:
 	{
-		auto winGamePacket = std::make_unique<WinGamePacket>();
+		auto winGamePacket = std::make_unique<LoseGamePacket>();
 		winGamePacket->packetType = packetTmp.packetType;
 		packet >> *winGamePacket;
 		return winGamePacket;
