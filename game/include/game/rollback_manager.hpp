@@ -10,6 +10,7 @@
 #include "network/packet_type.hpp"
 
 #include "physics/physics_manager.hpp"
+#include "damage_manager.hpp"
 
 namespace game
 {
@@ -78,7 +79,7 @@ public:
 	[[nodiscard]] const core::TransformManager& GetTransformManager() const { return _currentTransformManager; }
 	[[nodiscard]] const PlayerCharacterManager& GetPlayerCharacterManager() const { return _currentPlayerManager; }
 	void SetupLevel(core::Entity wallLeftEntity, core::Entity wallRightEntity, core::Entity wallMiddleEntity, core::Entity wallBottomEntity, core
-	                ::Entity wallTopEntity);
+		::Entity wallTopEntity);
 	void SpawnFallingWall(core::Entity backgroundWall, core::Entity door);
 	void CreateWall(core::Entity entity, core::Vec2f position, core::Vec2f size, Layer layer = Layer::Wall);
 	void SpawnPlayer(PlayerNumber playerNumber, core::Entity entity, core::Vec2f position, core::Degree rotation);
@@ -115,6 +116,7 @@ private:
 	BallManager _currentBulletManager;
 	FallingObjectManager _currentFallingObjectManager;
 	FallingDoorManager _currentFallingDoorManager;
+	DamageManager _currentDamageManager;
 
 	/**
 	 * Last Validate (confirm frame) Component Managers used for rollback
@@ -124,6 +126,7 @@ private:
 	BallManager _lastValidateBulletManager;
 	FallingObjectManager _lastValidateFallingObjectManager;
 	FallingDoorManager _lastValidateFallingDoorManager;
+	DamageManager _lastValidateDamageManager;
 
 	/**
 	 * \brief lastValidateFrame_ is the last validated frame from the server side.

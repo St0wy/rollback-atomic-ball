@@ -208,6 +208,7 @@ void NetworkClient::SendUnreliablePacket(const std::unique_ptr<Packet> packet)
 	{
 		return;
 	}
+
 	sf::Packet udpPacket;
 	GeneratePacket(udpPacket, *packet);
 

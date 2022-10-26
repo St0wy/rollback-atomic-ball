@@ -457,10 +457,8 @@ void ClientGameManager::FixedUpdate()
 			return;
 		}
 	}
-	if (_state & Finished)
-	{
-		return;
-	}
+
+	if (_state & Finished) return;
 
 	//We send the player inputs when the game started
 	const auto playerNumber = GetPlayerNumber();
@@ -477,10 +475,7 @@ void ClientGameManager::FixedUpdate()
 	playerInputPacket->currentFrame = core::ConvertToBinary(_currentFrame);
 	for (size_t i = 0; i < playerInputPacket->inputs.size(); i++)
 	{
-		if (i > _currentFrame)
-		{
-			break;
-		}
+		if (i > _currentFrame) break;
 
 		playerInputPacket->inputs[i] = inputs[i];
 	}

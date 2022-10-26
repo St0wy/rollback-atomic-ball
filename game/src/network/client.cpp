@@ -15,8 +15,10 @@ namespace game
 void Client::ReceivePacket(const Packet* packet)
 {
 	#ifdef TRACY_ENABLE
-    ZoneScoped;
+	ZoneScoped;
 	#endif
+
+	/*core::LogInfo(fmt::format("Packet type : {}", (int)packet->packetType));*/
 
 	switch (packet->packetType)
 	{
@@ -43,7 +45,7 @@ void Client::ReceivePacket(const Packet* packet)
 		using namespace std::chrono;
 		const auto startingTime = (duration_cast<duration<long long, std::milli>>(
 			system_clock::now().time_since_epoch()
-		) + milliseconds(START_DELAY)).count() - milliseconds(static_cast<long long>(_currentPing)).count();
+			) + milliseconds(START_DELAY)).count() - milliseconds(static_cast<long long>(_currentPing)).count();
 
 		_gameManager.StartGame(startingTime);
 		break;
@@ -62,18 +64,14 @@ void Client::ReceivePacket(const Packet* packet)
 			for (size_t i = 0; i < playerInputPacket->inputs.size(); i++)
 			{
 				const auto index = static_cast<unsigned long long>(currentFrame) - inputFrame + i;
-				if (index > inputs.size())
-				{
-					break;
-				}
+				if (index > inputs.size()) break;
+
 				if (inputs[index] != playerInputPacket->inputs[i])
 				{
 					gpr_assert(false, "Inputs coming back from server are not coherent!!!");
 				}
-				if (inputFrame - i == 0)
-				{
-					break;
-				}
+
+				if (inputFrame - i == 0) break;
 			}
 			break;
 		}
@@ -83,6 +81,7 @@ void Client::ReceivePacket(const Packet* packet)
 		{
 			break;
 		}
+
 		for (Frame i = 0; i < playerInputPacket->inputs.size(); i++)
 		{
 			_gameManager.SetPlayerInput(playerNumber,
@@ -126,7 +125,7 @@ void Client::ReceivePacket(const Packet* packet)
 			using namespace std::chrono;
 			const auto currentTime = duration_cast<duration<unsigned long long, std::milli>>(
 				system_clock::now().time_since_epoch()
-			).count();
+				).count();
 			const auto delta = currentTime - originTime;
 			const auto ping = static_cast<float>(delta);
 
@@ -147,7 +146,7 @@ void Client::ReceivePacket(const Packet* packet)
 		}
 		break;
 	}
-	default: 
+	default:
 		break;
 	}
 }
@@ -155,7 +154,7 @@ void Client::ReceivePacket(const Packet* packet)
 void Client::Update(const sf::Time dt)
 {
 	#ifdef TRACY_ENABLE
-    ZoneScoped;
+	ZoneScoped;
 
 	#endif
 	_pingTimer -= dt.asSeconds();
@@ -171,6 +170,6 @@ void Client::Update(const sf::Time dt)
 			SendUnreliablePacket(std::move(pingPacket));
 		}
 		_pingTimer = PING_PERIOD_;
-	}
+}
 }
 }

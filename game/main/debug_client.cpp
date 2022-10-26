@@ -4,11 +4,11 @@
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 {
-    core::Engine engine;
-    game::NetworkClientDebugApp app;
-    engine.RegisterApp(&app);
+	core::Engine engine(game::DEBUG_WINDOW_SIZE);
+	game::NetworkClientDebugApp app;
+	engine.RegisterApp(&app);
 
-    engine.Run();
+	engine.Run();
 
-    return EXIT_SUCCESS;
+	return EXIT_SUCCESS;
 }

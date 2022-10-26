@@ -16,14 +16,14 @@ void NetworkClientDebugApp::Begin()
 	#ifdef TRACY_ENABLE
 	ZoneScoped;
 	#endif
-	_windowSize = core::WINDOW_SIZE;
+	_windowSize = DEBUG_WINDOW_SIZE;
 	for (auto& framebuffer : _clientsFramebuffers)
 	{
-		framebuffer.create(_windowSize.x / 2u, _windowSize.y);
+		framebuffer.create(DEBUG_FRAMEBUFFER_SIZE.x, DEBUG_FRAMEBUFFER_SIZE.y);
 	}
 	for (auto& client : _clients)
 	{
-		client.SetWindowSize(sf::Vector2u(_windowSize.x / 2u, _windowSize.y));
+		client.SetWindowSize(DEBUG_FRAMEBUFFER_SIZE);
 		client.Begin();
 	}
 }
@@ -85,26 +85,6 @@ void NetworkClientDebugApp::Draw(sf::RenderTarget& renderTarget)
 	renderTarget.draw(_screenQuad);
 }
 
-void NetworkClientDebugApp::OnEvent(const sf::Event& event)
-{
-	switch (event.type) // NOLINT(clang-diagnostic-switch-enum)
-	{
-	case sf::Event::Resized:
-	{
-		_windowSize = sf::Vector2u(event.size.width, event.size.height);
-		for (auto& framebuffer : _clientsFramebuffers)
-		{
-			framebuffer.create(_windowSize.x / 2u, _windowSize.y);
-		}
-
-		for (auto& client : _clients)
-		{
-			client.SetWindowSize(sf::Vector2u(_windowSize.x / 2u, _windowSize.y));
-		}
-		break;
-	}
-	default:
-		break;
-	}
-}
+void NetworkClientDebugApp::OnEvent(const sf::Event&)
+{}
 }

@@ -28,7 +28,7 @@ void ClientApp::Update(const sf::Time dt)
 	ZoneScoped;
 	#endif
 
-	const PlayerInput playerInput = hasFocus ? GetPlayerInput(0) : PlayerInput{};
+	const PlayerInput playerInput = GetPlayerInput(0);
 	_client.SetPlayerInput(playerInput);
 
 	_client.Update(dt);

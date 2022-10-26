@@ -20,12 +20,13 @@ RollbackManager::RollbackManager(GameManager& gameManager, core::EntityManager& 
 	_currentBulletManager(entityManager, gameManager),
 	_currentFallingObjectManager(entityManager, _currentPhysicsManager),
 	_currentFallingDoorManager(entityManager, _currentPhysicsManager, _currentPlayerManager, _gameManager),
+	_currentDamageManager(entityManager),
 	_lastValidatePhysicsManager(entityManager),
 	_lastValidatePlayerManager(entityManager, _lastValidatePhysicsManager, _gameManager),
 	_lastValidateBulletManager(entityManager, gameManager),
 	_lastValidateFallingObjectManager(entityManager, _lastValidatePhysicsManager),
-	_lastValidateFallingDoorManager(entityManager, _lastValidatePhysicsManager, _lastValidatePlayerManager, _gameManager)
-
+	_lastValidateFallingDoorManager(entityManager, _lastValidatePhysicsManager, _lastValidatePlayerManager, _gameManager),
+	_lastValidateDamageManager(entityManager)
 {
 	for (auto& input : _inputs)
 	{
@@ -35,7 +36,7 @@ RollbackManager::RollbackManager(GameManager& gameManager, core::EntityManager& 
 	_currentPhysicsManager.RegisterTriggerListener(*this);
 	_currentPhysicsManager.RegisterCollisionListener(*this);
 	_currentPhysicsManager.RegisterCollisionListener(_currentFallingDoorManager);
-	_lastValidatePhysicsManager.RegisterCollisionListener(_lastValidateFallingDoorManager);
+	_currentPhysicsManager.RegisterCollisionListener(_currentDamageManager);
 }
 
 void RollbackManager::SimulateToCurrentFrame()
@@ -210,6 +211,8 @@ void RollbackManager::ValidateFrame(const Frame newValidateFrame)
 	_currentBulletManager.CopyAllComponents(_lastValidateBulletManager.GetAllComponents());
 	_currentPhysicsManager.CopyAllComponents(_lastValidatePhysicsManager);
 	_currentPlayerManager.CopyAllComponents(_lastValidatePlayerManager.GetAllComponents());
+	_currentFallingObjectManager.CopyAllComponents(_lastValidateFallingObjectManager.GetAllComponents());
+	_currentFallingDoorManager.CopyAllComponents(_lastValidateFallingDoorManager.GetAllComponents());
 
 	// We simulate the frames until the new validated frame
 	for (Frame frame = _lastValidateFrame + 1; frame <= newValidateFrame; frame++)
@@ -246,6 +249,8 @@ void RollbackManager::ValidateFrame(const Frame newValidateFrame)
 	_lastValidateBulletManager.CopyAllComponents(_currentBulletManager.GetAllComponents());
 	_lastValidatePlayerManager.CopyAllComponents(_currentPlayerManager.GetAllComponents());
 	_lastValidatePhysicsManager.CopyAllComponents(_currentPhysicsManager);
+	_lastValidateFallingObjectManager.CopyAllComponents(_currentFallingObjectManager.GetAllComponents());
+	_lastValidateFallingDoorManager.CopyAllComponents(_currentFallingDoorManager.GetAllComponents());
 	_lastValidateFrame = newValidateFrame;
 	_createdEntities.clear();
 }

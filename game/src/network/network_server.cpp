@@ -19,7 +19,7 @@ void NetworkServer::SendReliablePacket(const std::unique_ptr<Packet> packet)
 	core::LogInfo(fmt::format("[Server] Sending TCP packet: {}",
 		std::to_string(static_cast<int>(packet->packetType))));
 	for (PlayerNumber playerNumber = 0; playerNumber < MAX_PLAYER_NMB;
-		 playerNumber++)
+		playerNumber++)
 	{
 		sf::Packet sendingPacket;
 		GeneratePacket(sendingPacket, *packet);
@@ -28,17 +28,12 @@ void NetworkServer::SendReliablePacket(const std::unique_ptr<Packet> packet)
 		while (status == sf::Socket::Partial)
 		{
 			status = _tcpSockets[playerNumber].send(sendingPacket);
-			switch (status)
+
+			if (status == sf::Socket::NotReady)
 			{
-			case sf::Socket::NotReady:
 				core::LogInfo(fmt::format(
 					"[Server] Error trying to send packet to Player: {} socket is not ready",
 					playerNumber));
-				break;
-			case sf::Socket::Disconnected:
-				break;
-			default:
-				break;
 			}
 		}
 	}
@@ -47,7 +42,7 @@ void NetworkServer::SendReliablePacket(const std::unique_ptr<Packet> packet)
 void NetworkServer::SendUnreliablePacket(const std::unique_ptr<Packet> packet)
 {
 	for (PlayerNumber playerNumber = 0; playerNumber < MAX_PLAYER_NMB;
-		 playerNumber++)
+		playerNumber++)
 	{
 		if (_clientInfoMap[playerNumber].udpRemotePort == 0)
 		{
@@ -81,7 +76,6 @@ void NetworkServer::SendUnreliablePacket(const std::unique_ptr<Packet> packet)
 		case sf::Socket::Error:
 			core::LogInfo("[Server] Error while sending UDP packet, DISCONNECTED");
 			break;
-		case sf::Socket::Partial:
 		default:
 			break;
 		}
@@ -91,7 +85,7 @@ void NetworkServer::SendUnreliablePacket(const std::unique_ptr<Packet> packet)
 void NetworkServer::Begin()
 {
 	#ifdef TRACY_ENABLE
-    ZoneScoped;
+	ZoneScoped;
 	#endif
 
 	sf::Socket::Status status = sf::Socket::Error;
@@ -135,7 +129,7 @@ void NetworkServer::Begin()
 void NetworkServer::Update([[maybe_unused]] sf::Time dt)
 {
 	#ifdef TRACY_ENABLE
-    ZoneScoped;
+	ZoneScoped;
 	#endif
 
 	if (_lastSocketIndex < MAX_PLAYER_NMB)
@@ -149,13 +143,14 @@ void NetworkServer::Update([[maybe_unused]] sf::Time dt)
 			core::LogInfo(fmt::format("[Server] New player connection with address: {} and port: {}",
 				remoteAddress.toString(),
 				_tcpSockets[_lastSocketIndex].getRemotePort()));
-			_status = _status | (FirstPlayerConnect << _lastSocketIndex);
+			const std::uint8_t connectionStatus = static_cast<std::uint8_t>(FirstPlayerConnect << _lastSocketIndex);
+			_status = _status | connectionStatus;
 			_lastSocketIndex++;
 		}
 	}
 
 	for (PlayerNumber playerNumber = 0; playerNumber < MAX_PLAYER_NMB;
-		 playerNumber++)
+		playerNumber++)
 	{
 		sf::Packet tcpPacket;
 		switch (_tcpSockets[playerNumber].receive(tcpPacket))
@@ -231,13 +226,13 @@ void NetworkServer::ProcessReceivePacket(
 	{
 	case PacketType::Join:
 	{
-		const auto joinPacket = *static_cast<JoinPacket*>(packet.get());
+		const auto joinPacket = *dynamic_cast<JoinPacket*>(packet.get());
 		Server::ReceivePacket(std::move(packet));
 		auto clientId = core::ConvertFromBinary<ClientId>(joinPacket.clientId);
 		core::LogInfo(fmt::format("[Server] Received Join Packet from: {} {}",
 			static_cast<unsigned>(clientId),
 			(packetSource == PacketSocketSource::Udp ? fmt::format(" UDP with port: {}", port) : " TCP")));
-		const auto it = std::find(_clientMap.begin(), _clientMap.end(), clientId);
+		const auto it = std::ranges::find(_clientMap, clientId);
 		PlayerNumber playerNumber = 0;
 		if (it != _clientMap.end())
 		{
@@ -276,31 +271,13 @@ void NetworkServer::ProcessReceivePacket(
 	default:
 		Server::ReceivePacket(std::move(packet));
 		break;
-	case PacketType::SpawnPlayer:
-		break;
-	case PacketType::Input:
-		break;
-	case PacketType::SpawnBullet:
-		break;
-	case PacketType::ValidateState:
-		break;
-	case PacketType::StartGame:
-		break;
-	case PacketType::JoinAck:
-		break;
-	case PacketType::WinGame:
-		break;
-	case PacketType::Ping:
-		break;
-	case PacketType::None:
-		break;
 	}
 }
 
 void NetworkServer::ReceiveNetPacket(sf::Packet& packet,
-									 PacketSocketSource packetSource,
-									 sf::IpAddress address,
-									 unsigned short port)
+	PacketSocketSource packetSource,
+	sf::IpAddress address,
+	unsigned short port)
 {
 	auto receivedPacket = GenerateReceivedPacket(packet);
 
