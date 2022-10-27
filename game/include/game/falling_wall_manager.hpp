@@ -8,6 +8,13 @@
 
 namespace game
 {
+struct FallingWallSpawnInstructions
+{
+	Frame spawnFrame;
+	float doorPosition;
+	bool requiresBall;
+};
+
 struct FallingObject
 {
 	float fallingSpeed = 1.0f;
@@ -36,14 +43,12 @@ class FallingDoorManager final :
 	public OnCollisionInterface
 {
 public:
-	FallingDoorManager(core::EntityManager& entityManager, PhysicsManager& physicsManager, 
-		PlayerCharacterManager& playerCharacterManager, GameManager& gameManager);
+	FallingDoorManager(core::EntityManager& entityManager, PlayerCharacterManager& playerCharacterManager, GameManager& gameManager);
 	void SetFallingDoor(core::Entity entity, FallingDoor fallingDoor);
 	void OnCollision(core::Entity entity1, core::Entity entity2) override;
 
 private:
 	void HandleCollision(core::Entity doorEntity, core::Entity playerEntity);
-	PhysicsManager& _physicsManager;
 	PlayerCharacterManager& _playerCharacterManager;
 	GameManager& _gameManager;
 };

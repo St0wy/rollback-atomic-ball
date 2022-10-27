@@ -34,10 +34,8 @@ void game::FallingObjectManager::FixedUpdate(const sf::Time deltaTime)
 	}
 }
 
-game::FallingDoorManager::FallingDoorManager(core::EntityManager& entityManager, PhysicsManager& physicsManager,
-	PlayerCharacterManager& playerCharacterManager, GameManager& gameManager)
+game::FallingDoorManager::FallingDoorManager(core::EntityManager& entityManager, PlayerCharacterManager& playerCharacterManager, GameManager& gameManager)
 	: ComponentManager(entityManager),
-	_physicsManager(physicsManager),
 	_playerCharacterManager(playerCharacterManager),
 	_gameManager(gameManager)
 {}

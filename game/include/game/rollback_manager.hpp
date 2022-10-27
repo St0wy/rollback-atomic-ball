@@ -29,7 +29,7 @@ struct CreatedEntity
 /**
  * \brief RollbackManager is a class that manages all the rollback mechanisms of the game.
  * It contains two copies of the world (PhysicsManager, TransformManager, etc...), the current one and the validated one.
- * When receiving new information, it can reupdate the current copy of the world.
+ * When receiving new information, it can re-update the current copy of the world.
  */
 class RollbackManager final : public OnTriggerInterface, OnCollisionInterface
 {
@@ -127,6 +127,9 @@ private:
 	FallingObjectManager _lastValidateFallingObjectManager;
 	FallingDoorManager _lastValidateFallingDoorManager;
 	DamageManager _lastValidateDamageManager;
+
+	// TODO: put this in a manger
+	FallingWallSpawnInstructions _nextFallingWallSpawnInstructions{};
 
 	/**
 	 * \brief lastValidateFrame_ is the last validated frame from the server side.

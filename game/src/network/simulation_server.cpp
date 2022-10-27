@@ -20,7 +20,6 @@ SimulationServer::SimulationServer(std::array<std::unique_ptr<SimulationClient>,
 
 void SimulationServer::Begin()
 {
-	_gameManager.SpawnFallingWall();
 	_gameManager.SetupLevel();
 }
 
@@ -130,7 +129,8 @@ void SimulationServer::SpawnNewPlayer(const ClientId clientId, const PlayerNumbe
 
 	const core::Vec2f pos = SPAWN_POSITIONS[playerNumber] * 3.0f;
 	spawnPlayer->pos = ConvertToBinary(pos);
-	const core::Degree rotation = SPAWN_ROTATIONS[playerNumber];
+
+	constexpr auto rotation = core::Degree(0);
 	spawnPlayer->angle = ConvertToBinary(rotation);
 	_gameManager.SpawnPlayer(playerNumber, pos, rotation);
 	SendReliablePacket(std::move(spawnPlayer));

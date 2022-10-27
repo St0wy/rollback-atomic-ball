@@ -122,7 +122,6 @@ void NetworkServer::Begin()
 
 	_status = _status | Open;
 
-	_gameManager.SpawnFallingWall();
 	_gameManager.SetupLevel();
 }
 
@@ -143,7 +142,7 @@ void NetworkServer::Update([[maybe_unused]] sf::Time dt)
 			core::LogInfo(fmt::format("[Server] New player connection with address: {} and port: {}",
 				remoteAddress.toString(),
 				_tcpSockets[_lastSocketIndex].getRemotePort()));
-			const std::uint8_t connectionStatus = static_cast<std::uint8_t>(FirstPlayerConnect << _lastSocketIndex);
+			const auto connectionStatus = static_cast<std::uint8_t>(FirstPlayerConnect << _lastSocketIndex);
 			_status = _status | connectionStatus;
 			_lastSocketIndex++;
 		}
@@ -183,7 +182,8 @@ void NetworkServer::Update([[maybe_unused]] sf::Time dt)
 	}
 }
 
-void NetworkServer::End() {}
+void NetworkServer::End()
+{}
 
 void NetworkServer::SetTcpPort(const unsigned short i)
 {
@@ -208,7 +208,7 @@ void NetworkServer::SpawnNewPlayer(
 		const auto pos = SPAWN_POSITIONS[p] * 3.0f;
 		spawnPlayer->pos = ConvertToBinary(pos);
 
-		const auto rotation = SPAWN_ROTATIONS[p];
+		constexpr auto rotation = core::Degree(0);
 		spawnPlayer->angle = ConvertToBinary(rotation);
 		_gameManager.SpawnPlayer(p, pos, rotation);
 
@@ -226,14 +226,19 @@ void NetworkServer::ProcessReceivePacket(
 	{
 	case PacketType::Join:
 	{
-		const auto joinPacket = *dynamic_cast<JoinPacket*>(packet.get());
+		const JoinPacket joinPacket = *dynamic_cast<JoinPacket*>(packet.get());
 		Server::ReceivePacket(std::move(packet));
 		auto clientId = core::ConvertFromBinary<ClientId>(joinPacket.clientId);
-		core::LogInfo(fmt::format("[Server] Received Join Packet from: {} {}",
-			static_cast<unsigned>(clientId),
-			(packetSource == PacketSocketSource::Udp ? fmt::format(" UDP with port: {}", port) : " TCP")));
+
+		std::string packetTypeString = packetSource == PacketSocketSource::Udp
+			? fmt::format(" UDP with port: {}", port)
+			: " TCP";
+		auto unsignedId = static_cast<unsigned>(clientId);
+		core::LogInfo(fmt::format("[Server] Received Join Packet from: {} {}", unsignedId, packetTypeString));
+
 		const auto it = std::ranges::find(_clientMap, clientId);
 		PlayerNumber playerNumber = 0;
+
 		if (it != _clientMap.end())
 		{
 			playerNumber = static_cast<PlayerNumber>(std::distance(_clientMap.begin(), it));
@@ -246,7 +251,6 @@ void NetworkServer::ProcessReceivePacket(
 
 		auto joinAckPacket = std::make_unique<JoinAckPacket>();
 		joinAckPacket->clientId = core::ConvertToBinary(clientId);
-		joinAckPacket->clientId = core::ConvertToBinary(clientId);
 		joinAckPacket->udpPort = core::ConvertToBinary(_udpPort);
 		if (packetSource == PacketSocketSource::Udp)
 		{
@@ -258,7 +262,7 @@ void NetworkServer::ProcessReceivePacket(
 		else
 		{
 			SendReliablePacket(std::move(joinAckPacket));
-			//Calculate time difference
+			// Calculate time difference
 			const auto clientTime = core::ConvertFromBinary<unsigned long>(joinPacket.startTime);
 			using namespace std::chrono;
 			const unsigned long deltaTime = static_cast<unsigned long>((duration_cast<milliseconds>(
@@ -274,10 +278,8 @@ void NetworkServer::ProcessReceivePacket(
 	}
 }
 
-void NetworkServer::ReceiveNetPacket(sf::Packet& packet,
-	PacketSocketSource packetSource,
-	sf::IpAddress address,
-	unsigned short port)
+void NetworkServer::ReceiveNetPacket(sf::Packet& packet, const PacketSocketSource packetSource,
+	const sf::IpAddress address, const unsigned short port)
 {
 	auto receivedPacket = GenerateReceivedPacket(packet);
 

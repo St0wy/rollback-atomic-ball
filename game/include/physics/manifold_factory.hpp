@@ -3,7 +3,7 @@
 #include "collider.hpp"
 #include "manifold.hpp"
 
-#include "physics/transform.hpp"
+#include "transform.hpp"
 
 namespace game
 {

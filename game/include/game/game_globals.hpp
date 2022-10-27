@@ -29,7 +29,7 @@ constexpr auto INVALID_PLAYER = std::numeric_limits<PlayerNumber>::max();
  */
 enum class ClientId : std::uint16_t {};
 
-constexpr auto INVALID_CLIENT_ID = ClientId{ 0 };
+constexpr auto INVALID_CLIENT_ID = ClientId{ 0u };
 using Frame = std::uint32_t;
 
 /**
@@ -73,12 +73,6 @@ constexpr std::array SPAWN_POSITIONS
 {
 	core::Vec2f(-0.5f, -1.0f),
 	core::Vec2f(0.5f, -1.0f),
-};
-
-constexpr std::array SPAWN_ROTATIONS
-{
-	core::Degree(0.0f),
-	core::Degree(0.0f),
 };
 
 constexpr core::EntityMask OTHER_TYPE = static_cast<core::EntityMask>(core::ComponentType::OtherType);

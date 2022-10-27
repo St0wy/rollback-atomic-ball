@@ -323,7 +323,7 @@ void NetworkClient::ReceiveNetPacket(sf::Packet& packet, const PacketSource sour
 	case PacketType::Join:
 	case PacketType::SpawnPlayer:
 	case PacketType::Input:
-	case PacketType::SpawnBullet:
+	case PacketType::SpawnBall:
 	case PacketType::ValidateState:
 	case PacketType::StartGame:
 	case PacketType::LoseGame:

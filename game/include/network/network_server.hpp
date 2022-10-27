@@ -72,7 +72,6 @@ private:
 
 	std::array<ClientInfo, MAX_PLAYER_NMB> _clientInfoMap{};
 
-
 	unsigned short _tcpPort = 12345;
 	unsigned short _udpPort = 12345;
 	std::uint32_t _lastSocketIndex = 0;

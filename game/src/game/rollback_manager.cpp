@@ -17,15 +17,15 @@ RollbackManager::RollbackManager(GameManager& gameManager, core::EntityManager& 
 	: OnTriggerInterface(), OnCollisionInterface(), _gameManager(gameManager), _entityManager(entityManager),
 	_currentTransformManager(entityManager),
 	_currentPhysicsManager(entityManager), _currentPlayerManager(entityManager, _currentPhysicsManager, _gameManager),
-	_currentBulletManager(entityManager, gameManager),
+	_currentBulletManager(entityManager),
 	_currentFallingObjectManager(entityManager, _currentPhysicsManager),
-	_currentFallingDoorManager(entityManager, _currentPhysicsManager, _currentPlayerManager, _gameManager),
+	_currentFallingDoorManager(entityManager, _currentPlayerManager, _gameManager),
 	_currentDamageManager(entityManager, _currentPlayerManager),
 	_lastValidatePhysicsManager(entityManager),
 	_lastValidatePlayerManager(entityManager, _lastValidatePhysicsManager, _gameManager),
-	_lastValidateBulletManager(entityManager, gameManager),
+	_lastValidateBulletManager(entityManager),
 	_lastValidateFallingObjectManager(entityManager, _lastValidatePhysicsManager),
-	_lastValidateFallingDoorManager(entityManager, _lastValidatePhysicsManager, _lastValidatePlayerManager, _gameManager),
+	_lastValidateFallingDoorManager(entityManager, _lastValidatePlayerManager, _gameManager),
 	_lastValidateDamageManager(entityManager, _lastValidatePlayerManager)
 {
 	for (auto& input : _inputs)
@@ -460,6 +460,9 @@ void RollbackManager::SpawnPlayer(const PlayerNumber playerNumber, const core::E
 	_currentTransformManager.AddComponent(entity);
 	_currentTransformManager.SetPosition(entity, position);
 	_currentTransformManager.SetRotation(entity, rotation);
+
+	_currentFallingObjectManager.AddComponent(entity);
+	_lastValidateFallingObjectManager.AddComponent(entity);
 }
 
 PlayerInput RollbackManager::GetInputAtFrame(const PlayerNumber playerNumber, const Frame frame) const

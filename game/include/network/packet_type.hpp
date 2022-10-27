@@ -15,12 +15,13 @@ enum class PacketType : std::uint8_t
 	Join = 0u,
 	SpawnPlayer,
 	Input,
-	SpawnBullet,
+	SpawnBall,
 	ValidateState,
 	StartGame,
 	JoinAck,
 	LoseGame,
 	Ping,
+	SpawnFallingWall,
 	None,
 };
 
@@ -179,7 +180,7 @@ struct StartGamePacket final : TypedPacket<PacketType::StartGame> {};
 struct ValidateFramePacket final : TypedPacket<PacketType::ValidateState>
 {
 	std::array<std::uint8_t, sizeof(Frame)> newValidateFrame{};
-	std::array<std::uint8_t, sizeof(PhysicsState) * MAX_PLAYER_NMB> physicsState{};
+	std::array<std::uint8_t, sizeof(PhysicsState)* MAX_PLAYER_NMB> physicsState{};
 };
 
 inline sf::Packet& operator<<(sf::Packet& packet, const ValidateFramePacket& validateFramePacket)
@@ -227,6 +228,23 @@ inline sf::Packet& operator<<(sf::Packet& packet, const PingPacket& pingPacket)
 inline sf::Packet& operator>>(sf::Packet& packet, PingPacket& pingPacket)
 {
 	return packet >> pingPacket.time >> pingPacket.clientId;
+}
+
+struct SpawnFallingWallPacket final : TypedPacket<PacketType::SpawnFallingWall>
+{
+	std::array<std::uint8_t, sizeof(Frame)> spawnFrame{};
+	std::array<std::uint8_t, sizeof(float)> doorPosition{};
+	bool requiresBall{};
+};
+
+inline sf::Packet& operator<<(sf::Packet& packet, const SpawnFallingWallPacket& pingPacket)
+{
+	return packet << pingPacket.spawnFrame << pingPacket.doorPosition << pingPacket.requiresBall;
+}
+
+inline sf::Packet& operator>>(sf::Packet& packet, SpawnFallingWallPacket& pingPacket)
+{
+	return packet >> pingPacket.spawnFrame >> pingPacket.doorPosition >> pingPacket.requiresBall;
 }
 
 inline void GeneratePacket(sf::Packet& packet, Packet& sendingPacket)
@@ -277,6 +295,12 @@ inline void GeneratePacket(sf::Packet& packet, Packet& sendingPacket)
 	case PacketType::Ping:
 	{
 		const auto& packetTmp = static_cast<PingPacket&>(sendingPacket);
+		packet << packetTmp;
+		break;
+	}
+	case PacketType::SpawnFallingWall:
+	{
+		const auto& packetTmp = static_cast<SpawnFallingWallPacket&>(sendingPacket);
 		packet << packetTmp;
 		break;
 	}
@@ -346,7 +370,15 @@ inline std::unique_ptr<Packet> GenerateReceivedPacket(sf::Packet& packet)
 		packet >> *pingPacket;
 		return pingPacket;
 	}
-	default: ;
+	case PacketType::SpawnFallingWall:
+	{
+		auto spawnFallingWallPacket = std::make_unique<SpawnFallingWallPacket>();
+		spawnFallingWallPacket->packetType = packetTmp.packetType;
+		packet >> *spawnFallingWallPacket;
+		return spawnFallingWallPacket;
+	}
+	default:
+		break;
 	}
 	return nullptr;
 }
@@ -357,7 +389,13 @@ inline std::unique_ptr<Packet> GenerateReceivedPacket(sf::Packet& packet)
 class PacketSenderInterface
 {
 public:
+	PacketSenderInterface() = default;
 	virtual ~PacketSenderInterface() = default;
+	PacketSenderInterface(const PacketSenderInterface& other) = default;
+	PacketSenderInterface(PacketSenderInterface&& other) = default;
+	PacketSenderInterface& operator=(const PacketSenderInterface& other) = default;
+	PacketSenderInterface& operator=(PacketSenderInterface&& other) = default;
+
 	virtual void SendReliablePacket(std::unique_ptr<Packet> packet) = 0;
 	virtual void SendUnreliablePacket(std::unique_ptr<Packet> packet) = 0;
 };

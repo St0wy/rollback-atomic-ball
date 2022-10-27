@@ -80,15 +80,23 @@ void GameManager::SetPlayerInput(const PlayerNumber playerNumber, const PlayerIn
 	_rollbackManager.SetPlayerInput(playerNumber, playerInput, inputFrame);
 }
 
+void GameManager::SetFallingWallSpawnInstructions(const FallingWallSpawnInstructions fallingWallSpawnInstructions)
+{
+	core::LogInfo(fmt::format("I will spawn on frame : {}", fallingWallSpawnInstructions.spawnFrame));
+	_nextFallingWallSpawnInstructions = fallingWallSpawnInstructions;
+}
+
 void GameManager::Validate(const Frame newValidateFrame)
 {
 	#ifdef TRACY_ENABLE
 	ZoneScoped;
 	#endif
+
 	if (_rollbackManager.GetCurrentFrame() < newValidateFrame)
 	{
 		_rollbackManager.StartNewFrame(newValidateFrame);
 	}
+
 	_rollbackManager.ValidateFrame(newValidateFrame);
 }
 
@@ -111,12 +119,6 @@ std::pair<core::Entity, core::Entity> GameManager::SpawnFallingWall()
 
 	_transformManager.AddComponent(backgroundWall);
 	_transformManager.AddComponent(door);
-
-	// Todo random pos
-	/*const core::Vec2f position = { 0, 0 };
-	float doorPosition = 0.0f;
-	_transformManager.SetPosition(backgroundWall, position);
-	_transformManager.SetPosition(door, { doorPosition, position.y });*/
 
 	_rollbackManager.SpawnFallingWall(backgroundWall, door);
 
@@ -166,7 +168,6 @@ void ClientGameManager::Begin()
 
 	LoadData();
 
-	SpawnFallingWall();
 	SetupLevel();
 }
 
@@ -444,7 +445,7 @@ void ClientGameManager::FixedUpdate()
 		{
 			return;
 		}
-}
+	}
 
 	if (_state & Finished) return;
 

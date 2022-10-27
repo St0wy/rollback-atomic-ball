@@ -21,9 +21,7 @@ class GameManager;
 class BallManager final : public core::ComponentManager<Ball, static_cast<core::EntityMask>(ComponentType::Bullet)>
 {
 public:
-    explicit BallManager(core::EntityManager& entityManager, GameManager& gameManager);
+    explicit BallManager(core::EntityManager& entityManager);
     void FixedUpdate(sf::Time dt);
-private:
-    GameManager& _gameManager;
 };
 }

@@ -18,8 +18,6 @@ void Client::ReceivePacket(const Packet* packet)
 	ZoneScoped;
 	#endif
 
-	/*core::LogInfo(fmt::format("Packet type : {}", (int)packet->packetType));*/
-
 	switch (packet->packetType)
 	{
 	case PacketType::SpawnPlayer:
@@ -106,7 +104,6 @@ void Client::ReceivePacket(const Packet* packet)
 			statePtr[i] = validateFramePacket->physicsState[i];
 		}
 		_gameManager.ConfirmValidateFrame(newValidateFrame, physicsStates);
-		//logDebug("Client received validate frame " + std::to_string(newValidateFrame));
 		break;
 	}
 	case PacketType::LoseGame:
@@ -148,6 +145,23 @@ void Client::ReceivePacket(const Packet* packet)
 			_currentPing = _srtt;
 		}
 		break;
+	}
+	case PacketType::SpawnFallingWall:
+	{
+		const auto* spawnFallingWallPacket = static_cast<const SpawnFallingWallPacket*>(packet);
+		const auto spawnFrame = core::ConvertFromBinary<Frame>(spawnFallingWallPacket->spawnFrame);
+		if (spawnFrame <= _gameManager.GetRollbackManager().GetCurrentFrame())
+		{
+			core::LogWarning("Spawn frame is smaller than current frame.");
+			return;
+		}
+
+		FallingWallSpawnInstructions fallingWallSpawnInstructions{};
+		fallingWallSpawnInstructions.spawnFrame = spawnFrame;
+		fallingWallSpawnInstructions.doorPosition = core::ConvertFromBinary<float>(spawnFallingWallPacket->doorPosition);
+		fallingWallSpawnInstructions.requiresBall = spawnFallingWallPacket->requiresBall;
+
+		_gameManager.SetFallingWallSpawnInstructions(fallingWallSpawnInstructions);
 	}
 	default:
 		break;

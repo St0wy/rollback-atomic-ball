@@ -48,6 +48,7 @@ public:
 	[[nodiscard]] const core::TransformManager& GetTransformManager() const { return _transformManager; }
 	[[nodiscard]] const RollbackManager& GetRollbackManager() const { return _rollbackManager; }
 	virtual void SetPlayerInput(PlayerNumber playerNumber, PlayerInput playerInput, std::uint32_t inputFrame);
+	virtual void SetFallingWallSpawnInstructions(FallingWallSpawnInstructions fallingWallSpawnInstructions);
 
 	/**
 	 * \brief Validate is a method called by the server to validate a frame.
@@ -69,8 +70,8 @@ protected:
  * \brief ClientGameManager is a class that inherits from GameManager by adding the visual part and specific implementations needed by the clients.
  */
 class ClientGameManager final : public GameManager,
-								public core::DrawInterface, public core::DrawImGuiInterface,
-								public core::SystemInterface
+	public core::DrawInterface, public core::DrawImGuiInterface,
+	public core::SystemInterface
 {
 public:
 	enum State : std::uint32_t

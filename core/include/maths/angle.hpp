@@ -6,6 +6,7 @@
 namespace core
 {
 inline constexpr static float PI = std::numbers::pi_v<float>;
+
 class Degree;
 
 /**

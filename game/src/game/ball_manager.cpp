@@ -8,8 +8,8 @@
 
 namespace game
 {
-BallManager::BallManager(core::EntityManager& entityManager, GameManager& gameManager) :
-    ComponentManager(entityManager), _gameManager(gameManager)
+BallManager::BallManager(core::EntityManager& entityManager) :
+    ComponentManager(entityManager)
 {
 }
 

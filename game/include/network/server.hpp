@@ -19,6 +19,12 @@ protected:
 
     virtual void SpawnNewPlayer(ClientId clientId, PlayerNumber playerNumber) = 0;
 
+    virtual void SendStartGamePacket();
+    virtual void SendSpawnFallingWallPacket(Frame spawnTimeOffset = 0u);
+
+    Frame GetNextRandomFallingWallSpawnFrame() const;
+    float GetNextRandomDoorPosition() const;
+
     /**
      * \brief ReceiveNetPacket is a method that is called when the Server receives a Packet from a Client.
      * \param packet is the received Packet.

@@ -3,7 +3,7 @@
 
 namespace game
 {
-enum class Layer : std::uint8_t
+enum class Layer : std::int8_t
 {
 	None = 0,
 	Wall,
