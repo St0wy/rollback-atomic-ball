@@ -62,13 +62,14 @@ public:
 		:_rollbackManager(rollbackManager), _gameManager(gameManager)
 	{}
 
-	void FixedUpdate() const;
+	void FixedUpdate();
 	void CopyAllComponents(const FallingWallSpawnManager& fallingWallSpawnManager);
-	void SpawnWall() const;
+	void SpawnWall();
 
 	void SetNextFallingWallSpawnInstructions(const FallingWallSpawnInstructions fallingWallSpawnInstructions)
 	{
 		_nextFallingWallSpawnInstructions = fallingWallSpawnInstructions;
+		_hasSpawned = false;
 		core::LogInfo(fmt::format("I will spawn on frame : {}", _nextFallingWallSpawnInstructions.spawnFrame));
 	}
 
@@ -76,6 +77,7 @@ public:
 
 private:
 	FallingWallSpawnInstructions _nextFallingWallSpawnInstructions{};
+	bool _hasSpawned = true;
 
 	RollbackManager& _rollbackManager;
 	GameManager& _gameManager;

@@ -107,6 +107,7 @@ core::Entity GameManager::SpawnBall(const core::Vec2f position, const core::Vec2
 	_transformManager.SetPosition(entity, position);
 	_transformManager.SetScale(entity, core::Vec2f::One() * BALL_SCALE);
 	_transformManager.SetRotation(entity, core::Degree(0.0f));
+
 	_rollbackManager.SpawnBall(entity, position, velocity);
 	return entity;
 }

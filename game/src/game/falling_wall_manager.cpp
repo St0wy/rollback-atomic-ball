@@ -20,16 +20,16 @@ void game::FallingObjectManager::FixedUpdate(const sf::Time deltaTime)
 			static_cast<core::EntityMask>(core::ComponentType::Rigidbody));
 		const bool isFallingObject = _entityManager.HasComponent(entity,
 			static_cast<core::EntityMask>(ComponentType::FallingObject));
+		const bool isDestroyed = _entityManager.HasComponent(entity,
+			static_cast<core::EntityMask>(ComponentType::Destroyed));
 
-		if (!hasRigidbody || !isFallingObject) continue;
+		if (!hasRigidbody || !isFallingObject || isDestroyed) continue;
 
 		const FallingObject& fallingObject = GetComponent(entity);
 		Rigidbody& rigidbody = _physicsManager.GetRigidbody(entity);
 		Transform& transform = rigidbody.Trans();
 		const float deltaFall = fallingObject.fallingSpeed * deltaTime.asSeconds();
 		transform.position = { transform.position.x, transform.position.y - deltaFall };
-
-		// TODO : Destroy wall
 	}
 }
 
@@ -81,9 +81,10 @@ void game::FallingDoorManager::HandleCollision(const core::Entity doorEntity, co
 	}
 }
 
-void game::FallingWallSpawnManager::FixedUpdate() const
+void game::FallingWallSpawnManager::FixedUpdate()
 {
 	if (_nextFallingWallSpawnInstructions.spawnFrame == 0u) return;
+	if (_hasSpawned) return;
 
 	if (_nextFallingWallSpawnInstructions.spawnFrame <= _rollbackManager.GetCurrentFrame())
 	{
@@ -94,9 +95,13 @@ void game::FallingWallSpawnManager::FixedUpdate() const
 void game::FallingWallSpawnManager::CopyAllComponents(const FallingWallSpawnManager& fallingWallSpawnManager)
 {
 	_nextFallingWallSpawnInstructions = fallingWallSpawnManager._nextFallingWallSpawnInstructions;
+	_hasSpawned = fallingWallSpawnManager._hasSpawned;
 }
 
-void game::FallingWallSpawnManager::SpawnWall() const
+void game::FallingWallSpawnManager::SpawnWall()
 {
+	_hasSpawned = true;
+	core::LogInfo(fmt::format("Spawning wall on frame {}", _gameManager.GetCurrentFrame()));
+
 	_gameManager.SpawnFallingWall(_nextFallingWallSpawnInstructions.doorPosition, _nextFallingWallSpawnInstructions.requiresBall);
 }

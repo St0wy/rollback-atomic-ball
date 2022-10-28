@@ -339,13 +339,14 @@ void RollbackManager::SpawnFallingWall(const core::Entity backgroundWall, const 
 	_createdEntities.push_back({ backgroundWall, _testedFrame });
 	_createdEntities.push_back({ door, _testedFrame });
 
-	constexpr float spawnHeight = 5.0f;
+	constexpr float spawnHeight = 3.0f;
 
 	Rigidbody wallBody;
-	wallBody.SetPosition({ 0, spawnHeight });
+	constexpr core::Vec2f backgroundWallPos = { 0, spawnHeight };
+	wallBody.SetPosition(backgroundWallPos);
 	wallBody.SetDragFactor(0);
 	wallBody.SetBodyType(BodyType::Kinematic);
-	wallBody.SetRestitution(1.0f);
+	wallBody.SetRestitution(0.0f);
 	wallBody.SetMass(100);
 	wallBody.SetLayer(Layer::Wall);
 
@@ -360,11 +361,12 @@ void RollbackManager::SpawnFallingWall(const core::Entity backgroundWall, const 
 
 	_currentFallingObjectManager.AddComponent(backgroundWall);
 
+	const core::Vec2f doorPos{ doorPosition, spawnHeight };
 	Rigidbody doorBody;
-	doorBody.SetPosition({ doorPosition, spawnHeight });
+	doorBody.SetPosition(doorPos);
 	doorBody.SetDragFactor(0);
 	doorBody.SetBodyType(BodyType::Kinematic);
-	doorBody.SetRestitution(1.0f);
+	doorBody.SetRestitution(0.0f);
 	doorBody.SetMass(10);
 	doorBody.SetLayer(Layer::Door);
 
@@ -510,8 +512,7 @@ void RollbackManager::SpawnBall(const core::Entity entity, const core::Vec2f pos
 	Rigidbody ballBody;
 	ballBody.SetPosition(position);
 	ballBody.SetVelocity(velocity);
-	const auto scale = core::Vec2f::One() * BALL_SCALE;
-	ballBody.Trans().scale = scale;
+	ballBody.Trans().scale = core::Vec2f::One() * BALL_SCALE;
 	ballBody.SetTakesGravity(false);
 	ballBody.SetIsTrigger(false);
 	ballBody.SetBodyType(BodyType::Dynamic);
@@ -527,10 +528,6 @@ void RollbackManager::SpawnBall(const core::Entity entity, const core::Vec2f pos
 	_currentPhysicsManager.SetRigidbody(entity, ballBody);
 	_currentPhysicsManager.AddCircleCollider(entity);
 	_currentPhysicsManager.SetCircleCollider(entity, ballCircle);
-
-	_currentTransformManager.AddComponent(entity);
-	_currentTransformManager.SetPosition(entity, position);
-	_currentTransformManager.SetRotation(entity, core::Degree(0.0f));
 }
 
 void RollbackManager::DestroyEntity(core::Entity entity)
@@ -543,7 +540,7 @@ void RollbackManager::DestroyEntity(core::Entity entity)
 	const auto predicate = [entity](auto newEntity)
 	{
 		return newEntity.entity == entity;
-	};
+};
 
 	if (std::ranges::find_if(_createdEntities, predicate) != _createdEntities.end())
 	{
