@@ -99,7 +99,6 @@ void RollbackManager::SimulateToCurrentFrame()
 
 		// Simulate one frame of the game
 		const sf::Time period = sf::seconds(FIXED_PERIOD);
-		_currentBulletManager.FixedUpdate(period);
 		_currentPlayerManager.FixedUpdate(period);
 		_currentFallingObjectManager.FixedUpdate(period);
 		_currentPhysicsManager.FixedUpdate(period);
@@ -233,7 +232,6 @@ void RollbackManager::ValidateFrame(const Frame newValidateFrame)
 
 		// We simulate one frame
 		const sf::Time period = sf::seconds(FIXED_PERIOD);
-		_currentBulletManager.FixedUpdate(period);
 		_currentPlayerManager.FixedUpdate(period);
 		_currentFallingObjectManager.FixedUpdate(period);
 		_currentPhysicsManager.FixedUpdate(period);
@@ -344,8 +342,7 @@ void RollbackManager::SpawnFallingWall(const core::Entity backgroundWall, const 
 	Rigidbody wallBody;
 	constexpr core::Vec2f backgroundWallPos = { 0, spawnHeight };
 	wallBody.SetPosition(backgroundWallPos);
-	wallBody.SetDragFactor(0);
-	wallBody.SetBodyType(BodyType::Kinematic);
+	wallBody.SetBodyType(BodyType::Static);
 	wallBody.SetRestitution(0.0f);
 	wallBody.SetMass(100);
 	wallBody.SetLayer(Layer::Wall);
@@ -364,8 +361,7 @@ void RollbackManager::SpawnFallingWall(const core::Entity backgroundWall, const 
 	const core::Vec2f doorPos{ doorPosition, spawnHeight };
 	Rigidbody doorBody;
 	doorBody.SetPosition(doorPos);
-	doorBody.SetDragFactor(0);
-	doorBody.SetBodyType(BodyType::Kinematic);
+	doorBody.SetBodyType(BodyType::Static);
 	doorBody.SetRestitution(0.0f);
 	doorBody.SetMass(10);
 	doorBody.SetLayer(Layer::Door);

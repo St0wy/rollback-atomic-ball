@@ -22,6 +22,5 @@ class BallManager final : public core::ComponentManager<Ball, static_cast<core::
 {
 public:
     explicit BallManager(core::EntityManager& entityManager);
-    void FixedUpdate(sf::Time dt);
 };
 }

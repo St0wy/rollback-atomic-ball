@@ -27,7 +27,7 @@ void Server::SendSpawnFallingWallPacket(const Frame spawnTimeOffset)
 	spawnFallingWallPacket->packetType = PacketType::SpawnFallingWall;
 
 
-	const Frame currentFrame = _gameManager.GetRollbackManager().GetCurrentFrame();
+	const Frame currentFrame = _gameManager.GetLastValidateFrame();
 
 	const Frame offsetFrame = GetNextRandomFallingWallSpawnFrame() + spawnTimeOffset;
 
@@ -155,7 +155,7 @@ void Server::ReceivePacket(std::unique_ptr<Packet> packet)
 			SendUnreliablePacket(std::move(validateFramePacket));
 
 			const Frame wallSpawnFrame = _gameManager.GetRollbackManager().GetNextFallingWallSpawnInstructions().spawnFrame;
-			if (wallSpawnFrame <= lastReceiveFrame)
+			if (wallSpawnFrame <= _gameManager.GetLastValidateFrame())
 			{
 				SendSpawnFallingWallPacket(200u);
 			}

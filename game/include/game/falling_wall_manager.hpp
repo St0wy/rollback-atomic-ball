@@ -66,12 +66,7 @@ public:
 	void CopyAllComponents(const FallingWallSpawnManager& fallingWallSpawnManager);
 	void SpawnWall();
 
-	void SetNextFallingWallSpawnInstructions(const FallingWallSpawnInstructions fallingWallSpawnInstructions)
-	{
-		_nextFallingWallSpawnInstructions = fallingWallSpawnInstructions;
-		_hasSpawned = false;
-		core::LogInfo(fmt::format("I will spawn on frame : {}", _nextFallingWallSpawnInstructions.spawnFrame));
-	}
+	void SetNextFallingWallSpawnInstructions(const FallingWallSpawnInstructions fallingWallSpawnInstructions);
 
 	[[nodiscard]] FallingWallSpawnInstructions GetNextFallingWallSpawnInstructions() const { return _nextFallingWallSpawnInstructions; }
 

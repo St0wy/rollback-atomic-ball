@@ -86,7 +86,7 @@ void game::FallingWallSpawnManager::FixedUpdate()
 	if (_nextFallingWallSpawnInstructions.spawnFrame == 0u) return;
 	if (_hasSpawned) return;
 
-	if (_nextFallingWallSpawnInstructions.spawnFrame <= _rollbackManager.GetCurrentFrame())
+	if (_nextFallingWallSpawnInstructions.spawnFrame <= _rollbackManager.GetLastValidateFrame())
 	{
 		SpawnWall();
 	}
@@ -101,7 +101,17 @@ void game::FallingWallSpawnManager::CopyAllComponents(const FallingWallSpawnMana
 void game::FallingWallSpawnManager::SpawnWall()
 {
 	_hasSpawned = true;
-	core::LogInfo(fmt::format("Spawning wall on frame {}", _gameManager.GetCurrentFrame()));
+	core::LogInfo(fmt::format("Spawning wall on frame {}", _gameManager.GetLastValidateFrame()));
 
 	_gameManager.SpawnFallingWall(_nextFallingWallSpawnInstructions.doorPosition, _nextFallingWallSpawnInstructions.requiresBall);
+}
+
+void game::FallingWallSpawnManager::SetNextFallingWallSpawnInstructions(
+	const FallingWallSpawnInstructions fallingWallSpawnInstructions)
+{
+	if (!_hasSpawned) return;
+
+	_nextFallingWallSpawnInstructions = fallingWallSpawnInstructions;
+	_hasSpawned = false;
+	core::LogInfo(fmt::format("I will spawn on frame : {}", _nextFallingWallSpawnInstructions.spawnFrame));
 }
