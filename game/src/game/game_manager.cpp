@@ -82,8 +82,7 @@ void GameManager::SetPlayerInput(const PlayerNumber playerNumber, const PlayerIn
 
 void GameManager::SetFallingWallSpawnInstructions(const FallingWallSpawnInstructions fallingWallSpawnInstructions)
 {
-	core::LogInfo(fmt::format("I will spawn on frame : {}", fallingWallSpawnInstructions.spawnFrame));
-	_nextFallingWallSpawnInstructions = fallingWallSpawnInstructions;
+	_rollbackManager.SetNextFallingWallSpawnInstructions(fallingWallSpawnInstructions);
 }
 
 void GameManager::Validate(const Frame newValidateFrame)
@@ -112,7 +111,7 @@ core::Entity GameManager::SpawnBall(const core::Vec2f position, const core::Vec2
 	return entity;
 }
 
-std::pair<core::Entity, core::Entity> GameManager::SpawnFallingWall()
+std::pair<core::Entity, core::Entity> GameManager::SpawnFallingWall(const float doorPosition, const bool requiresBall)
 {
 	const core::Entity backgroundWall = _entityManager.CreateEntity();
 	const core::Entity door = _entityManager.CreateEntity();
@@ -120,7 +119,7 @@ std::pair<core::Entity, core::Entity> GameManager::SpawnFallingWall()
 	_transformManager.AddComponent(backgroundWall);
 	_transformManager.AddComponent(door);
 
-	_rollbackManager.SpawnFallingWall(backgroundWall, door);
+	_rollbackManager.SpawnFallingWall(backgroundWall, door, doorPosition, requiresBall);
 
 	return std::make_pair(backgroundWall, door);
 }
@@ -402,9 +401,9 @@ core::Entity ClientGameManager::SpawnBall(const core::Vec2f position, const core
 	return entity;
 }
 
-std::pair<core::Entity, core::Entity> ClientGameManager::SpawnFallingWall()
+std::pair<core::Entity, core::Entity> ClientGameManager::SpawnFallingWall(const float doorPosition, const bool requiresBall)
 {
-	auto [backgroundWall, door] = GameManager::SpawnFallingWall();
+	auto [backgroundWall, door] = GameManager::SpawnFallingWall(doorPosition, requiresBall);
 
 	_rectangleShapeManager.AddComponent(backgroundWall);
 	_rectangleShapeManager.SetFillColor(backgroundWall, WALL_COLOR);
@@ -412,7 +411,7 @@ std::pair<core::Entity, core::Entity> ClientGameManager::SpawnFallingWall()
 	_rectangleShapeManager.SetOrigin(backgroundWall, sf::Vector2f(FALLING_WALL_SIZE) / 2.0f);
 
 	_rectangleShapeManager.AddComponent(door);
-	_rectangleShapeManager.SetFillColor(door, NO_BALL_DOOR_COLOR);
+	_rectangleShapeManager.SetFillColor(door, requiresBall ? BALL_DOOR_COLOR : NO_BALL_DOOR_COLOR);
 	_rectangleShapeManager.SetSize(door, FALLING_WALL_DOOR_SIZE);
 	_rectangleShapeManager.SetOrigin(door, sf::Vector2f(FALLING_WALL_DOOR_SIZE) / 2.0f);
 

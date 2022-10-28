@@ -28,7 +28,6 @@ void Server::SendSpawnFallingWallPacket(const Frame spawnTimeOffset)
 
 
 	const Frame currentFrame = _gameManager.GetRollbackManager().GetCurrentFrame();
-	// We want more time on the first wall
 
 	const Frame offsetFrame = GetNextRandomFallingWallSpawnFrame() + spawnTimeOffset;
 
@@ -43,7 +42,7 @@ void Server::SendSpawnFallingWallPacket(const Frame spawnTimeOffset)
 	spawnFallingWallPacket->requiresBall = fallingWallSpawnInstructions.requiresBall;
 	spawnFallingWallPacket->doorPosition = core::ConvertToBinary(fallingWallSpawnInstructions.doorPosition);
 
-	core::LogInfo("Send Spawn Wall Packet");
+	core::LogInfo(fmt::format("Send Spawn Wall Packet for frame : {}", fallingWallSpawnInstructions.spawnFrame));
 
 	SendReliablePacket(std::move(spawnFallingWallPacket));
 }
@@ -55,13 +54,16 @@ Frame Server::GetNextRandomFallingWallSpawnFrame() const
 
 float Server::GetNextRandomDoorPosition() const
 {
+	constexpr float max = 7.0f;
+	constexpr float min = 3.0f;
+
 	// Check if the door will be on the left (true) or on the right
 	if (core::RandomBool())
 	{
-		return core::RandomRange<float>(-10.0f, -3.0f);
+		return core::RandomRange<float>(-max, -min);
 	}
 
-	return core::RandomRange<float>(3.0f, 10.0f);
+	return core::RandomRange<float>(min, max);
 }
 
 void Server::ReceivePacket(std::unique_ptr<Packet> packet)
@@ -75,15 +77,17 @@ void Server::ReceivePacket(std::unique_ptr<Packet> packet)
 	{
 		const auto* joinPacket = dynamic_cast<const JoinPacket*>(packet.get());
 		const auto clientId = core::ConvertFromBinary<ClientId>(joinPacket->clientId);
-		if (std::ranges::any_of(_clientMap,
-			[clientId](const auto clientMapId)
+		const auto idPredicate = [clientId](const ClientId clientMapId)
 		{
 			return clientMapId == clientId;
-		}))
+		};
+
+		if (std::ranges::any_of(_clientMap, idPredicate))
 		{
 			//Player joined twice!
 			return;
 		}
+
 		core::LogInfo("Managing Received Packet Join from: " + std::to_string(static_cast<unsigned>(clientId)));
 		_clientMap[_lastPlayerNumber] = clientId;
 		SpawnNewPlayer(clientId, _lastPlayerNumber);
@@ -93,7 +97,7 @@ void Server::ReceivePacket(std::unique_ptr<Packet> packet)
 		if (_lastPlayerNumber == MAX_PLAYER_NMB)
 		{
 			SendStartGamePacket();
-			SendSpawnFallingWallPacket(500u);
+			SendSpawnFallingWallPacket(100u);
 		}
 
 		break;
@@ -150,7 +154,11 @@ void Server::ReceivePacket(std::unique_ptr<Packet> packet)
 
 			SendUnreliablePacket(std::move(validateFramePacket));
 
-			// TODO : Check for spawning falling wall
+			const Frame wallSpawnFrame = _gameManager.GetRollbackManager().GetNextFallingWallSpawnInstructions().spawnFrame;
+			if (wallSpawnFrame <= lastReceiveFrame)
+			{
+				SendSpawnFallingWallPacket(200u);
+			}
 
 			if (_gameManager.CheckIfLost())
 			{

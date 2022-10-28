@@ -78,9 +78,10 @@ public:
 	[[nodiscard]] Frame GetCurrentFrame() const { return _currentFrame; }
 	[[nodiscard]] const core::TransformManager& GetTransformManager() const { return _currentTransformManager; }
 	[[nodiscard]] const PlayerCharacterManager& GetPlayerCharacterManager() const { return _currentPlayerManager; }
-	void SetupLevel(core::Entity wallLeftEntity, core::Entity wallRightEntity, core::Entity wallMiddleEntity, core::Entity wallBottomEntity, core
+	void SetupLevel(core::Entity wallLeftEntity, core::Entity wallRightEntity, core::Entity wallMiddleEntity,
+		core::Entity wallBottomEntity, core
 		::Entity wallTopEntity);
-	void SpawnFallingWall(core::Entity backgroundWall, core::Entity door);
+	void SpawnFallingWall(core::Entity backgroundWall, core::Entity door, float doorPosition, bool requiresBall);
 	void CreateWall(core::Entity entity, core::Vec2f position, core::Vec2f size, Layer layer = Layer::Wall);
 	void SpawnPlayer(PlayerNumber playerNumber, core::Entity entity, core::Vec2f position, core::Degree rotation);
 	void SpawnBall(core::Entity entity, core::Vec2f position, core::Vec2f velocity);
@@ -101,6 +102,15 @@ public:
 	}
 
 	PhysicsManager& GetCurrentPhysicsManager() { return _currentPhysicsManager; }
+
+	void SetNextFallingWallSpawnInstructions(const FallingWallSpawnInstructions fallingWallSpawnInstructions)
+	{
+		_currentFallingWallSpawnManager.SetNextFallingWallSpawnInstructions(fallingWallSpawnInstructions);
+		_lastValidateFallingWallSpawnManager.SetNextFallingWallSpawnInstructions(fallingWallSpawnInstructions);
+	}
+
+	[[nodiscard]] FallingWallSpawnInstructions GetNextFallingWallSpawnInstructions() const { return _currentFallingWallSpawnManager.GetNextFallingWallSpawnInstructions(); }
+
 private:
 	[[nodiscard]] PlayerInput GetInputAtFrame(PlayerNumber playerNumber, Frame frame) const;
 
@@ -117,6 +127,7 @@ private:
 	FallingObjectManager _currentFallingObjectManager;
 	FallingDoorManager _currentFallingDoorManager;
 	DamageManager _currentDamageManager;
+	FallingWallSpawnManager _currentFallingWallSpawnManager;
 
 	/**
 	 * Last Validate (confirm frame) Component Managers used for rollback
@@ -127,9 +138,7 @@ private:
 	FallingObjectManager _lastValidateFallingObjectManager;
 	FallingDoorManager _lastValidateFallingDoorManager;
 	DamageManager _lastValidateDamageManager;
-
-	// TODO: put this in a manger
-	FallingWallSpawnInstructions _nextFallingWallSpawnInstructions{};
+	FallingWallSpawnManager _lastValidateFallingWallSpawnManager;
 
 	/**
 	 * \brief lastValidateFrame_ is the last validated frame from the server side.

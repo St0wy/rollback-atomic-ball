@@ -162,6 +162,7 @@ void Client::ReceivePacket(const Packet* packet)
 		fallingWallSpawnInstructions.requiresBall = spawnFallingWallPacket->requiresBall;
 
 		_gameManager.SetFallingWallSpawnInstructions(fallingWallSpawnInstructions);
+		break;
 	}
 	default:
 		break;

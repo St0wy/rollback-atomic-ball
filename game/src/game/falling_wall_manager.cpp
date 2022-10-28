@@ -1,6 +1,5 @@
 #include "game/falling_wall_manager.hpp"
-
-#include "engine/transform.hpp"
+#include "game/rollback_manager.hpp"
 #include "game/game_manager.hpp"
 
 
@@ -80,4 +79,24 @@ void game::FallingDoorManager::HandleCollision(const core::Entity doorEntity, co
 		_gameManager.DestroyEntity(door.backgroundWallEntity);
 		_gameManager.DestroyEntity(doorEntity);
 	}
+}
+
+void game::FallingWallSpawnManager::FixedUpdate() const
+{
+	if (_nextFallingWallSpawnInstructions.spawnFrame == 0u) return;
+
+	if (_nextFallingWallSpawnInstructions.spawnFrame <= _rollbackManager.GetCurrentFrame())
+	{
+		SpawnWall();
+	}
+}
+
+void game::FallingWallSpawnManager::CopyAllComponents(const FallingWallSpawnManager& fallingWallSpawnManager)
+{
+	_nextFallingWallSpawnInstructions = fallingWallSpawnManager._nextFallingWallSpawnInstructions;
+}
+
+void game::FallingWallSpawnManager::SpawnWall() const
+{
+	_gameManager.SpawnFallingWall(_nextFallingWallSpawnInstructions.doorPosition, _nextFallingWallSpawnInstructions.requiresBall);
 }

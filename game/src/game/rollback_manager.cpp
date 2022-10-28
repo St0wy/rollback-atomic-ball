@@ -21,12 +21,14 @@ RollbackManager::RollbackManager(GameManager& gameManager, core::EntityManager& 
 	_currentFallingObjectManager(entityManager, _currentPhysicsManager),
 	_currentFallingDoorManager(entityManager, _currentPlayerManager, _gameManager),
 	_currentDamageManager(entityManager, _currentPlayerManager),
+	_currentFallingWallSpawnManager(*this, _gameManager),
 	_lastValidatePhysicsManager(entityManager),
 	_lastValidatePlayerManager(entityManager, _lastValidatePhysicsManager, _gameManager),
 	_lastValidateBulletManager(entityManager),
 	_lastValidateFallingObjectManager(entityManager, _lastValidatePhysicsManager),
 	_lastValidateFallingDoorManager(entityManager, _lastValidatePlayerManager, _gameManager),
-	_lastValidateDamageManager(entityManager, _lastValidatePlayerManager)
+	_lastValidateDamageManager(entityManager, _lastValidatePlayerManager),
+	_lastValidateFallingWallSpawnManager(*this, _gameManager)
 {
 	for (auto& input : _inputs)
 	{
@@ -70,11 +72,11 @@ void RollbackManager::SimulateToCurrentFrame()
 
 	// Revert the current game state to the last validated game state
 	_currentBulletManager.CopyAllComponents(_lastValidateBulletManager.GetAllComponents());
-	_currentPhysicsManager.CopyAllComponents(_lastValidatePhysicsManager);
 	_currentPlayerManager.CopyAllComponents(_lastValidatePlayerManager.GetAllComponents());
 	_currentFallingObjectManager.CopyAllComponents(_lastValidateFallingObjectManager.GetAllComponents());
 	_currentFallingDoorManager.CopyAllComponents(_lastValidateFallingDoorManager.GetAllComponents());
-
+	_currentPhysicsManager.CopyAllComponents(_lastValidatePhysicsManager);
+	_currentFallingWallSpawnManager.CopyAllComponents(_lastValidateFallingWallSpawnManager);
 
 	for (Frame frame = lastValidateFrame + 1; frame <= currentFrame; frame++)
 	{
@@ -101,6 +103,7 @@ void RollbackManager::SimulateToCurrentFrame()
 		_currentPlayerManager.FixedUpdate(period);
 		_currentFallingObjectManager.FixedUpdate(period);
 		_currentPhysicsManager.FixedUpdate(period);
+		_currentFallingWallSpawnManager.FixedUpdate();
 	}
 
 	// Copy the physics states to the transforms
@@ -208,11 +211,12 @@ void RollbackManager::ValidateFrame(const Frame newValidateFrame)
 
 	// We use the current game state as the temporary new validate game state
 	_currentBulletManager.CopyAllComponents(_lastValidateBulletManager.GetAllComponents());
-	_currentPhysicsManager.CopyAllComponents(_lastValidatePhysicsManager);
 	_currentPlayerManager.CopyAllComponents(_lastValidatePlayerManager.GetAllComponents());
 	_currentFallingObjectManager.CopyAllComponents(_lastValidateFallingObjectManager.GetAllComponents());
 	_currentFallingDoorManager.CopyAllComponents(_lastValidateFallingDoorManager.GetAllComponents());
 	_currentDamageManager.CopyAllComponents(_lastValidateDamageManager.GetAllComponents());
+	_currentPhysicsManager.CopyAllComponents(_lastValidatePhysicsManager);
+	_currentFallingWallSpawnManager.CopyAllComponents(_lastValidateFallingWallSpawnManager);
 
 	// We simulate the frames until the new validated frame
 	for (Frame frame = _lastValidateFrame + 1; frame <= newValidateFrame; frame++)
@@ -233,6 +237,7 @@ void RollbackManager::ValidateFrame(const Frame newValidateFrame)
 		_currentPlayerManager.FixedUpdate(period);
 		_currentFallingObjectManager.FixedUpdate(period);
 		_currentPhysicsManager.FixedUpdate(period);
+		_currentFallingWallSpawnManager.FixedUpdate();
 	}
 
 	// Definitely remove DESTROY entities
@@ -251,6 +256,7 @@ void RollbackManager::ValidateFrame(const Frame newValidateFrame)
 	_lastValidateFallingObjectManager.CopyAllComponents(_currentFallingObjectManager.GetAllComponents());
 	_lastValidateFallingDoorManager.CopyAllComponents(_currentFallingDoorManager.GetAllComponents());
 	_lastValidateDamageManager.CopyAllComponents(_currentDamageManager.GetAllComponents());
+	_lastValidateFallingWallSpawnManager.CopyAllComponents(_currentFallingWallSpawnManager);
 	_lastValidateFrame = newValidateFrame;
 	_createdEntities.clear();
 }
@@ -327,15 +333,16 @@ void RollbackManager::SetupLevel(const core::Entity wallLeftEntity, const core::
 	_lastValidateDamageManager.AddComponent(wallBottomEntity);
 }
 
-void RollbackManager::SpawnFallingWall(const core::Entity backgroundWall, const core::Entity door)
+void RollbackManager::SpawnFallingWall(const core::Entity backgroundWall, const core::Entity door, float doorPosition,
+	const bool requiresBall)
 {
 	_createdEntities.push_back({ backgroundWall, _testedFrame });
 	_createdEntities.push_back({ door, _testedFrame });
 
-	float doorPosition = 1.0f;
+	constexpr float spawnHeight = 5.0f;
 
 	Rigidbody wallBody;
-	wallBody.SetPosition({ 0,3.0f });
+	wallBody.SetPosition({ 0, spawnHeight });
 	wallBody.SetDragFactor(0);
 	wallBody.SetBodyType(BodyType::Kinematic);
 	wallBody.SetRestitution(1.0f);
@@ -350,16 +357,11 @@ void RollbackManager::SpawnFallingWall(const core::Entity backgroundWall, const 
 	_currentPhysicsManager.SetRigidbody(backgroundWall, wallBody);
 	_currentPhysicsManager.AddAabbCollider(backgroundWall);
 	_currentPhysicsManager.SetAabbCollider(backgroundWall, wallCollider);
-	_lastValidatePhysicsManager.AddRigidbody(backgroundWall);
-	_lastValidatePhysicsManager.SetRigidbody(backgroundWall, wallBody);
-	_lastValidatePhysicsManager.AddAabbCollider(backgroundWall);
-	_lastValidatePhysicsManager.SetAabbCollider(backgroundWall, wallCollider);
 
 	_currentFallingObjectManager.AddComponent(backgroundWall);
-	_lastValidateFallingObjectManager.AddComponent(backgroundWall);
 
 	Rigidbody doorBody;
-	doorBody.SetPosition({ doorPosition,3.0f });
+	doorBody.SetPosition({ doorPosition, spawnHeight });
 	doorBody.SetDragFactor(0);
 	doorBody.SetBodyType(BodyType::Kinematic);
 	doorBody.SetRestitution(1.0f);
@@ -374,18 +376,11 @@ void RollbackManager::SpawnFallingWall(const core::Entity backgroundWall, const 
 	_currentPhysicsManager.SetRigidbody(door, doorBody);
 	_currentPhysicsManager.AddAabbCollider(door);
 	_currentPhysicsManager.SetAabbCollider(door, doorCollider);
-	_lastValidatePhysicsManager.AddRigidbody(door);
-	_lastValidatePhysicsManager.SetRigidbody(door, doorBody);
-	_lastValidatePhysicsManager.AddAabbCollider(door);
-	_lastValidatePhysicsManager.SetAabbCollider(door, doorCollider);
 
 	_currentFallingObjectManager.AddComponent(door);
-	_lastValidateFallingObjectManager.AddComponent(door);
 
 	_currentFallingDoorManager.AddComponent(door);
-	_currentFallingDoorManager.SetFallingDoor(door, { backgroundWall, false });
-	_lastValidateFallingDoorManager.AddComponent(door);
-	_lastValidateFallingDoorManager.SetFallingDoor(door, { backgroundWall, false });
+	_currentFallingDoorManager.SetFallingDoor(door, { backgroundWall, requiresBall });
 }
 
 void RollbackManager::CreateWall(const core::Entity entity, const core::Vec2f position, const core::Vec2f size,

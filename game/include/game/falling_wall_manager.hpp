@@ -1,9 +1,9 @@
 #pragma once
 
 #include "game_globals.hpp"
+
 #include "engine/component.hpp"
 #include "physics/event_interfaces.hpp"
-#include "physics/physics_manager.hpp"
 #include "game/player_character.hpp"
 
 namespace game
@@ -53,4 +53,31 @@ private:
 	GameManager& _gameManager;
 };
 
+class RollbackManager;
+
+class FallingWallSpawnManager
+{
+public:
+	explicit FallingWallSpawnManager(RollbackManager& rollbackManager, GameManager& gameManager)
+		:_rollbackManager(rollbackManager), _gameManager(gameManager)
+	{}
+
+	void FixedUpdate() const;
+	void CopyAllComponents(const FallingWallSpawnManager& fallingWallSpawnManager);
+	void SpawnWall() const;
+
+	void SetNextFallingWallSpawnInstructions(const FallingWallSpawnInstructions fallingWallSpawnInstructions)
+	{
+		_nextFallingWallSpawnInstructions = fallingWallSpawnInstructions;
+		core::LogInfo(fmt::format("I will spawn on frame : {}", _nextFallingWallSpawnInstructions.spawnFrame));
+	}
+
+	[[nodiscard]] FallingWallSpawnInstructions GetNextFallingWallSpawnInstructions() const { return _nextFallingWallSpawnInstructions; }
+
+private:
+	FallingWallSpawnInstructions _nextFallingWallSpawnInstructions{};
+
+	RollbackManager& _rollbackManager;
+	GameManager& _gameManager;
+};
 }
