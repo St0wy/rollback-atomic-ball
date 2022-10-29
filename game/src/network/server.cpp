@@ -157,7 +157,7 @@ void Server::ReceivePacket(std::unique_ptr<Packet> packet)
 			const Frame wallSpawnFrame = _gameManager.GetRollbackManager().GetNextFallingWallSpawnInstructions().spawnFrame;
 			if (wallSpawnFrame <= _gameManager.GetLastValidateFrame())
 			{
-				SendSpawnFallingWallPacket(200u);
+				SendSpawnFallingWallPacket(500u);
 			}
 
 			if (_gameManager.CheckIfLost())
@@ -175,7 +175,7 @@ void Server::ReceivePacket(std::unique_ptr<Packet> packet)
 	case PacketType::Ping:
 	{
 		auto pingPacket = std::make_unique<PingPacket>();
-		*pingPacket = *static_cast<PingPacket*>(packet.get());
+		*pingPacket = *dynamic_cast<PingPacket*>(packet.get());
 		SendUnreliablePacket(std::move(pingPacket));
 		break;
 	}

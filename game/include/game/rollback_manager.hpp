@@ -11,6 +11,7 @@
 
 #include "physics/physics_manager.hpp"
 #include "damage_manager.hpp"
+#include "score_manager.hpp"
 
 namespace game
 {
@@ -78,6 +79,7 @@ public:
 	[[nodiscard]] Frame GetCurrentFrame() const { return _currentFrame; }
 	[[nodiscard]] const core::TransformManager& GetTransformManager() const { return _currentTransformManager; }
 	[[nodiscard]] const PlayerCharacterManager& GetPlayerCharacterManager() const { return _currentPlayerManager; }
+	[[nodiscard]] const ScoreManager& GetScoreManager() const { return _currentScoreManager; }
 	void SetupLevel(core::Entity wallLeftEntity, core::Entity wallRightEntity, core::Entity wallMiddleEntity,
 		core::Entity wallBottomEntity, core
 		::Entity wallTopEntity);
@@ -111,6 +113,8 @@ public:
 
 	[[nodiscard]] FallingWallSpawnInstructions GetNextFallingWallSpawnInstructions() const { return _currentFallingWallSpawnManager.GetNextFallingWallSpawnInstructions(); }
 
+	void SetTextTEMP(const std::string_view name) { _currentFallingWallSpawnManager.name = name; _lastValidateFallingWallSpawnManager.name = name; }
+
 private:
 	[[nodiscard]] PlayerInput GetInputAtFrame(PlayerNumber playerNumber, Frame frame) const;
 
@@ -128,6 +132,7 @@ private:
 	FallingDoorManager _currentFallingDoorManager;
 	DamageManager _currentDamageManager;
 	FallingWallSpawnManager _currentFallingWallSpawnManager;
+	ScoreManager _currentScoreManager{};
 
 	/**
 	 * Last Validate (confirm frame) Component Managers used for rollback
@@ -139,6 +144,7 @@ private:
 	FallingDoorManager _lastValidateFallingDoorManager;
 	DamageManager _lastValidateDamageManager;
 	FallingWallSpawnManager _lastValidateFallingWallSpawnManager;
+	ScoreManager _lastValidateScoreManager{};
 
 	/**
 	 * \brief lastValidateFrame_ is the last validated frame from the server side.

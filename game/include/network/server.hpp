@@ -22,8 +22,8 @@ protected:
     virtual void SendStartGamePacket();
     virtual void SendSpawnFallingWallPacket(Frame spawnTimeOffset = 0u);
 
-    Frame GetNextRandomFallingWallSpawnFrame() const;
-    float GetNextRandomDoorPosition() const;
+    [[nodiscard]] Frame GetNextRandomFallingWallSpawnFrame() const;
+    [[nodiscard]] float GetNextRandomDoorPosition() const;
 
     /**
      * \brief ReceiveNetPacket is a method that is called when the Server receives a Packet from a Client.

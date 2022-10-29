@@ -310,19 +310,12 @@ void ClientGameManager::Draw(sf::RenderTarget& target)
 	}
 	else
 	{
-		std::string isDead;
-		const auto& playerManager = _rollbackManager.GetPlayerCharacterManager();
-		for (PlayerNumber playerNumber = 0; playerNumber < MAX_PLAYER_NMB; playerNumber++)
-		{
-			const auto playerEntity = GetEntityFromPlayerNumber(playerNumber);
-			if (playerEntity == core::INVALID_ENTITY)
-			{
-				continue;
-			}
-			isDead += fmt::format("P{} is dead: {} ", playerNumber + 1, playerManager.GetComponent(playerEntity).isDead);
-		}
+		const auto& scoreManager = _rollbackManager.GetScoreManager();
+		const std::uint32_t score = scoreManager.GetScore();
+		const std::string scoreString = fmt::format("Score : {}", score);
+
 		_textRenderer.setFillColor(sf::Color::White);
-		_textRenderer.setString(isDead);
+		_textRenderer.setString(scoreString);
 		_textRenderer.setPosition(10, 10);
 		_textRenderer.setCharacterSize(20);
 		target.draw(_textRenderer);

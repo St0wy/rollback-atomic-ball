@@ -1,6 +1,7 @@
 #pragma once
 
 #include "game_globals.hpp"
+#include "score_manager.hpp"
 
 #include "engine/component.hpp"
 #include "physics/event_interfaces.hpp"
@@ -43,7 +44,7 @@ class FallingDoorManager final :
 	public OnCollisionInterface
 {
 public:
-	FallingDoorManager(core::EntityManager& entityManager, PlayerCharacterManager& playerCharacterManager, GameManager& gameManager);
+	FallingDoorManager(core::EntityManager& entityManager, PlayerCharacterManager& playerCharacterManager, GameManager& gameManager, ScoreManager& scoreManager);
 	void SetFallingDoor(core::Entity entity, FallingDoor fallingDoor);
 	void OnCollision(core::Entity entity1, core::Entity entity2) override;
 
@@ -51,6 +52,7 @@ private:
 	void HandleCollision(core::Entity doorEntity, core::Entity playerEntity);
 	PlayerCharacterManager& _playerCharacterManager;
 	GameManager& _gameManager;
+	ScoreManager& _scoreManager;
 };
 
 class RollbackManager;
@@ -69,6 +71,8 @@ public:
 	void SetNextFallingWallSpawnInstructions(const FallingWallSpawnInstructions fallingWallSpawnInstructions);
 
 	[[nodiscard]] FallingWallSpawnInstructions GetNextFallingWallSpawnInstructions() const { return _nextFallingWallSpawnInstructions; }
+
+	std::string name;
 
 private:
 	FallingWallSpawnInstructions _nextFallingWallSpawnInstructions{};

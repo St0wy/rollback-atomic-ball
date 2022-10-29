@@ -19,14 +19,14 @@ RollbackManager::RollbackManager(GameManager& gameManager, core::EntityManager& 
 	_currentPhysicsManager(entityManager), _currentPlayerManager(entityManager, _currentPhysicsManager, _gameManager),
 	_currentBulletManager(entityManager),
 	_currentFallingObjectManager(entityManager, _currentPhysicsManager),
-	_currentFallingDoorManager(entityManager, _currentPlayerManager, _gameManager),
+	_currentFallingDoorManager(entityManager, _currentPlayerManager, _gameManager, _currentScoreManager),
 	_currentDamageManager(entityManager, _currentPlayerManager),
 	_currentFallingWallSpawnManager(*this, _gameManager),
 	_lastValidatePhysicsManager(entityManager),
 	_lastValidatePlayerManager(entityManager, _lastValidatePhysicsManager, _gameManager),
 	_lastValidateBulletManager(entityManager),
 	_lastValidateFallingObjectManager(entityManager, _lastValidatePhysicsManager),
-	_lastValidateFallingDoorManager(entityManager, _lastValidatePlayerManager, _gameManager),
+	_lastValidateFallingDoorManager(entityManager, _lastValidatePlayerManager, _gameManager, _lastValidateScoreManager),
 	_lastValidateDamageManager(entityManager, _lastValidatePlayerManager),
 	_lastValidateFallingWallSpawnManager(*this, _gameManager)
 {
@@ -337,7 +337,7 @@ void RollbackManager::SpawnFallingWall(const core::Entity backgroundWall, const 
 	_createdEntities.push_back({ backgroundWall, _testedFrame });
 	_createdEntities.push_back({ door, _testedFrame });
 
-	constexpr float spawnHeight = 3.0f;
+	constexpr float spawnHeight = 5.0f;
 
 	Rigidbody wallBody;
 	constexpr core::Vec2f backgroundWallPos = { 0, spawnHeight };
@@ -536,7 +536,7 @@ void RollbackManager::DestroyEntity(core::Entity entity)
 	const auto predicate = [entity](auto newEntity)
 	{
 		return newEntity.entity == entity;
-};
+	};
 
 	if (std::ranges::find_if(_createdEntities, predicate) != _createdEntities.end())
 	{

@@ -110,6 +110,8 @@ constexpr core::Vec2f FALLING_WALL_SIZE{ 100.0f, 0.3f };
 constexpr float FALLING_WALL_DOOR_COLLIDER_OFFSET = 0.2f;
 constexpr core::Vec2f FALLING_WALL_DOOR_SIZE{ 1.5f, FALLING_WALL_SIZE.y + FALLING_WALL_DOOR_COLLIDER_OFFSET };
 
+constexpr std::uint32_t DESTROY_WALL_SCORE_INCREMENT = 100u;
+
 /**
  * \brief PlayerInput is a type defining the input data from a player.
  */

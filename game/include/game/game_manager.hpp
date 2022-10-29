@@ -47,6 +47,7 @@ public:
 	[[nodiscard]] Frame GetLastValidateFrame() const { return _rollbackManager.GetLastValidateFrame(); }
 	[[nodiscard]] const core::TransformManager& GetTransformManager() const { return _transformManager; }
 	[[nodiscard]] const RollbackManager& GetRollbackManager() const { return _rollbackManager; }
+	RollbackManager& GetRollbackManager() { return _rollbackManager; }
 	virtual void SetPlayerInput(PlayerNumber playerNumber, PlayerInput playerInput, std::uint32_t inputFrame);
 	virtual void SetFallingWallSpawnInstructions(FallingWallSpawnInstructions fallingWallSpawnInstructions);
 

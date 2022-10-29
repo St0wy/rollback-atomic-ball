@@ -15,7 +15,9 @@ namespace game
 {
 SimulationClient::SimulationClient(SimulationServer& server)
 	: _server(server)
-{}
+{
+	_gameManager.GetRollbackManager().SetTextTEMP("SimulationClient");
+}
 
 void SimulationClient::Begin()
 {
@@ -31,7 +33,7 @@ void SimulationClient::Begin()
 	#endif
 	//JOIN packet
 	_gameManager.Begin();
-}
+	}
 
 void SimulationClient::Update(const sf::Time dt)
 {

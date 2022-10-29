@@ -33,10 +33,11 @@ void game::FallingObjectManager::FixedUpdate(const sf::Time deltaTime)
 	}
 }
 
-game::FallingDoorManager::FallingDoorManager(core::EntityManager& entityManager, PlayerCharacterManager& playerCharacterManager, GameManager& gameManager)
+game::FallingDoorManager::FallingDoorManager(core::EntityManager& entityManager, PlayerCharacterManager& playerCharacterManager, GameManager& gameManager, ScoreManager& scoreManager)
 	: ComponentManager(entityManager),
 	_playerCharacterManager(playerCharacterManager),
-	_gameManager(gameManager)
+	_gameManager(gameManager),
+	_scoreManager(scoreManager)
 {}
 
 void game::FallingDoorManager::SetFallingDoor(const core::Entity entity, const FallingDoor fallingDoor)
@@ -78,6 +79,7 @@ void game::FallingDoorManager::HandleCollision(const core::Entity doorEntity, co
 	{
 		_gameManager.DestroyEntity(door.backgroundWallEntity);
 		_gameManager.DestroyEntity(doorEntity);
+		_scoreManager.AddScore(DESTROY_WALL_SCORE_INCREMENT);
 	}
 }
 
@@ -101,7 +103,7 @@ void game::FallingWallSpawnManager::CopyAllComponents(const FallingWallSpawnMana
 void game::FallingWallSpawnManager::SpawnWall()
 {
 	_hasSpawned = true;
-	core::LogInfo(fmt::format("Spawning wall on frame {}", _gameManager.GetLastValidateFrame()));
+	core::LogInfo(fmt::format("[{}] Spawning wall on frame {}", name, _gameManager.GetLastValidateFrame()));
 
 	_gameManager.SpawnFallingWall(_nextFallingWallSpawnInstructions.doorPosition, _nextFallingWallSpawnInstructions.requiresBall);
 }
