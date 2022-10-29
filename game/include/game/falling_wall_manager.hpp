@@ -68,7 +68,7 @@ public:
 	void CopyAllComponents(const FallingWallSpawnManager& fallingWallSpawnManager);
 	void SpawnWall();
 
-	void SetNextFallingWallSpawnInstructions(const FallingWallSpawnInstructions fallingWallSpawnInstructions);
+	bool SetNextFallingWallSpawnInstructions(const FallingWallSpawnInstructions fallingWallSpawnInstructions);
 
 	[[nodiscard]] FallingWallSpawnInstructions GetNextFallingWallSpawnInstructions() const { return _nextFallingWallSpawnInstructions; }
 

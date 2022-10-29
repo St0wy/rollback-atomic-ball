@@ -108,12 +108,17 @@ void game::FallingWallSpawnManager::SpawnWall()
 	_gameManager.SpawnFallingWall(_nextFallingWallSpawnInstructions.doorPosition, _nextFallingWallSpawnInstructions.requiresBall);
 }
 
-void game::FallingWallSpawnManager::SetNextFallingWallSpawnInstructions(
+bool game::FallingWallSpawnManager::SetNextFallingWallSpawnInstructions(
 	const FallingWallSpawnInstructions fallingWallSpawnInstructions)
 {
-	if (!_hasSpawned) return;
+	if (!_hasSpawned)
+	{
+		core::LogWarning(fmt::format("[{}] Tried to set spawning wall instructions when the wall hasn't spawned yet", name));
+		return false;
+	}
 
 	_nextFallingWallSpawnInstructions = fallingWallSpawnInstructions;
 	_hasSpawned = false;
-	core::LogInfo(fmt::format("I will spawn on frame : {}", _nextFallingWallSpawnInstructions.spawnFrame));
+	core::LogInfo(fmt::format("[{}] I will spawn on frame : {}", name, _nextFallingWallSpawnInstructions.spawnFrame));
+	return true;
 }

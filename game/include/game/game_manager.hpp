@@ -49,7 +49,7 @@ public:
 	[[nodiscard]] const RollbackManager& GetRollbackManager() const { return _rollbackManager; }
 	RollbackManager& GetRollbackManager() { return _rollbackManager; }
 	virtual void SetPlayerInput(PlayerNumber playerNumber, PlayerInput playerInput, std::uint32_t inputFrame);
-	virtual void SetFallingWallSpawnInstructions(FallingWallSpawnInstructions fallingWallSpawnInstructions);
+	virtual bool SetFallingWallSpawnInstructions(FallingWallSpawnInstructions fallingWallSpawnInstructions);
 
 	/**
 	 * \brief Validate is a method called by the server to validate a frame.

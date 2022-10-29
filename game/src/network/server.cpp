@@ -36,13 +36,16 @@ void Server::SendSpawnFallingWallPacket(const Frame spawnTimeOffset)
 	fallingWallSpawnInstructions.requiresBall = core::RandomBool();
 	fallingWallSpawnInstructions.doorPosition = GetNextRandomDoorPosition();
 
-	_gameManager.SetFallingWallSpawnInstructions(fallingWallSpawnInstructions);
+	if (!_gameManager.SetFallingWallSpawnInstructions(fallingWallSpawnInstructions))
+	{
+		core::LogInfo("Not sending spawn info, it didn't set");
+	}
 
+	core::LogInfo(fmt::format("[Server] Send Spawn Wall Packet for frame : {}", fallingWallSpawnInstructions.spawnFrame));
 	spawnFallingWallPacket->spawnFrame = core::ConvertToBinary(fallingWallSpawnInstructions.spawnFrame);
 	spawnFallingWallPacket->requiresBall = fallingWallSpawnInstructions.requiresBall;
 	spawnFallingWallPacket->doorPosition = core::ConvertToBinary(fallingWallSpawnInstructions.doorPosition);
 
-	core::LogInfo(fmt::format("Send Spawn Wall Packet for frame : {}", fallingWallSpawnInstructions.spawnFrame));
 
 	SendReliablePacket(std::move(spawnFallingWallPacket));
 }

@@ -80,9 +80,9 @@ void GameManager::SetPlayerInput(const PlayerNumber playerNumber, const PlayerIn
 	_rollbackManager.SetPlayerInput(playerNumber, playerInput, inputFrame);
 }
 
-void GameManager::SetFallingWallSpawnInstructions(const FallingWallSpawnInstructions fallingWallSpawnInstructions)
+bool GameManager::SetFallingWallSpawnInstructions(const FallingWallSpawnInstructions fallingWallSpawnInstructions)
 {
-	_rollbackManager.SetNextFallingWallSpawnInstructions(fallingWallSpawnInstructions);
+	return _rollbackManager.SetNextFallingWallSpawnInstructions(fallingWallSpawnInstructions);
 }
 
 void GameManager::Validate(const Frame newValidateFrame)

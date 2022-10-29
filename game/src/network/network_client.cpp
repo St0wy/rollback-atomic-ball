@@ -24,6 +24,9 @@ void NetworkClient::Begin()
 		core::RandomRange(std::numeric_limits<std::underlying_type_t<ClientId>>::lowest(),
 			std::numeric_limits<std::underlying_type_t<ClientId>>::max())
 	};
+
+	_gameManager.GetRollbackManager().SetTextTEMP("NetworkClient");
+
 	//JOIN packet
 	_gameManager.Begin();
 	_tcpSocket.setBlocking(false);
@@ -37,7 +40,7 @@ void NetworkClient::Begin()
 	#ifdef ENABLE_SQLITE
 	debugDb_.Open(fmt::format("Client_{}.db", static_cast<unsigned>(clientId_)));
 	#endif
-}
+	}
 
 void NetworkClient::Update(const sf::Time dt)
 {

@@ -88,6 +88,8 @@ void NetworkServer::Begin()
 	ZoneScoped;
 	#endif
 
+	_gameManager.GetRollbackManager().SetTextTEMP("NetworkServer");
+
 	sf::Socket::Status status = sf::Socket::Error;
 	while (status != sf::Socket::Done)
 	{

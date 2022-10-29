@@ -38,7 +38,9 @@ RollbackManager::RollbackManager(GameManager& gameManager, core::EntityManager& 
 	_currentPhysicsManager.RegisterTriggerListener(*this);
 	_currentPhysicsManager.RegisterCollisionListener(*this);
 	_currentPhysicsManager.RegisterCollisionListener(_currentFallingDoorManager);
+	_lastValidatePhysicsManager.RegisterCollisionListener(_lastValidateFallingDoorManager);
 	_currentPhysicsManager.RegisterCollisionListener(_currentDamageManager);
+	_lastValidatePhysicsManager.RegisterCollisionListener(_lastValidateDamageManager);
 }
 
 void RollbackManager::SimulateToCurrentFrame()
@@ -77,6 +79,7 @@ void RollbackManager::SimulateToCurrentFrame()
 	_currentFallingDoorManager.CopyAllComponents(_lastValidateFallingDoorManager.GetAllComponents());
 	_currentPhysicsManager.CopyAllComponents(_lastValidatePhysicsManager);
 	_currentFallingWallSpawnManager.CopyAllComponents(_lastValidateFallingWallSpawnManager);
+	_currentScoreManager.CopyAllComponents(_lastValidateScoreManager);
 
 	for (Frame frame = lastValidateFrame + 1; frame <= currentFrame; frame++)
 	{
@@ -216,6 +219,7 @@ void RollbackManager::ValidateFrame(const Frame newValidateFrame)
 	_currentDamageManager.CopyAllComponents(_lastValidateDamageManager.GetAllComponents());
 	_currentPhysicsManager.CopyAllComponents(_lastValidatePhysicsManager);
 	_currentFallingWallSpawnManager.CopyAllComponents(_lastValidateFallingWallSpawnManager);
+	_currentScoreManager.CopyAllComponents(_lastValidateScoreManager);
 
 	// We simulate the frames until the new validated frame
 	for (Frame frame = _lastValidateFrame + 1; frame <= newValidateFrame; frame++)
@@ -255,6 +259,7 @@ void RollbackManager::ValidateFrame(const Frame newValidateFrame)
 	_lastValidateFallingDoorManager.CopyAllComponents(_currentFallingDoorManager.GetAllComponents());
 	_lastValidateDamageManager.CopyAllComponents(_currentDamageManager.GetAllComponents());
 	_lastValidateFallingWallSpawnManager.CopyAllComponents(_currentFallingWallSpawnManager);
+	_lastValidateScoreManager.CopyAllComponents(_currentScoreManager);
 	_lastValidateFrame = newValidateFrame;
 	_createdEntities.clear();
 }

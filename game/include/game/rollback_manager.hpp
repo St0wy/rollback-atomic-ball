@@ -105,15 +105,21 @@ public:
 
 	PhysicsManager& GetCurrentPhysicsManager() { return _currentPhysicsManager; }
 
-	void SetNextFallingWallSpawnInstructions(const FallingWallSpawnInstructions fallingWallSpawnInstructions)
+	bool SetNextFallingWallSpawnInstructions(const FallingWallSpawnInstructions fallingWallSpawnInstructions)
 	{
-		_currentFallingWallSpawnManager.SetNextFallingWallSpawnInstructions(fallingWallSpawnInstructions);
-		_lastValidateFallingWallSpawnManager.SetNextFallingWallSpawnInstructions(fallingWallSpawnInstructions);
+		const bool currentResult = _currentFallingWallSpawnManager.SetNextFallingWallSpawnInstructions(fallingWallSpawnInstructions);
+		const bool lastValidateResult = _lastValidateFallingWallSpawnManager.SetNextFallingWallSpawnInstructions(fallingWallSpawnInstructions);
+
+		return lastValidateResult && currentResult;
 	}
 
 	[[nodiscard]] FallingWallSpawnInstructions GetNextFallingWallSpawnInstructions() const { return _currentFallingWallSpawnManager.GetNextFallingWallSpawnInstructions(); }
 
-	void SetTextTEMP(const std::string_view name) { _currentFallingWallSpawnManager.name = name; _lastValidateFallingWallSpawnManager.name = name; }
+	void SetTextTEMP(const std::string_view name)
+	{
+		_currentFallingWallSpawnManager.name = fmt::format("Current {}", name);
+		_lastValidateFallingWallSpawnManager.name = fmt::format("LastValidate {}", name);
+	}
 
 private:
 	[[nodiscard]] PlayerInput GetInputAtFrame(PlayerNumber playerNumber, Frame frame) const;
