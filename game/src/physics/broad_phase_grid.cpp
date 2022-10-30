@@ -18,15 +18,16 @@ BroadPhaseGrid::BroadPhaseGrid(
 	AabbColliderManager& aabbManager, CircleColliderManager& circleManager
 )
 	: _min(minX, minY),
-	_max(maxX, maxY),
-	_cellSize(cellSize),
-	_gridWidth(static_cast<std::size_t>(
-	std::floor((_max.x - _min.x) / _cellSize))),
-	_gridHeight(static_cast<std::size_t>(
-	std::floor((_max.y - _min.y) / _cellSize))),
-	_entityManager(entityManager), _rigidbodyManager(rigidbodyManager),
-	_aabbManager(aabbManager), _circleManager(circleManager)
-{}
+	  _max(maxX, maxY),
+	  _cellSize(cellSize),
+	  _gridWidth(static_cast<std::size_t>(
+		  std::floor((_max.x - _min.x) / _cellSize))),
+	  _gridHeight(static_cast<std::size_t>(
+		  std::floor((_max.y - _min.y) / _cellSize))),
+	  _entityManager(entityManager), _rigidbodyManager(rigidbodyManager),
+	  _aabbManager(aabbManager), _circleManager(circleManager)
+{
+}
 
 void BroadPhaseGrid::Update()
 {
@@ -36,7 +37,8 @@ void BroadPhaseGrid::Update()
 	for (core::Entity entity = 0; entity < _entityManager.GetEntitiesSize(); entity++)
 	{
 		const bool isRigidbody = _entityManager.HasComponent(entity,
-			static_cast<core::EntityMask>(core::ComponentType::Rigidbody));
+		                                                     static_cast<core::EntityMask>(
+			                                                     core::ComponentType::Rigidbody));
 		if (!isRigidbody) continue;
 
 		Rigidbody& body = _rigidbodyManager.GetComponent(entity);
@@ -101,17 +103,19 @@ std::vector<std::pair<core::Entity, core::Entity>> BroadPhaseGrid::GetCollisionP
 					core::Entity entityB = gridCell[j];
 
 					std::pair<core::Entity, core::Entity> bodyPair = entityA < entityB
-						? std::make_pair(entityA, entityB)
-						: std::make_pair(entityB, entityA);
+						                                                 ? std::make_pair(entityA, entityB)
+						                                                 : std::make_pair(entityB, entityA);
 
 					if (HasBeenChecked(checkedCollisions, bodyPair)) continue;
 
 					checkedCollisions.insert(bodyPair);
 
 					const bool aIsDestroyed = _entityManager.HasComponent(entityA,
-						static_cast<core::EntityMask>(ComponentType::Destroyed));
+					                                                      static_cast<core::EntityMask>(
+						                                                      ComponentType::Destroyed));
 					const bool bIsDestroyed = _entityManager.HasComponent(entityB,
-						static_cast<core::EntityMask>(ComponentType::Destroyed));
+					                                                      static_cast<core::EntityMask>(
+						                                                      ComponentType::Destroyed));
 
 					if (aIsDestroyed || bIsDestroyed) continue;
 

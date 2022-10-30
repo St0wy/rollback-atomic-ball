@@ -21,149 +21,150 @@ void Client::ReceivePacket(const Packet* packet)
 	switch (packet->packetType)
 	{
 	case PacketType::SpawnPlayer:
-	{
-		const auto* spawnPlayerPacket = static_cast<const SpawnPlayerPacket*>(packet);
-		const auto clientId = core::ConvertFromBinary<ClientId>(spawnPlayerPacket->clientId);
-
-		const PlayerNumber playerNumber = spawnPlayerPacket->playerNumber;
-		if (clientId == _clientId)
 		{
-			_gameManager.SetClientPlayer(playerNumber);
+			const auto* spawnPlayerPacket = static_cast<const SpawnPlayerPacket*>(packet);
+			const auto clientId = core::ConvertFromBinary<ClientId>(spawnPlayerPacket->clientId);
+
+			const PlayerNumber playerNumber = spawnPlayerPacket->playerNumber;
+			if (clientId == _clientId)
+			{
+				_gameManager.SetClientPlayer(playerNumber);
+			}
+
+			const auto pos = core::ConvertFromBinary<core::Vec2f>(spawnPlayerPacket->pos);
+			const auto rotation = core::ConvertFromBinary<core::Degree>(spawnPlayerPacket->angle);
+
+			_gameManager.SpawnPlayer(playerNumber, pos, rotation);
+			break;
 		}
-
-		const auto pos = core::ConvertFromBinary<core::Vec2f>(spawnPlayerPacket->pos);
-		const auto rotation = core::ConvertFromBinary<core::Degree>(spawnPlayerPacket->angle);
-
-		_gameManager.SpawnPlayer(playerNumber, pos, rotation);
-		break;
-	}
 	case PacketType::StartGame:
-	{
-		core::LogInfo("Start Game Packet Received");
-		using namespace std::chrono;
-		const auto startingTime = (duration_cast<duration<long long, std::milli>>(
-			system_clock::now().time_since_epoch()
+		{
+			core::LogInfo("Start Game Packet Received");
+			using namespace std::chrono;
+			const auto startingTime = (duration_cast<duration<long long, std::milli>>(
+				system_clock::now().time_since_epoch()
 			) + milliseconds(START_DELAY)).count() - milliseconds(static_cast<long long>(_currentPing)).count();
 
-		_gameManager.StartGame(startingTime);
-		break;
-	}
+			_gameManager.StartGame(startingTime);
+			break;
+		}
 	case PacketType::Input:
-	{
-		const auto* playerInputPacket = static_cast<const PlayerInputPacket*>(packet);
-		const auto playerNumber = playerInputPacket->playerNumber;
-		const auto inputFrame = core::ConvertFromBinary<Frame>(playerInputPacket->currentFrame);
-
-		if (playerNumber == _gameManager.GetPlayerNumber())
 		{
-			// Verify the inputs coming back from the server
-			const auto& inputs = _gameManager.GetRollbackManager().GetInputs(playerNumber);
-			const auto currentFrame = _gameManager.GetRollbackManager().GetCurrentFrame();
-			for (size_t i = 0; i < playerInputPacket->inputs.size(); i++)
+			const auto* playerInputPacket = static_cast<const PlayerInputPacket*>(packet);
+			const auto playerNumber = playerInputPacket->playerNumber;
+			const auto inputFrame = core::ConvertFromBinary<Frame>(playerInputPacket->currentFrame);
+
+			if (playerNumber == _gameManager.GetPlayerNumber())
 			{
-				const auto index = static_cast<unsigned long long>(currentFrame) - inputFrame + i;
-				if (index > inputs.size()) break;
-
-				if (inputs[index] != playerInputPacket->inputs[i])
+				// Verify the inputs coming back from the server
+				const auto& inputs = _gameManager.GetRollbackManager().GetInputs(playerNumber);
+				const auto currentFrame = _gameManager.GetRollbackManager().GetCurrentFrame();
+				for (size_t i = 0; i < playerInputPacket->inputs.size(); i++)
 				{
-					gpr_assert(false, "Inputs coming back from server are not coherent!!!");
+					const auto index = static_cast<unsigned long long>(currentFrame) - inputFrame + i;
+					if (index > inputs.size()) break;
+
+					if (inputs[index] != playerInputPacket->inputs[i])
+					{
+						gpr_assert(false, "Inputs coming back from server are not coherent!!!");
+					}
+
+					if (inputFrame - i == 0) break;
 				}
-
-				if (inputFrame - i == 0) break;
+				break;
 			}
-			break;
-		}
 
-		//discard delayed input packet
-		if (inputFrame < _gameManager.GetRollbackManager().GetLastReceivedFrame(playerNumber))
-		{
-			break;
-		}
-
-		for (Frame i = 0; i < playerInputPacket->inputs.size(); i++)
-		{
-			_gameManager.SetPlayerInput(playerNumber,
-				playerInputPacket->inputs[i],
-				inputFrame - i);
-
-			if (inputFrame - i == 0)
+			//discard delayed input packet
+			if (inputFrame < _gameManager.GetRollbackManager().GetLastReceivedFrame(playerNumber))
 			{
 				break;
 			}
+
+			for (Frame i = 0; i < playerInputPacket->inputs.size(); i++)
+			{
+				_gameManager.SetPlayerInput(playerNumber,
+				                            playerInputPacket->inputs[i],
+				                            inputFrame - i);
+
+				if (inputFrame - i == 0)
+				{
+					break;
+				}
+			}
+			break;
 		}
-		break;
-	}
 	case PacketType::ValidateState:
-	{
-		const auto* validateFramePacket = static_cast<const ValidateFramePacket*>(packet);
-		const auto newValidateFrame = core::ConvertFromBinary<Frame>(validateFramePacket->newValidateFrame);
-		std::array<PhysicsState, MAX_PLAYER_NMB> physicsStates{};
-		for (size_t i = 0; i < validateFramePacket->physicsState.size(); i++)
 		{
-			auto* statePtr = reinterpret_cast<std::uint8_t*>(physicsStates.data());
-			statePtr[i] = validateFramePacket->physicsState[i];
+			const auto* validateFramePacket = static_cast<const ValidateFramePacket*>(packet);
+			const auto newValidateFrame = core::ConvertFromBinary<Frame>(validateFramePacket->newValidateFrame);
+			std::array<PhysicsState, MAX_PLAYER_NMB> physicsStates{};
+			for (size_t i = 0; i < validateFramePacket->physicsState.size(); i++)
+			{
+				auto* statePtr = reinterpret_cast<std::uint8_t*>(physicsStates.data());
+				statePtr[i] = validateFramePacket->physicsState[i];
+			}
+			_gameManager.ConfirmValidateFrame(newValidateFrame, physicsStates);
+			break;
 		}
-		_gameManager.ConfirmValidateFrame(newValidateFrame, physicsStates);
-		break;
-	}
 	case PacketType::LoseGame:
-	{
-		const auto* loseGamePacket = static_cast<const LoseGamePacket*>(packet);
-		if (loseGamePacket->hasLost)
 		{
-			_gameManager.LoseGame();
+			const auto* loseGamePacket = static_cast<const LoseGamePacket*>(packet);
+			if (loseGamePacket->hasLost)
+			{
+				_gameManager.LoseGame();
+			}
+			break;
 		}
-		break;
-	}
 	case PacketType::Ping:
-	{
-		const auto* pingPacket = static_cast<const PingPacket*>(packet);
-		const auto clientId = core::ConvertFromBinary<ClientId>(pingPacket->clientId);
-		if (clientId == _clientId)
 		{
-			const auto originTime = core::ConvertFromBinary<unsigned long long>(pingPacket->time);
-			using namespace std::chrono;
-			const auto currentTime = duration_cast<duration<unsigned long long, std::milli>>(
-				system_clock::now().time_since_epoch()
+			const auto* pingPacket = static_cast<const PingPacket*>(packet);
+			const auto clientId = core::ConvertFromBinary<ClientId>(pingPacket->clientId);
+			if (clientId == _clientId)
+			{
+				const auto originTime = core::ConvertFromBinary<unsigned long long>(pingPacket->time);
+				using namespace std::chrono;
+				const auto currentTime = duration_cast<duration<unsigned long long, std::milli>>(
+					system_clock::now().time_since_epoch()
 				).count();
-			const auto delta = currentTime - originTime;
-			const auto ping = static_cast<float>(delta);
+				const auto delta = currentTime - originTime;
+				const auto ping = static_cast<float>(delta);
 
-			//calculate average and var ping
-			if (_srtt < 0.0f)
-			{
-				_srtt = ping;
-				_rttvar = ping / 2.0f;
-			}
-			else
-			{
-				_srtt = (1.0f - ALPHA) * _srtt + ALPHA * ping;
-				_rttvar = (1.0f - BETA) * _rttvar + BETA * core::Abs(_srtt - ping);
-			}
+				//calculate average and var ping
+				if (_srtt < 0.0f)
+				{
+					_srtt = ping;
+					_rttvar = ping / 2.0f;
+				}
+				else
+				{
+					_srtt = (1.0f - ALPHA) * _srtt + ALPHA * ping;
+					_rttvar = (1.0f - BETA) * _rttvar + BETA * core::Abs(_srtt - ping);
+				}
 
-			_rto = _srtt + std::max(G, K * _rttvar);
-			_currentPing = _srtt;
+				_rto = _srtt + std::max(G, K * _rttvar);
+				_currentPing = _srtt;
+			}
+			break;
 		}
-		break;
-	}
 	case PacketType::SpawnFallingWall:
-	{
-		const auto* spawnFallingWallPacket = static_cast<const SpawnFallingWallPacket*>(packet);
-		const auto spawnFrame = core::ConvertFromBinary<Frame>(spawnFallingWallPacket->spawnFrame);
-		if (spawnFrame <= _gameManager.GetRollbackManager().GetCurrentFrame())
 		{
-			core::LogWarning("Spawn frame is smaller than current frame.");
-			return;
+			const auto* spawnFallingWallPacket = static_cast<const SpawnFallingWallPacket*>(packet);
+			const auto spawnFrame = core::ConvertFromBinary<Frame>(spawnFallingWallPacket->spawnFrame);
+			if (spawnFrame <= _gameManager.GetRollbackManager().GetCurrentFrame())
+			{
+				core::LogWarning("Spawn frame is smaller than current frame.");
+				return;
+			}
+
+			FallingWallSpawnInstructions fallingWallSpawnInstructions{};
+			fallingWallSpawnInstructions.spawnFrame = spawnFrame;
+			fallingWallSpawnInstructions.doorPosition = core::ConvertFromBinary<float>(
+				spawnFallingWallPacket->doorPosition);
+			fallingWallSpawnInstructions.requiresBall = spawnFallingWallPacket->requiresBall;
+
+			_gameManager.SetFallingWallSpawnInstructions(fallingWallSpawnInstructions);
+			break;
 		}
-
-		FallingWallSpawnInstructions fallingWallSpawnInstructions{};
-		fallingWallSpawnInstructions.spawnFrame = spawnFrame;
-		fallingWallSpawnInstructions.doorPosition = core::ConvertFromBinary<float>(spawnFallingWallPacket->doorPosition);
-		fallingWallSpawnInstructions.requiresBall = spawnFallingWallPacket->requiresBall;
-
-		_gameManager.SetFallingWallSpawnInstructions(fallingWallSpawnInstructions);
-		break;
-	}
 	default:
 		break;
 	}

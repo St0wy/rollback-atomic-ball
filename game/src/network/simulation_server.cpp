@@ -27,7 +27,6 @@ void SimulationServer::Begin()
 
 void SimulationServer::Update(const sf::Time dt)
 {
-
 	#ifdef TRACY_ENABLE
 	ZoneScoped;
 	#endif
@@ -45,7 +44,6 @@ void SimulationServer::Update(const sf::Time dt)
 		{
 			++packetIt;
 		}
-
 	}
 
 	packetIt = _sentPackets.begin();
@@ -69,7 +67,8 @@ void SimulationServer::Update(const sf::Time dt)
 }
 
 void SimulationServer::End()
-{}
+{
+}
 
 void SimulationServer::DrawImGui()
 {
@@ -90,7 +89,7 @@ void SimulationServer::DrawImGui()
 
 void SimulationServer::PutPacketInSendingQueue(std::unique_ptr<Packet> packet)
 {
-	_sentPackets.push_back({ _avgDelay + core::RandomRange(-_marginDelay, _marginDelay), std::move(packet) });
+	_sentPackets.push_back({_avgDelay + core::RandomRange(-_marginDelay, _marginDelay), std::move(packet)});
 }
 
 void SimulationServer::PutPacketInReceiveQueue(std::unique_ptr<Packet> packet, bool unreliable)
@@ -103,7 +102,7 @@ void SimulationServer::PutPacketInReceiveQueue(std::unique_ptr<Packet> packet, b
 			return;
 		}
 	}
-	_receivedPackets.push_back({ _avgDelay + core::RandomRange(-_marginDelay, _marginDelay), std::move(packet) });
+	_receivedPackets.push_back({_avgDelay + core::RandomRange(-_marginDelay, _marginDelay), std::move(packet)});
 }
 
 void SimulationServer::SendReliablePacket(std::unique_ptr<Packet> packet)

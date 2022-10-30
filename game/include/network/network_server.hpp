@@ -51,13 +51,13 @@ protected:
 
 private:
 	void ProcessReceivePacket(std::unique_ptr<Packet> packet,
-		PacketSocketSource packetSource,
-		sf::IpAddress address = "localhost",
-		unsigned short port = 0);
+	                          PacketSocketSource packetSource,
+	                          sf::IpAddress address = "localhost",
+	                          unsigned short port = 0);
 
 	void ReceiveNetPacket(sf::Packet& packet, PacketSocketSource packetSource,
-		sf::IpAddress address = "localhost",
-		unsigned short port = 0);
+	                      sf::IpAddress address = "localhost",
+	                      unsigned short port = 0);
 
 	enum ServerStatus
 	{

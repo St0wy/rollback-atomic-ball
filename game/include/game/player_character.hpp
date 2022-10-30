@@ -25,10 +25,12 @@ struct PlayerCharacter
 /**
  * \brief PlayerCharacterManager is a ComponentManager that holds all the PlayerCharacter in the game.
  */
-class PlayerCharacterManager final : public core::ComponentManager<PlayerCharacter, static_cast<core::EntityMask>(ComponentType::PlayerCharacter)>
+class PlayerCharacterManager final : public core::ComponentManager<
+		PlayerCharacter, static_cast<core::EntityMask>(ComponentType::PlayerCharacter)>
 {
 public:
-	PlayerCharacterManager(core::EntityManager& entityManager, PhysicsManager& physicsManager, GameManager& gameManager);
+	PlayerCharacterManager(core::EntityManager& entityManager, PhysicsManager& physicsManager,
+	                       GameManager& gameManager);
 	void FixedUpdate(sf::Time deltaTime);
 	void AddComponent(core::Entity entity) override;
 

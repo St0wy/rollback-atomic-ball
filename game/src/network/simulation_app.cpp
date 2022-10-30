@@ -23,7 +23,8 @@ SimulationApp::SimulationApp()
 }
 
 void SimulationApp::OnEvent(const sf::Event&)
-{}
+{
+}
 
 void SimulationApp::Begin()
 {
@@ -113,7 +114,7 @@ void SimulationApp::Draw(sf::RenderTarget& window)
 	_screenQuad.setScale({
 		windowWidth / framebufferWidth,
 		windowHeight / framebufferHeight
-		});
+	});
 	window.draw(_screenQuad);
 
 	_screenQuad.setTexture(_clientsFramebuffers[1].getTexture());

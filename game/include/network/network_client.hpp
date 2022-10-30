@@ -24,7 +24,6 @@ public:
 		Joined,
 		GameStarting,
 		Game
-
 	};
 
 	enum class PacketSource
@@ -61,8 +60,8 @@ private:
 
 	State _currentState = State::None;
 
-#ifdef ENABLE_SQLITE
+	#ifdef ENABLE_SQLITE
 	DebugDatabase debugDb_;
-#endif
+	#endif
 };
 }

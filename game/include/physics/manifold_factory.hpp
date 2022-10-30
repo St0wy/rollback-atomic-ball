@@ -26,8 +26,8 @@ namespace algo
  * \return The manifold of the collisions between A and B.
  */
 Manifold FindCircleCircleManifold(
-    const CircleCollider* a, const Transform* ta,
-    const CircleCollider* b, const Transform* tb);
+	const CircleCollider* a, const Transform* ta,
+	const CircleCollider* b, const Transform* tb);
 
 /**
  * \brief Finds the collision manifold between A and B.
@@ -38,8 +38,8 @@ Manifold FindCircleCircleManifold(
  * \return The manifold of the collisions between A and B.
  */
 Manifold FindAabbAabbManifold(
-    const AabbCollider* a, const Transform* ta,
-    const AabbCollider* b, const Transform* tb);
+	const AabbCollider* a, const Transform* ta,
+	const AabbCollider* b, const Transform* tb);
 
 /**
  * \brief Finds the collision manifold between A and B.
@@ -50,8 +50,8 @@ Manifold FindAabbAabbManifold(
  * \return The manifold of the collisions between A and B.
  */
 Manifold FindAabbCircleManifold(
-    const AabbCollider* a, const Transform* ta,
-    const CircleCollider* b, const Transform* tb);
+	const AabbCollider* a, const Transform* ta,
+	const CircleCollider* b, const Transform* tb);
 
 /**
  * \brief Finds the collision manifold between A and B.
@@ -62,7 +62,7 @@ Manifold FindAabbCircleManifold(
  * \return The manifold of the collisions between A and B.
  */
 Manifold FindCircleAabbManifold(
-    const CircleCollider* a, const Transform* ta,
-    const AabbCollider* b, const Transform* tb);
+	const CircleCollider* a, const Transform* ta,
+	const AabbCollider* b, const Transform* tb);
 }
 }

@@ -81,10 +81,12 @@ void NetworkClientDebugApp::Draw(sf::RenderTarget& renderTarget)
 	renderTarget.draw(_screenQuad);
 
 	_screenQuad.setTexture(_clientsFramebuffers[1].getTexture());
-	_screenQuad.setPosition(sf::Vector2f(static_cast<float>(_windowSize.x / 2u), 0)); // NOLINT(bugprone-integer-division)
+	_screenQuad.setPosition(sf::Vector2f(static_cast<float>(_windowSize.x / 2u), 0));
+	// NOLINT(bugprone-integer-division)
 	renderTarget.draw(_screenQuad);
 }
 
 void NetworkClientDebugApp::OnEvent(const sf::Event&)
-{}
+{
+}
 }

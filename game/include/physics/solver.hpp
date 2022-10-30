@@ -41,7 +41,8 @@ class ImpulseSolver final : public Solver
 public:
 	ImpulseSolver(core::EntityManager& entityManager, RigidbodyManager& rigidbodyManager)
 		: Solver(entityManager, rigidbodyManager)
-	{}
+	{
+	}
 
 	void Solve(const std::vector<Collision>& collisions, float deltaTime) override;
 };
@@ -54,7 +55,8 @@ class SmoothPositionSolver final : public Solver
 public:
 	SmoothPositionSolver(core::EntityManager& entityManager, RigidbodyManager& rigidbodyManager)
 		: Solver(entityManager, rigidbodyManager)
-	{}
+	{
+	}
 
 	void Solve(const std::vector<Collision>& collisions, float deltaTime) override;
 };

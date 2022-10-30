@@ -24,11 +24,12 @@ void PlayerCharacter::ThrowBall()
 }
 
 PlayerCharacterManager::PlayerCharacterManager(core::EntityManager& entityManager, PhysicsManager& physicsManager,
-	GameManager& gameManager)
+                                               GameManager& gameManager)
 	: ComponentManager(entityManager),
-	_physicsManager(physicsManager),
-	_gameManager(gameManager)
-{}
+	  _physicsManager(physicsManager),
+	  _gameManager(gameManager)
+{
+}
 
 void PlayerCharacterManager::FixedUpdate(const sf::Time deltaTime)
 {
@@ -39,7 +40,8 @@ void PlayerCharacterManager::FixedUpdate(const sf::Time deltaTime)
 	{
 		const auto playerEntity = _gameManager.GetEntityFromPlayerNumber(playerNumber);
 		const bool isPlayer = _entityManager.HasComponent(playerEntity,
-			static_cast<core::EntityMask>(ComponentType::PlayerCharacter));
+		                                                  static_cast<core::EntityMask>(
+			                                                  ComponentType::PlayerCharacter));
 		if (!isPlayer) continue;
 
 		Rigidbody& playerBody = _physicsManager.GetRigidbody(playerEntity);
@@ -55,7 +57,7 @@ void PlayerCharacterManager::FixedUpdate(const sf::Time deltaTime)
 
 		const auto horizontalVel = ((left ? -1.0f : 0.0f) + (right ? 1.0f : 0.0f)) * PLAYER_SPEED;
 		const auto verticalVel = ((down ? -1.0f : 0.0f) + (up ? 1.0f : 0.0f)) * PLAYER_SPEED;
-		const core::Vec2f vel{ horizontalVel, verticalVel };
+		const core::Vec2f vel{horizontalVel, verticalVel};
 		playerBody.ApplyForce(vel);
 
 		if (isMoving)
@@ -74,11 +76,12 @@ void PlayerCharacterManager::FixedUpdate(const sf::Time deltaTime)
 		{
 			const auto currentPlayerSpeed = playerBody.Velocity().GetMagnitude();
 			const auto ballVelocity = playerCharacter.aimDirection *
-				((core::Vec2f::Dot(playerBody.Velocity(), playerCharacter.aimDirection) > 0.0f ? currentPlayerSpeed : 0.0f)
+			((core::Vec2f::Dot(playerBody.Velocity(), playerCharacter.aimDirection) > 0.0f ? currentPlayerSpeed : 0.0f)
 				+ BULLET_SPEED);
-			const auto ballPosition = playerBody.Position() + playerCharacter.aimDirection * 0.5f + playerBody.Position() * deltaTime.asSeconds();
+			const auto ballPosition = playerBody.Position() + playerCharacter.aimDirection * 0.5f + playerBody.
+				Position() * deltaTime.asSeconds();
 			_gameManager.SpawnBall(ballPosition,
-				ballVelocity);
+			                       ballVelocity);
 			playerCharacter.ThrowBall();
 		}
 	}

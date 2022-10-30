@@ -34,8 +34,8 @@ public:
 	 * \param circleManager Manager for circle colliders.
 	 */
 	BroadPhaseGrid(float minX, float maxX, float minY, float maxY, float cellSize,
-		core::EntityManager& entityManager, RigidbodyManager& rigidbodyManager,
-		AabbColliderManager& aabbManager, CircleColliderManager& circleManager
+	               core::EntityManager& entityManager, RigidbodyManager& rigidbodyManager,
+	               AabbColliderManager& aabbManager, CircleColliderManager& circleManager
 	);
 
 	/**

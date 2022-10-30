@@ -19,7 +19,9 @@ class RectangleShapeManager final :
 public:
 	RectangleShapeManager(EntityManager& entityManager, TransformManager& transformManager)
 		: ComponentManager(entityManager),
-		  _transformManager(transformManager) { }
+		  _transformManager(transformManager)
+	{
+	}
 
 	void SetOrigin(Entity entity, sf::Vector2f origin);
 	void SetCenter(const sf::Vector2f center) { _center = center; }

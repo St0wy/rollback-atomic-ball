@@ -113,7 +113,7 @@ public:
 	) const override;
 
 	Manifold TestCollision(const Transform* transform, const AabbCollider* collider,
-		const Transform* aabbTransform) const override;
+	                       const Transform* aabbTransform) const override;
 
 	[[nodiscard]] core::Vec2f FindFurthestPoint(
 		const Transform* transform,
@@ -137,13 +137,13 @@ struct AabbCollider final : Collider
 	float halfHeight = 0;
 
 	Manifold TestCollision(const Transform* transform, const Collider* collider,
-		const Transform* colliderTransform) const override;
+	                       const Transform* colliderTransform) const override;
 	Manifold TestCollision(const Transform* transform, const CircleCollider* collider,
-		const Transform* circleTransform) const override;
+	                       const Transform* circleTransform) const override;
 	Manifold TestCollision(const Transform* transform, const AabbCollider* collider,
-		const Transform* aabbTransform) const override;
+	                       const Transform* aabbTransform) const override;
 	[[nodiscard]] core::Vec2f
-		FindFurthestPoint(const Transform* transform, const core::Vec2f& direction) const override;
+	FindFurthestPoint(const Transform* transform, const core::Vec2f& direction) const override;
 	[[nodiscard]] core::Vec2f GetBoundingBoxSize() const override;
 };
 

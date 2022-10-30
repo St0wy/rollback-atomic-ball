@@ -17,9 +17,9 @@ namespace game
 void NetworkServer::SendReliablePacket(const std::unique_ptr<Packet> packet)
 {
 	core::LogInfo(fmt::format("[Server] Sending TCP packet: {}",
-		std::to_string(static_cast<int>(packet->packetType))));
+	                          std::to_string(static_cast<int>(packet->packetType))));
 	for (PlayerNumber playerNumber = 0; playerNumber < MAX_PLAYER_NMB;
-		playerNumber++)
+	     playerNumber++)
 	{
 		sf::Packet sendingPacket;
 		GeneratePacket(sendingPacket, *packet);
@@ -42,7 +42,7 @@ void NetworkServer::SendReliablePacket(const std::unique_ptr<Packet> packet)
 void NetworkServer::SendUnreliablePacket(const std::unique_ptr<Packet> packet)
 {
 	for (PlayerNumber playerNumber = 0; playerNumber < MAX_PLAYER_NMB;
-		playerNumber++)
+	     playerNumber++)
 	{
 		if (_clientInfoMap[playerNumber].udpRemotePort == 0)
 		{
@@ -54,8 +54,8 @@ void NetworkServer::SendUnreliablePacket(const std::unique_ptr<Packet> packet)
 		GeneratePacket(sendingPacket, *packet);
 		// ReSharper disable once CppTooWideScope
 		const auto status = _udpSocket.send(sendingPacket,
-			_clientInfoMap[playerNumber].udpRemoteAddress,
-			_clientInfoMap[playerNumber].udpRemotePort);
+		                                    _clientInfoMap[playerNumber].udpRemoteAddress,
+		                                    _clientInfoMap[playerNumber].udpRemotePort);
 		switch (status)
 		{
 		case sf::Socket::Done:
@@ -64,10 +64,10 @@ void NetworkServer::SendUnreliablePacket(const std::unique_ptr<Packet> packet)
 			break;
 
 		case sf::Socket::Disconnected:
-		{
-			core::LogInfo("[Server] Error while sending UDP packet, DISCONNECTED");
-			break;
-		}
+			{
+				core::LogInfo("[Server] Error while sending UDP packet, DISCONNECTED");
+				break;
+			}
 		case sf::Socket::NotReady:
 			core::LogInfo("[Server] Error while sending UDP packet, NOT READY");
 
@@ -142,8 +142,8 @@ void NetworkServer::Update([[maybe_unused]] sf::Time dt)
 			const auto remoteAddress = _tcpSockets[_lastSocketIndex].
 				getRemoteAddress();
 			core::LogInfo(fmt::format("[Server] New player connection with address: {} and port: {}",
-				remoteAddress.toString(),
-				_tcpSockets[_lastSocketIndex].getRemotePort()));
+			                          remoteAddress.toString(),
+			                          _tcpSockets[_lastSocketIndex].getRemotePort()));
 			const auto connectionStatus = static_cast<std::uint8_t>(FirstPlayerConnect << _lastSocketIndex);
 			_status = _status | connectionStatus;
 			_lastSocketIndex++;
@@ -151,7 +151,7 @@ void NetworkServer::Update([[maybe_unused]] sf::Time dt)
 	}
 
 	for (PlayerNumber playerNumber = 0; playerNumber < MAX_PLAYER_NMB;
-		playerNumber++)
+	     playerNumber++)
 	{
 		sf::Packet tcpPacket;
 		switch (_tcpSockets[playerNumber].receive(tcpPacket))
@@ -160,16 +160,16 @@ void NetworkServer::Update([[maybe_unused]] sf::Time dt)
 			ReceiveNetPacket(tcpPacket, PacketSocketSource::Tcp);
 			break;
 		case sf::Socket::Disconnected:
-		{
-			core::LogInfo(fmt::format(
-				"[Error] Player Number {} is disconnected when receiving",
-				playerNumber + 1));
-			_status = _status & ~(FirstPlayerConnect << playerNumber);
-			auto endGame = std::make_unique<LoseGamePacket>();
-			SendReliablePacket(std::move(endGame));
-			_status = _status & ~Open; //Close the server
-			break;
-		}
+			{
+				core::LogInfo(fmt::format(
+					"[Error] Player Number {} is disconnected when receiving",
+					playerNumber + 1));
+				_status = _status & ~(FirstPlayerConnect << playerNumber);
+				auto endGame = std::make_unique<LoseGamePacket>();
+				SendReliablePacket(std::move(endGame));
+				_status = _status & ~Open; //Close the server
+				break;
+			}
 		default:
 			break;
 		}
@@ -185,7 +185,8 @@ void NetworkServer::Update([[maybe_unused]] sf::Time dt)
 }
 
 void NetworkServer::End()
-{}
+{
+}
 
 void NetworkServer::SetTcpPort(const unsigned short i)
 {
@@ -227,53 +228,53 @@ void NetworkServer::ProcessReceivePacket(
 	switch (packet->packetType)
 	{
 	case PacketType::Join:
-	{
-		const JoinPacket joinPacket = *dynamic_cast<JoinPacket*>(packet.get());
-		Server::ReceivePacket(std::move(packet));
-		auto clientId = core::ConvertFromBinary<ClientId>(joinPacket.clientId);
-
-		std::string packetTypeString = packetSource == PacketSocketSource::Udp
-			? fmt::format(" UDP with port: {}", port)
-			: " TCP";
-		auto unsignedId = static_cast<unsigned>(clientId);
-		core::LogInfo(fmt::format("[Server] Received Join Packet from: {} {}", unsignedId, packetTypeString));
-
-		const auto it = std::ranges::find(_clientMap, clientId);
-		PlayerNumber playerNumber = 0;
-
-		if (it != _clientMap.end())
 		{
-			playerNumber = static_cast<PlayerNumber>(std::distance(_clientMap.begin(), it));
-			_clientInfoMap[playerNumber].clientId = clientId;
-		}
-		else
-		{
-			gpr_assert(false, "Player Number is supposed to be already set before join!");
-		}
+			const JoinPacket joinPacket = *dynamic_cast<JoinPacket*>(packet.get());
+			Server::ReceivePacket(std::move(packet));
+			auto clientId = core::ConvertFromBinary<ClientId>(joinPacket.clientId);
 
-		auto joinAckPacket = std::make_unique<JoinAckPacket>();
-		joinAckPacket->clientId = core::ConvertToBinary(clientId);
-		joinAckPacket->udpPort = core::ConvertToBinary(_udpPort);
-		if (packetSource == PacketSocketSource::Udp)
-		{
-			auto& clientInfo = _clientInfoMap[playerNumber];
-			clientInfo.udpRemoteAddress = address;
-			clientInfo.udpRemotePort = port;
-			SendUnreliablePacket(std::move(joinAckPacket));
+			std::string packetTypeString = packetSource == PacketSocketSource::Udp
+				                               ? fmt::format(" UDP with port: {}", port)
+				                               : " TCP";
+			auto unsignedId = static_cast<unsigned>(clientId);
+			core::LogInfo(fmt::format("[Server] Received Join Packet from: {} {}", unsignedId, packetTypeString));
+
+			const auto it = std::ranges::find(_clientMap, clientId);
+			PlayerNumber playerNumber = 0;
+
+			if (it != _clientMap.end())
+			{
+				playerNumber = static_cast<PlayerNumber>(std::distance(_clientMap.begin(), it));
+				_clientInfoMap[playerNumber].clientId = clientId;
+			}
+			else
+			{
+				gpr_assert(false, "Player Number is supposed to be already set before join!");
+			}
+
+			auto joinAckPacket = std::make_unique<JoinAckPacket>();
+			joinAckPacket->clientId = core::ConvertToBinary(clientId);
+			joinAckPacket->udpPort = core::ConvertToBinary(_udpPort);
+			if (packetSource == PacketSocketSource::Udp)
+			{
+				auto& clientInfo = _clientInfoMap[playerNumber];
+				clientInfo.udpRemoteAddress = address;
+				clientInfo.udpRemotePort = port;
+				SendUnreliablePacket(std::move(joinAckPacket));
+			}
+			else
+			{
+				SendReliablePacket(std::move(joinAckPacket));
+				// Calculate time difference
+				const auto clientTime = core::ConvertFromBinary<unsigned long>(joinPacket.startTime);
+				using namespace std::chrono;
+				const unsigned long deltaTime = static_cast<unsigned long>((duration_cast<milliseconds>(
+					system_clock::now().time_since_epoch()).count())) - clientTime;
+				core::LogInfo(fmt::format("[Server] Client Server deltaTime: {}", deltaTime));
+				_clientInfoMap[playerNumber].timeDifference = deltaTime;
+			}
+			break;
 		}
-		else
-		{
-			SendReliablePacket(std::move(joinAckPacket));
-			// Calculate time difference
-			const auto clientTime = core::ConvertFromBinary<unsigned long>(joinPacket.startTime);
-			using namespace std::chrono;
-			const unsigned long deltaTime = static_cast<unsigned long>((duration_cast<milliseconds>(
-				system_clock::now().time_since_epoch()).count())) - clientTime;
-			core::LogInfo(fmt::format("[Server] Client Server deltaTime: {}", deltaTime));
-			_clientInfoMap[playerNumber].timeDifference = deltaTime;
-		}
-		break;
-	}
 	default:
 		Server::ReceivePacket(std::move(packet));
 		break;
@@ -281,7 +282,7 @@ void NetworkServer::ProcessReceivePacket(
 }
 
 void NetworkServer::ReceiveNetPacket(sf::Packet& packet, const PacketSocketSource packetSource,
-	const sf::IpAddress address, const unsigned short port)
+                                     const sf::IpAddress address, const unsigned short port)
 {
 	auto receivedPacket = GenerateReceivedPacket(packet);
 

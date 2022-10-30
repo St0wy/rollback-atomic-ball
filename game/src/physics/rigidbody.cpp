@@ -6,7 +6,7 @@ namespace game
 {
 Rigidbody::Rigidbody()
 	: _invMass(1),
-	_takesGravity(true)
+	  _takesGravity(true)
 {
 	//static std::uint64_t staticId = 0;
 	//id = staticId++;

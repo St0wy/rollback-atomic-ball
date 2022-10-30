@@ -53,11 +53,11 @@ void ClientApp::OnEvent(const sf::Event& event)
 	switch (event.type)
 	{
 	case sf::Event::Resized:
-	{
-		_windowSize = sf::Vector2u(event.size.width, event.size.height);
-		_client.SetWindowSize(_windowSize);
-		break;
-	}
+		{
+			_windowSize = sf::Vector2u(event.size.width, event.size.height);
+			_client.SetWindowSize(_windowSize);
+			break;
+		}
 	default:
 		break;
 	}

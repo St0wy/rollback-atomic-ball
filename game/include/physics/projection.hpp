@@ -4,10 +4,10 @@ namespace game
 {
 struct Projection
 {
-    float min;
-    float max;
+	float min;
+	float max;
 
-    [[nodiscard]] bool Overlaps(const Projection& other) const;
-    [[nodiscard]] float GetOverlap(const Projection& other) const;
+	[[nodiscard]] bool Overlaps(const Projection& other) const;
+	[[nodiscard]] float GetOverlap(const Projection& other) const;
 };
 }

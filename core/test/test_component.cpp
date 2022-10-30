@@ -10,73 +10,70 @@ constexpr core::EntityMask COMPONENT_TYPE = 2u;
 
 class SimpleComponentManager : public core::ComponentManager<int, COMPONENT_TYPE>
 {
-    using ComponentManager::ComponentManager;
+	using ComponentManager::ComponentManager;
 };
 
 TEST(Component, AddComponent)
 {
-    core::EntityManager entityManager;
-    SimpleComponentManager componentManager(entityManager);
+	core::EntityManager entityManager;
+	SimpleComponentManager componentManager(entityManager);
 
-    const auto entity = entityManager.CreateEntity();
-    EXPECT_FALSE(entityManager.HasComponent(entity, COMPONENT_TYPE));
-    componentManager.AddComponent(entity);
-    EXPECT_TRUE(entityManager.HasComponent(entity, COMPONENT_TYPE));
-    componentManager.RemoveComponent(entity);
-    EXPECT_FALSE(entityManager.HasComponent(entity, COMPONENT_TYPE));
-
+	const auto entity = entityManager.CreateEntity();
+	EXPECT_FALSE(entityManager.HasComponent(entity, COMPONENT_TYPE));
+	componentManager.AddComponent(entity);
+	EXPECT_TRUE(entityManager.HasComponent(entity, COMPONENT_TYPE));
+	componentManager.RemoveComponent(entity);
+	EXPECT_FALSE(entityManager.HasComponent(entity, COMPONENT_TYPE));
 }
 
 TEST(Component, GetComponent)
 {
-    constexpr int newValue = 45;
-    core::EntityManager entityManager;
-    SimpleComponentManager componentManager(entityManager);
+	constexpr int newValue = 45;
+	core::EntityManager entityManager;
+	SimpleComponentManager componentManager(entityManager);
 
-    const auto entity = entityManager.CreateEntity();
-    componentManager.AddComponent(entity);
-    auto& mutableValue = componentManager.GetComponent(entity);
-    mutableValue = newValue;
-    const auto& immutableComponentManager = componentManager;
-    const auto& immutableValue = immutableComponentManager.GetComponent(entity);
-    EXPECT_EQ(immutableValue, mutableValue);
-
+	const auto entity = entityManager.CreateEntity();
+	componentManager.AddComponent(entity);
+	auto& mutableValue = componentManager.GetComponent(entity);
+	mutableValue = newValue;
+	const auto& immutableComponentManager = componentManager;
+	const auto& immutableValue = immutableComponentManager.GetComponent(entity);
+	EXPECT_EQ(immutableValue, mutableValue);
 }
 
 TEST(Component, CopyAllComponents)
 {
-    constexpr int oldValue1 = 45;
-    constexpr int newValue1 = 43;
-    constexpr int newValue2 = 47;
-    core::EntityManager entityManager;
-    SimpleComponentManager oldComponentManager(entityManager);
-    SimpleComponentManager newComponentManager(entityManager);
+	constexpr int oldValue1 = 45;
+	constexpr int newValue1 = 43;
+	constexpr int newValue2 = 47;
+	core::EntityManager entityManager;
+	SimpleComponentManager oldComponentManager(entityManager);
+	SimpleComponentManager newComponentManager(entityManager);
 
-    const auto entity1 = entityManager.CreateEntity();
-    const auto entity2 = entityManager.CreateEntity();
-    oldComponentManager.AddComponent(entity1);
-    oldComponentManager.SetComponent(entity1, oldValue1);
-    newComponentManager.AddComponent(entity1);
-    newComponentManager.SetComponent(entity1, newValue1);
-    newComponentManager.AddComponent(entity2);
-    newComponentManager.SetComponent(entity2, newValue2);
+	const auto entity1 = entityManager.CreateEntity();
+	const auto entity2 = entityManager.CreateEntity();
+	oldComponentManager.AddComponent(entity1);
+	oldComponentManager.SetComponent(entity1, oldValue1);
+	newComponentManager.AddComponent(entity1);
+	newComponentManager.SetComponent(entity1, newValue1);
+	newComponentManager.AddComponent(entity2);
+	newComponentManager.SetComponent(entity2, newValue2);
 
-    oldComponentManager.CopyAllComponents(newComponentManager.GetAllComponents());
-    EXPECT_EQ(oldComponentManager.GetComponent(entity1), newValue1);
-    EXPECT_EQ(oldComponentManager.GetComponent(entity2), newValue2);
-
+	oldComponentManager.CopyAllComponents(newComponentManager.GetAllComponents());
+	EXPECT_EQ(oldComponentManager.GetComponent(entity1), newValue1);
+	EXPECT_EQ(oldComponentManager.GetComponent(entity2), newValue2);
 }
 
 TEST(Component, InternalArrayOverflow)
 {
-    core::EntityManager entityManager;
-    SimpleComponentManager componentManager(entityManager);
+	core::EntityManager entityManager;
+	SimpleComponentManager componentManager(entityManager);
 
-    for (std::size_t i = 0; i < core::ENTITY_INIT_NMB; i++)
-    {
-        entityManager.CreateEntity();
-    }
-    const auto entity = entityManager.CreateEntity();
-    componentManager.AddComponent(entity);
-    EXPECT_LT(core::ENTITY_INIT_NMB, componentManager.GetAllComponents().size());
+	for (std::size_t i = 0; i < core::ENTITY_INIT_NMB; i++)
+	{
+		entityManager.CreateEntity();
+	}
+	const auto entity = entityManager.CreateEntity();
+	componentManager.AddComponent(entity);
+	EXPECT_LT(core::ENTITY_INIT_NMB, componentManager.GetAllComponents().size());
 }

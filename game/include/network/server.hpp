@@ -16,25 +16,23 @@ namespace game
 class Server : public PacketSenderInterface, public core::SystemInterface
 {
 protected:
+	virtual void SpawnNewPlayer(ClientId clientId, PlayerNumber playerNumber) = 0;
 
-    virtual void SpawnNewPlayer(ClientId clientId, PlayerNumber playerNumber) = 0;
+	virtual void SendStartGamePacket();
+	virtual void SendSpawnFallingWallPacket(Frame spawnTimeOffset = 0u);
 
-    virtual void SendStartGamePacket();
-    virtual void SendSpawnFallingWallPacket(Frame spawnTimeOffset = 0u);
+	[[nodiscard]] Frame GetNextRandomFallingWallSpawnFrame() const;
+	[[nodiscard]] float GetNextRandomDoorPosition() const;
 
-    [[nodiscard]] Frame GetNextRandomFallingWallSpawnFrame() const;
-    [[nodiscard]] float GetNextRandomDoorPosition() const;
+	/**
+	 * \brief ReceiveNetPacket is a method that is called when the Server receives a Packet from a Client.
+	 * \param packet is the received Packet.
+	 */
+	virtual void ReceivePacket(std::unique_ptr<Packet> packet);
 
-    /**
-     * \brief ReceiveNetPacket is a method that is called when the Server receives a Packet from a Client.
-     * \param packet is the received Packet.
-     */
-    virtual void ReceivePacket(std::unique_ptr<Packet> packet);
-
-    //Server game manager
-    GameManager _gameManager;
-    PlayerNumber _lastPlayerNumber = 0;
-    std::array<ClientId, MAX_PLAYER_NMB> _clientMap{};
-
+	//Server game manager
+	GameManager _gameManager;
+	PlayerNumber _lastPlayerNumber = 0;
+	std::array<ClientId, MAX_PLAYER_NMB> _clientMap{};
 };
 }

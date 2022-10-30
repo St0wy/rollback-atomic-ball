@@ -21,10 +21,10 @@ EntityManager::EntityManager(const std::size_t reservedSize)
 Entity EntityManager::CreateEntity()
 {
 	const auto entityMaskIt = std::ranges::find_if(_entityMasks,
-		[](const EntityMask entityMask)
-		{
-			return entityMask == INVALID_ENTITY_MASK;
-		});
+	                                               [](const EntityMask entityMask)
+	                                               {
+		                                               return entityMask == INVALID_ENTITY_MASK;
+	                                               });
 
 	if (entityMaskIt == _entityMasks.end())
 	{

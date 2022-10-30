@@ -27,9 +27,11 @@ constexpr auto INVALID_PLAYER = std::numeric_limits<PlayerNumber>::max();
  * \brief ClientId is a type used to define the client identification.
  * It is given by the server to clients.
  */
-enum class ClientId : std::uint16_t {};
+enum class ClientId : std::uint16_t
+{
+};
 
-constexpr auto INVALID_CLIENT_ID = ClientId{ 0u };
+constexpr auto INVALID_CLIENT_ID = ClientId{0u};
 using Frame = std::uint32_t;
 
 /**
@@ -76,6 +78,7 @@ constexpr std::array SPAWN_POSITIONS
 };
 
 constexpr core::EntityMask OTHER_TYPE = static_cast<core::EntityMask>(core::ComponentType::OtherType);
+
 enum class ComponentType : core::EntityMask
 {
 	PlayerCharacter = OTHER_TYPE,
@@ -90,25 +93,25 @@ enum class ComponentType : core::EntityMask
 };
 
 constexpr unsigned WINDOW_SCALE = 60;
-const sf::Vector2u DEBUG_WINDOW_SIZE{ core::WINDOW_RATIO.x * 2 * WINDOW_SCALE , core::WINDOW_RATIO.y * WINDOW_SCALE };
+const sf::Vector2u DEBUG_WINDOW_SIZE{core::WINDOW_RATIO.x * 2 * WINDOW_SCALE, core::WINDOW_RATIO.y * WINDOW_SCALE};
 const sf::Vector2u DEBUG_FRAMEBUFFER_SIZE = core::WINDOW_RATIO * WINDOW_SCALE;
 
-constexpr core::Color WALL_COLOR{ 255, 0, 243 };
-constexpr core::Color BALL_DOOR_COLOR{ 6, 255, 0 };
-constexpr core::Color NO_BALL_DOOR_COLOR{ 0, 234, 251 };
+constexpr core::Color WALL_COLOR{255, 0, 243};
+constexpr core::Color BALL_DOOR_COLOR{6, 255, 0};
+constexpr core::Color NO_BALL_DOOR_COLOR{0, 234, 251};
 
-constexpr core::Vec2f VERTICAL_WALLS_SIZE{ 1, 100 };
-constexpr core::Vec2f HORIZONTAL_WALLS_SIZE{ 100, 0.4f };
-constexpr core::Vec2f MIDDLE_WALL_SIZE{ 0.1f, 100 };
-constexpr core::Vec2f WALL_LEFT_POS{ -9.0f, 0.0f };
-constexpr core::Vec2f WALL_RIGHT_POS{ 9.0f, 0.0f };
-constexpr core::Vec2f WALL_BOTTOM_POS{ 0.0f, -4.1f };
-constexpr core::Vec2f WALL_TOP_POS{ 0.0f, 4.9f };
-constexpr core::Vec2f WALL_MIDDLE_POS{ 0.0f, 0.0f };
+constexpr core::Vec2f VERTICAL_WALLS_SIZE{1, 100};
+constexpr core::Vec2f HORIZONTAL_WALLS_SIZE{100, 0.4f};
+constexpr core::Vec2f MIDDLE_WALL_SIZE{0.1f, 100};
+constexpr core::Vec2f WALL_LEFT_POS{-9.0f, 0.0f};
+constexpr core::Vec2f WALL_RIGHT_POS{9.0f, 0.0f};
+constexpr core::Vec2f WALL_BOTTOM_POS{0.0f, -4.1f};
+constexpr core::Vec2f WALL_TOP_POS{0.0f, 4.9f};
+constexpr core::Vec2f WALL_MIDDLE_POS{0.0f, 0.0f};
 
-constexpr core::Vec2f FALLING_WALL_SIZE{ 100.0f, 0.3f };
+constexpr core::Vec2f FALLING_WALL_SIZE{100.0f, 0.3f};
 constexpr float FALLING_WALL_DOOR_COLLIDER_OFFSET = 0.2f;
-constexpr core::Vec2f FALLING_WALL_DOOR_SIZE{ 1.5f, FALLING_WALL_SIZE.y + FALLING_WALL_DOOR_COLLIDER_OFFSET };
+constexpr core::Vec2f FALLING_WALL_DOOR_SIZE{1.5f, FALLING_WALL_SIZE.y + FALLING_WALL_DOOR_COLLIDER_OFFSET};
 
 constexpr std::uint32_t DESTROY_WALL_SCORE_INCREMENT = 100u;
 

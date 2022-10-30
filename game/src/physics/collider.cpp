@@ -11,19 +11,19 @@ namespace game
 #pragma region CircleCollider
 
 Manifold CircleCollider::TestCollision(const Transform* transform, const Collider* collider,
-									   const Transform* colliderTransform) const
+                                       const Transform* colliderTransform) const
 {
 	return collider->TestCollision(colliderTransform, this, transform).Swaped();
 }
 
 Manifold CircleCollider::TestCollision(const Transform* transform, const CircleCollider* collider,
-									   const Transform* circleTransform) const
+                                       const Transform* circleTransform) const
 {
 	return algo::FindCircleCircleManifold(this, transform, collider, circleTransform).Swaped();
 }
 
 Manifold CircleCollider::TestCollision(const Transform* transform, const AabbCollider* collider,
-									   const Transform* aabbTransform) const
+                                       const Transform* aabbTransform) const
 {
 	return algo::FindCircleAabbManifold(this, transform, collider, aabbTransform);
 }
@@ -41,19 +41,19 @@ core::Vec2f CircleCollider::GetBoundingBoxSize() const
 
 #pragma region AabbCollider
 Manifold AabbCollider::TestCollision(const Transform* transform, const Collider* collider,
-									 const Transform* colliderTransform) const
+                                     const Transform* colliderTransform) const
 {
 	return collider->TestCollision(colliderTransform, this, transform).Swaped();
 }
 
 Manifold AabbCollider::TestCollision(const Transform* transform, const CircleCollider* collider,
-									 const Transform* circleTransform) const
+                                     const Transform* circleTransform) const
 {
 	return algo::FindAabbCircleManifold(this, transform, collider, circleTransform);
 }
 
 Manifold AabbCollider::TestCollision(const Transform* transform, const AabbCollider* collider,
-									 const Transform* aabbTransform) const
+                                     const Transform* aabbTransform) const
 {
 	return algo::FindAabbAabbManifold(this, transform, collider, aabbTransform);
 }

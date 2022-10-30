@@ -15,20 +15,21 @@ namespace game
 {
 RollbackManager::RollbackManager(GameManager& gameManager, core::EntityManager& entityManager)
 	: OnTriggerInterface(), OnCollisionInterface(), _gameManager(gameManager), _entityManager(entityManager),
-	_currentTransformManager(entityManager),
-	_currentPhysicsManager(entityManager), _currentPlayerManager(entityManager, _currentPhysicsManager, _gameManager),
-	_currentBulletManager(entityManager),
-	_currentFallingObjectManager(entityManager, _currentPhysicsManager),
-	_currentFallingDoorManager(entityManager, _currentPlayerManager, _gameManager, _currentScoreManager),
-	_currentDamageManager(entityManager, _currentPlayerManager),
-	_currentFallingWallSpawnManager(*this, _gameManager),
-	_lastValidatePhysicsManager(entityManager),
-	_lastValidatePlayerManager(entityManager, _lastValidatePhysicsManager, _gameManager),
-	_lastValidateBulletManager(entityManager),
-	_lastValidateFallingObjectManager(entityManager, _lastValidatePhysicsManager),
-	_lastValidateFallingDoorManager(entityManager, _lastValidatePlayerManager, _gameManager, _lastValidateScoreManager),
-	_lastValidateDamageManager(entityManager, _lastValidatePlayerManager),
-	_lastValidateFallingWallSpawnManager(*this, _gameManager)
+	  _currentTransformManager(entityManager),
+	  _currentPhysicsManager(entityManager), _currentPlayerManager(entityManager, _currentPhysicsManager, _gameManager),
+	  _currentBulletManager(entityManager),
+	  _currentFallingObjectManager(entityManager, _currentPhysicsManager),
+	  _currentFallingDoorManager(entityManager, _currentPlayerManager, _gameManager, _currentScoreManager),
+	  _currentDamageManager(entityManager, _currentPlayerManager),
+	  _currentFallingWallSpawnManager(*this, _gameManager),
+	  _lastValidatePhysicsManager(entityManager),
+	  _lastValidatePlayerManager(entityManager, _lastValidatePhysicsManager, _gameManager),
+	  _lastValidateBulletManager(entityManager),
+	  _lastValidateFallingObjectManager(entityManager, _lastValidatePhysicsManager),
+	  _lastValidateFallingDoorManager(entityManager, _lastValidatePlayerManager, _gameManager,
+	                                  _lastValidateScoreManager),
+	  _lastValidateDamageManager(entityManager, _lastValidatePlayerManager),
+	  _lastValidateFallingWallSpawnManager(*this, _gameManager)
 {
 	for (auto& input : _inputs)
 	{
@@ -112,8 +113,8 @@ void RollbackManager::SimulateToCurrentFrame()
 	for (core::Entity entity = 0; entity < _entityManager.GetEntitiesSize(); entity++)
 	{
 		if (!_entityManager.HasComponent(entity,
-			static_cast<core::EntityMask>(core::ComponentType::Rigidbody) |
-			static_cast<core::EntityMask>(core::ComponentType::Transform)))
+		                                 static_cast<core::EntityMask>(core::ComponentType::Rigidbody) |
+		                                 static_cast<core::EntityMask>(core::ComponentType::Transform)))
 			continue;
 		const Rigidbody& body = _currentPhysicsManager.GetRigidbody(entity);
 		_currentTransformManager.SetPosition(entity, body.Position());
@@ -122,7 +123,7 @@ void RollbackManager::SimulateToCurrentFrame()
 }
 
 void RollbackManager::SetPlayerInput(const PlayerNumber playerNumber, const PlayerInput playerInput,
-	const Frame inputFrame)
+                                     const Frame inputFrame)
 {
 	// Should only be called on the server
 	if (_currentFrame < inputFrame)
@@ -265,7 +266,7 @@ void RollbackManager::ValidateFrame(const Frame newValidateFrame)
 }
 
 void RollbackManager::ConfirmFrame(Frame newValidatedFrame,
-	const std::array<PhysicsState, MAX_PLAYER_NMB>& serverPhysicsState)
+                                   const std::array<PhysicsState, MAX_PLAYER_NMB>& serverPhysicsState)
 {
 	#ifdef TRACY_ENABLE
 	ZoneScoped;
@@ -278,13 +279,13 @@ void RollbackManager::ConfirmFrame(Frame newValidatedFrame,
 		if (serverPhysicsState[playerNumber] != lastPhysicsState)
 		{
 			gpr_assert(false,
-				fmt::format(
-				"Physics State are not equal for player {} (server frame: {}, client frame: {}, server: {}, client: {})",
-				playerNumber + 1,
-				newValidatedFrame,
-				_lastValidateFrame,
-				serverPhysicsState[playerNumber],
-				lastPhysicsState));
+			           fmt::format(
+				           "Physics State are not equal for player {} (server frame: {}, client frame: {}, server: {}, client: {})",
+				           playerNumber + 1,
+				           newValidatedFrame,
+				           _lastValidateFrame,
+				           serverPhysicsState[playerNumber],
+				           lastPhysicsState));
 		}
 	}
 }
@@ -323,8 +324,8 @@ PhysicsState RollbackManager::GetValidatePhysicsState(const PlayerNumber playerN
 }
 
 void RollbackManager::SetupLevel(const core::Entity wallLeftEntity, const core::Entity wallRightEntity,
-	const core::Entity wallMiddleEntity, const core::Entity wallBottomEntity,
-	const core::Entity wallTopEntity)
+                                 const core::Entity wallMiddleEntity, const core::Entity wallBottomEntity,
+                                 const core::Entity wallTopEntity)
 {
 	CreateWall(wallLeftEntity, WALL_LEFT_POS, VERTICAL_WALLS_SIZE);
 	CreateWall(wallRightEntity, WALL_RIGHT_POS, VERTICAL_WALLS_SIZE);
@@ -337,15 +338,15 @@ void RollbackManager::SetupLevel(const core::Entity wallLeftEntity, const core::
 }
 
 void RollbackManager::SpawnFallingWall(const core::Entity backgroundWall, const core::Entity door, float doorPosition,
-	const bool requiresBall)
+                                       const bool requiresBall)
 {
-	_createdEntities.push_back({ backgroundWall, _testedFrame });
-	_createdEntities.push_back({ door, _testedFrame });
+	_createdEntities.push_back({backgroundWall, _testedFrame});
+	_createdEntities.push_back({door, _testedFrame});
 
 	constexpr float spawnHeight = 5.0f;
 
 	Rigidbody wallBody;
-	constexpr core::Vec2f backgroundWallPos = { 0, spawnHeight };
+	constexpr core::Vec2f backgroundWallPos = {0, spawnHeight};
 	wallBody.SetPosition(backgroundWallPos);
 	wallBody.SetBodyType(BodyType::Static);
 	wallBody.SetRestitution(0.0f);
@@ -363,7 +364,7 @@ void RollbackManager::SpawnFallingWall(const core::Entity backgroundWall, const 
 
 	_currentFallingObjectManager.AddComponent(backgroundWall);
 
-	const core::Vec2f doorPos{ doorPosition, spawnHeight };
+	const core::Vec2f doorPos{doorPosition, spawnHeight};
 	Rigidbody doorBody;
 	doorBody.SetPosition(doorPos);
 	doorBody.SetBodyType(BodyType::Static);
@@ -383,11 +384,11 @@ void RollbackManager::SpawnFallingWall(const core::Entity backgroundWall, const 
 	_currentFallingObjectManager.AddComponent(door);
 
 	_currentFallingDoorManager.AddComponent(door);
-	_currentFallingDoorManager.SetFallingDoor(door, { backgroundWall, requiresBall });
+	_currentFallingDoorManager.SetFallingDoor(door, {backgroundWall, requiresBall});
 }
 
 void RollbackManager::CreateWall(const core::Entity entity, const core::Vec2f position, const core::Vec2f size,
-	const Layer layer)
+                                 const Layer layer)
 {
 	Rigidbody wallBody;
 	wallBody.SetPosition(position);
@@ -416,7 +417,7 @@ void RollbackManager::CreateWall(const core::Entity entity, const core::Vec2f po
 }
 
 void RollbackManager::SpawnPlayer(const PlayerNumber playerNumber, const core::Entity entity,
-	const core::Vec2f position, const core::Degree rotation)
+                                  const core::Vec2f position, const core::Degree rotation)
 {
 	#ifdef TRACY_ENABLE
 	ZoneScoped;
@@ -468,12 +469,13 @@ PlayerInput RollbackManager::GetInputAtFrame(const PlayerNumber playerNumber, co
 	const std::size_t frameDifference = static_cast<std::size_t>(_currentFrame) - frame;
 
 	gpr_assert(frameDifference < _inputs[playerNumber].size(),
-		"Trying to get input too far in the past");
+	           "Trying to get input too far in the past");
 	return _inputs[playerNumber][frameDifference];
 }
 
 void RollbackManager::OnTrigger(const core::Entity, const core::Entity)
-{}
+{
+}
 
 void RollbackManager::OnCollision(const core::Entity entity1, const core::Entity entity2)
 {
@@ -508,7 +510,7 @@ void RollbackManager::OnCollision(const core::Entity entity1, const core::Entity
 
 void RollbackManager::SpawnBall(const core::Entity entity, const core::Vec2f position, const core::Vec2f velocity)
 {
-	_createdEntities.push_back({ entity, _testedFrame });
+	_createdEntities.push_back({entity, _testedFrame});
 
 	Rigidbody ballBody;
 	ballBody.SetPosition(position);

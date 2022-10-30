@@ -7,7 +7,6 @@
 
 namespace core
 {
-
 class Log
 {
 public:
@@ -27,7 +26,7 @@ private:
 	inline static std::shared_ptr<spdlog::sinks::basic_file_sink_mt> _fileSink =
 		std::make_shared<spdlog::sinks::basic_file_sink_mt>(LOG_FILE_PATH, true);
 
-	inline static spdlog::logger _logger{ "multi_sink", {_consoleSink, _fileSink} };
+	inline static spdlog::logger _logger{"multi_sink", {_consoleSink, _fileSink}};
 };
 
 /**

@@ -172,7 +172,9 @@ inline sf::Packet& operator>>(sf::Packet& packet, PlayerInputPacket& playerInput
 /**
  * \brief StartGamePacket is a TCP Packet send by the server to start a game at a given time.
  */
-struct StartGamePacket final : TypedPacket<PacketType::StartGame> {};
+struct StartGamePacket final : TypedPacket<PacketType::StartGame>
+{
+};
 
 /**
  * \brief ValidateFramePacket is an UDP packet that is sent by the server to validate the last physics state of the world.
@@ -180,7 +182,7 @@ struct StartGamePacket final : TypedPacket<PacketType::StartGame> {};
 struct ValidateFramePacket final : TypedPacket<PacketType::ValidateState>
 {
 	std::array<std::uint8_t, sizeof(Frame)> newValidateFrame{};
-	std::array<std::uint8_t, sizeof(PhysicsState)* MAX_PLAYER_NMB> physicsState{};
+	std::array<std::uint8_t, sizeof(PhysicsState) * MAX_PLAYER_NMB> physicsState{};
 };
 
 inline sf::Packet& operator<<(sf::Packet& packet, const ValidateFramePacket& validateFramePacket)
@@ -253,57 +255,57 @@ inline void GeneratePacket(sf::Packet& packet, Packet& sendingPacket)
 	switch (sendingPacket.packetType)
 	{
 	case PacketType::Join:
-	{
-		const auto& packetTmp = static_cast<JoinPacket&>(sendingPacket);
-		packet << packetTmp;
-		break;
-	}
+		{
+			const auto& packetTmp = static_cast<JoinPacket&>(sendingPacket);
+			packet << packetTmp;
+			break;
+		}
 	case PacketType::SpawnPlayer:
-	{
-		const auto& packetTmp = static_cast<SpawnPlayerPacket&>(sendingPacket);
-		packet << packetTmp;
-		break;
-	}
+		{
+			const auto& packetTmp = static_cast<SpawnPlayerPacket&>(sendingPacket);
+			packet << packetTmp;
+			break;
+		}
 	case PacketType::Input:
-	{
-		const auto& packetTmp = static_cast<PlayerInputPacket&>(sendingPacket);
-		packet << packetTmp;
-		break;
-	}
+		{
+			const auto& packetTmp = static_cast<PlayerInputPacket&>(sendingPacket);
+			packet << packetTmp;
+			break;
+		}
 	case PacketType::ValidateState:
-	{
-		const auto& packetTmp = static_cast<ValidateFramePacket&>(sendingPacket);
-		packet << packetTmp;
-		break;
-	}
+		{
+			const auto& packetTmp = static_cast<ValidateFramePacket&>(sendingPacket);
+			packet << packetTmp;
+			break;
+		}
 	case PacketType::StartGame:
-	{
-		break;
-	}
+		{
+			break;
+		}
 	case PacketType::JoinAck:
-	{
-		const auto& packetTmp = static_cast<JoinAckPacket&>(sendingPacket);
-		packet << packetTmp;
-		break;
-	}
+		{
+			const auto& packetTmp = static_cast<JoinAckPacket&>(sendingPacket);
+			packet << packetTmp;
+			break;
+		}
 	case PacketType::LoseGame:
-	{
-		const auto& packetTmp = static_cast<LoseGamePacket&>(sendingPacket);
-		packet << packetTmp;
-		break;
-	}
+		{
+			const auto& packetTmp = static_cast<LoseGamePacket&>(sendingPacket);
+			packet << packetTmp;
+			break;
+		}
 	case PacketType::Ping:
-	{
-		const auto& packetTmp = static_cast<PingPacket&>(sendingPacket);
-		packet << packetTmp;
-		break;
-	}
+		{
+			const auto& packetTmp = static_cast<PingPacket&>(sendingPacket);
+			packet << packetTmp;
+			break;
+		}
 	case PacketType::SpawnFallingWall:
-	{
-		const auto& packetTmp = static_cast<SpawnFallingWallPacket&>(sendingPacket);
-		packet << packetTmp;
-		break;
-	}
+		{
+			const auto& packetTmp = static_cast<SpawnFallingWallPacket&>(sendingPacket);
+			packet << packetTmp;
+			break;
+		}
 	default:
 		break;
 	}
@@ -316,67 +318,67 @@ inline std::unique_ptr<Packet> GenerateReceivedPacket(sf::Packet& packet)
 	switch (packetTmp.packetType)
 	{
 	case PacketType::Join:
-	{
-		auto joinPacket = std::make_unique<JoinPacket>();
-		joinPacket->packetType = packetTmp.packetType;
-		packet >> *joinPacket;
-		return joinPacket;
-	}
+		{
+			auto joinPacket = std::make_unique<JoinPacket>();
+			joinPacket->packetType = packetTmp.packetType;
+			packet >> *joinPacket;
+			return joinPacket;
+		}
 	case PacketType::SpawnPlayer:
-	{
-		auto spawnPlayerPacket = std::make_unique<SpawnPlayerPacket>();
-		spawnPlayerPacket->packetType = packetTmp.packetType;
-		packet >> *spawnPlayerPacket;
-		return spawnPlayerPacket;
-	}
+		{
+			auto spawnPlayerPacket = std::make_unique<SpawnPlayerPacket>();
+			spawnPlayerPacket->packetType = packetTmp.packetType;
+			packet >> *spawnPlayerPacket;
+			return spawnPlayerPacket;
+		}
 	case PacketType::Input:
-	{
-		auto playerInputPacket = std::make_unique<PlayerInputPacket>();
-		playerInputPacket->packetType = packetTmp.packetType;
-		packet >> *playerInputPacket;
-		return playerInputPacket;
-	}
+		{
+			auto playerInputPacket = std::make_unique<PlayerInputPacket>();
+			playerInputPacket->packetType = packetTmp.packetType;
+			packet >> *playerInputPacket;
+			return playerInputPacket;
+		}
 	case PacketType::ValidateState:
-	{
-		auto validateFramePacket = std::make_unique<ValidateFramePacket>();
-		validateFramePacket->packetType = packetTmp.packetType;
-		packet >> *validateFramePacket;
-		return validateFramePacket;
-	}
+		{
+			auto validateFramePacket = std::make_unique<ValidateFramePacket>();
+			validateFramePacket->packetType = packetTmp.packetType;
+			packet >> *validateFramePacket;
+			return validateFramePacket;
+		}
 	case PacketType::StartGame:
-	{
-		auto startGamePacket = std::make_unique<StartGamePacket>();
-		startGamePacket->packetType = packetTmp.packetType;
-		return startGamePacket;
-	}
+		{
+			auto startGamePacket = std::make_unique<StartGamePacket>();
+			startGamePacket->packetType = packetTmp.packetType;
+			return startGamePacket;
+		}
 	case PacketType::JoinAck:
-	{
-		auto joinAckPacket = std::make_unique<JoinAckPacket>();
-		joinAckPacket->packetType = packetTmp.packetType;
-		packet >> *joinAckPacket;
-		return joinAckPacket;
-	}
+		{
+			auto joinAckPacket = std::make_unique<JoinAckPacket>();
+			joinAckPacket->packetType = packetTmp.packetType;
+			packet >> *joinAckPacket;
+			return joinAckPacket;
+		}
 	case PacketType::LoseGame:
-	{
-		auto winGamePacket = std::make_unique<LoseGamePacket>();
-		winGamePacket->packetType = packetTmp.packetType;
-		packet >> *winGamePacket;
-		return winGamePacket;
-	}
+		{
+			auto winGamePacket = std::make_unique<LoseGamePacket>();
+			winGamePacket->packetType = packetTmp.packetType;
+			packet >> *winGamePacket;
+			return winGamePacket;
+		}
 	case PacketType::Ping:
-	{
-		auto pingPacket = std::make_unique<PingPacket>();
-		pingPacket->packetType = packetTmp.packetType;
-		packet >> *pingPacket;
-		return pingPacket;
-	}
+		{
+			auto pingPacket = std::make_unique<PingPacket>();
+			pingPacket->packetType = packetTmp.packetType;
+			packet >> *pingPacket;
+			return pingPacket;
+		}
 	case PacketType::SpawnFallingWall:
-	{
-		auto spawnFallingWallPacket = std::make_unique<SpawnFallingWallPacket>();
-		spawnFallingWallPacket->packetType = packetTmp.packetType;
-		packet >> *spawnFallingWallPacket;
-		return spawnFallingWallPacket;
-	}
+		{
+			auto spawnFallingWallPacket = std::make_unique<SpawnFallingWallPacket>();
+			spawnFallingWallPacket->packetType = packetTmp.packetType;
+			packet >> *spawnFallingWallPacket;
+			return spawnFallingWallPacket;
+		}
 	default:
 		break;
 	}

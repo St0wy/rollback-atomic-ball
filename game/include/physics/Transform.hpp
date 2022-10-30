@@ -21,7 +21,7 @@ public:
 	/**
 	 * \brief The scale of this object.
 	 */
-	core::Vec2f scale{ 1, 1 };
+	core::Vec2f scale{1, 1};
 
 	/**
 	 * \brief The rotation of this object.

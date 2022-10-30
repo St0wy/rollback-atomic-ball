@@ -3,14 +3,14 @@
 void game::DamageManager::OnCollision(const core::Entity entity1, const core::Entity entity2)
 {
 	const bool oneIsDamager = _entityManager.HasComponent(entity1,
-		static_cast<core::EntityMask>(ComponentType::Damager));
+	                                                      static_cast<core::EntityMask>(ComponentType::Damager));
 	const bool twoIsPlayer = _entityManager.HasComponent(entity2,
-		static_cast<core::EntityMask>(ComponentType::PlayerCharacter));
+	                                                     static_cast<core::EntityMask>(ComponentType::PlayerCharacter));
 
 	const bool oneIsPlayer = _entityManager.HasComponent(entity1,
-		static_cast<core::EntityMask>(ComponentType::PlayerCharacter));
+	                                                     static_cast<core::EntityMask>(ComponentType::PlayerCharacter));
 	const bool twoIsDamager = _entityManager.HasComponent(entity2,
-		static_cast<core::EntityMask>(ComponentType::Damager));
+	                                                      static_cast<core::EntityMask>(ComponentType::Damager));
 
 	if (oneIsDamager && twoIsPlayer)
 	{

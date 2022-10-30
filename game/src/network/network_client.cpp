@@ -22,7 +22,7 @@ void NetworkClient::Begin()
 	#endif
 	_clientId = ClientId{
 		core::RandomRange(std::numeric_limits<std::underlying_type_t<ClientId>>::lowest(),
-			std::numeric_limits<std::underlying_type_t<ClientId>>::max())
+		                  std::numeric_limits<std::underlying_type_t<ClientId>>::max())
 	};
 
 	_gameManager.GetRollbackManager().SetTextTEMP("NetworkClient");
@@ -40,7 +40,7 @@ void NetworkClient::Begin()
 	#ifdef ENABLE_SQLITE
 	debugDb_.Open(fmt::format("Client_{}.db", static_cast<unsigned>(clientId_)));
 	#endif
-	}
+}
 
 void NetworkClient::Update(const sf::Time dt)
 {
@@ -104,16 +104,16 @@ void NetworkClient::Update(const sf::Time dt)
 		switch (_currentState)
 		{
 		case State::Joining:
-		{
-			if (_serverUdpPort != 0)
 			{
-				//Need to send a join packet on the unreliable channel
-				auto joinPacket = std::make_unique<JoinPacket>();
-				joinPacket->clientId = core::ConvertToBinary<ClientId>(_clientId);
-				SendUnreliablePacket(std::move(joinPacket));
+				if (_serverUdpPort != 0)
+				{
+					//Need to send a join packet on the unreliable channel
+					auto joinPacket = std::make_unique<JoinPacket>();
+					joinPacket->clientId = core::ConvertToBinary<ClientId>(_clientId);
+					SendUnreliablePacket(std::move(joinPacket));
+				}
+				break;
 			}
-			break;
-		}
 		case State::None:
 		case State::Joined:
 		case State::GameStarting:
@@ -298,31 +298,31 @@ void NetworkClient::ReceiveNetPacket(sf::Packet& packet, const PacketSource sour
 	switch (receivePacket->packetType)
 	{
 	case PacketType::JoinAck:
-	{
-		core::LogInfo(
-			"[Client] Receive " + std::string(source == PacketSource::Udp ? "UDP" : "TCP") + " Join ACK Packet");
-		const auto* joinAckPacket = static_cast<JoinAckPacket*>(receivePacket.get());
+		{
+			core::LogInfo(
+				"[Client] Receive " + std::string(source == PacketSource::Udp ? "UDP" : "TCP") + " Join ACK Packet");
+			const auto* joinAckPacket = static_cast<JoinAckPacket*>(receivePacket.get());
 
-		_serverUdpPort = core::ConvertFromBinary<unsigned short>(joinAckPacket->udpPort);
-		const auto clientId = core::ConvertFromBinary<ClientId>(joinAckPacket->clientId);
-		if (clientId != _clientId)
-			return;
-		if (source == PacketSource::Tcp)
-		{
-			//Need to send a join packet on the unreliable channel
-			auto joinPacket = std::make_unique<JoinPacket>();
-			joinPacket->clientId = core::ConvertToBinary<ClientId>(_clientId);
-			SendUnreliablePacket(std::move(joinPacket));
-		}
-		else
-		{
-			if (_currentState == State::Joining)
+			_serverUdpPort = core::ConvertFromBinary<unsigned short>(joinAckPacket->udpPort);
+			const auto clientId = core::ConvertFromBinary<ClientId>(joinAckPacket->clientId);
+			if (clientId != _clientId)
+				return;
+			if (source == PacketSource::Tcp)
 			{
-				_currentState = State::Joined;
+				//Need to send a join packet on the unreliable channel
+				auto joinPacket = std::make_unique<JoinPacket>();
+				joinPacket->clientId = core::ConvertToBinary<ClientId>(_clientId);
+				SendUnreliablePacket(std::move(joinPacket));
 			}
+			else
+			{
+				if (_currentState == State::Joining)
+				{
+					_currentState = State::Joined;
+				}
+			}
+			break;
 		}
-		break;
-	}
 	case PacketType::Join:
 	case PacketType::SpawnPlayer:
 	case PacketType::Input:

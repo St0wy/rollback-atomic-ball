@@ -11,7 +11,8 @@ void core::RectangleShapeManager::Draw(sf::RenderTarget& window)
 {
 	for (Entity entity = 0; entity < _components.size(); entity++)
 	{
-		const bool hasShape = _entityManager.HasComponent(entity, static_cast<Component>(ComponentType::RectangleShape));
+		const bool hasShape = _entityManager.
+			HasComponent(entity, static_cast<Component>(ComponentType::RectangleShape));
 		if (!hasShape) continue;
 
 		auto& rectangleShape = _components[entity];

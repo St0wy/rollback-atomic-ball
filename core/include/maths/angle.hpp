@@ -20,7 +20,9 @@ public:
 	constexpr Radian() = default;
 	// ReSharper disable once CppNonExplicitConvertingConstructor
 	constexpr Radian(const float value)
-		: _value(value) {}
+		: _value(value)
+	{
+	}
 
 	// TODO: Add explicit
 	// ReSharper disable once CppNonExplicitConvertingConstructor
@@ -66,7 +68,9 @@ public:
 
 	// ReSharper disable once CppNonExplicitConvertingConstructor
 	constexpr Degree(const float value)
-		: _value(value) {}
+		: _value(value)
+	{
+	}
 
 	// ReSharper disable once CppNonExplicitConvertingConstructor
 	/**
@@ -74,7 +78,9 @@ public:
 	 * \param angle is the radian angle to be converted to Degree
 	 */
 	constexpr Degree(const Radian& angle)
-		: _value(angle.Value() / PI * 180.0f) {}
+		: _value(angle.Value() / PI * 180.0f)
+	{
+	}
 
 	[[nodiscard]] constexpr float Value() const { return _value; }
 	constexpr Degree operator+(const Degree angle) const { return {_value + angle.Value()}; }

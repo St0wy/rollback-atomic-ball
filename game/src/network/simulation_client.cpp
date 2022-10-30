@@ -26,14 +26,14 @@ void SimulationClient::Begin()
 	#endif
 	_clientId = ClientId{
 		core::RandomRange(std::numeric_limits<std::underlying_type_t<ClientId>>::lowest(),
-			std::numeric_limits<std::underlying_type_t<ClientId>>::max())
+		                  std::numeric_limits<std::underlying_type_t<ClientId>>::max())
 	};
 	#ifdef ENABLE_SQLITE
 	debugDb_.Open(fmt::format("Client_{}.db", static_cast<unsigned>(clientId_)));
 	#endif
 	//JOIN packet
 	_gameManager.Begin();
-	}
+}
 
 void SimulationClient::Update(const sf::Time dt)
 {

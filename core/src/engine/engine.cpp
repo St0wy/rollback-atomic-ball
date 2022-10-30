@@ -22,7 +22,8 @@
 namespace core
 {
 Engine::Engine(const sf::Vector2u size) : _windowSize(size)
-{}
+{
+}
 
 void Engine::Run()
 {
@@ -117,13 +118,13 @@ void Engine::Update(const sf::Time dt) const
 			_window->close();
 			break;
 		case sf::Event::Resized:
-		{
-			const auto width = static_cast<float>(e.size.width);
-			const auto height = static_cast<float>(e.size.height);
-			sf::FloatRect visibleArea(0, 0, width, height);
-			_window->setView(sf::View(visibleArea));
-			break;
-		}
+			{
+				const auto width = static_cast<float>(e.size.width);
+				const auto height = static_cast<float>(e.size.height);
+				sf::FloatRect visibleArea(0, 0, width, height);
+				_window->setView(sf::View(visibleArea));
+				break;
+			}
 		default:
 			break;
 		}

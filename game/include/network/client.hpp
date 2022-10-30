@@ -12,11 +12,13 @@ namespace game
  * A client needs an ID which is receive by the server through a packet.
  */
 class Client : public core::DrawInterface, public core::DrawImGuiInterface, public PacketSenderInterface,
-			   public core::SystemInterface
+               public core::SystemInterface
 {
 public:
 	Client()
-		: _gameManager(*this) { }
+		: _gameManager(*this)
+	{
+	}
 
 	virtual void SetWindowSize(const sf::Vector2u windowSize)
 	{

@@ -5,7 +5,8 @@
 
 game::FallingObjectManager::FallingObjectManager(core::EntityManager& entityManager, PhysicsManager& physicsManager)
 	: ComponentManager(entityManager), _physicsManager(physicsManager)
-{}
+{
+}
 
 void game::FallingObjectManager::SetFallingSpeed(const core::Entity entity, const float fallingSpeed)
 {
@@ -17,11 +18,13 @@ void game::FallingObjectManager::FixedUpdate(const sf::Time deltaTime)
 	for (core::Entity entity = 0; entity < _entityManager.GetEntitiesSize(); entity++)
 	{
 		const bool hasRigidbody = _entityManager.HasComponent(entity,
-			static_cast<core::EntityMask>(core::ComponentType::Rigidbody));
+		                                                      static_cast<core::EntityMask>(
+			                                                      core::ComponentType::Rigidbody));
 		const bool isFallingObject = _entityManager.HasComponent(entity,
-			static_cast<core::EntityMask>(ComponentType::FallingObject));
+		                                                         static_cast<core::EntityMask>(
+			                                                         ComponentType::FallingObject));
 		const bool isDestroyed = _entityManager.HasComponent(entity,
-			static_cast<core::EntityMask>(ComponentType::Destroyed));
+		                                                     static_cast<core::EntityMask>(ComponentType::Destroyed));
 
 		if (!hasRigidbody || !isFallingObject || isDestroyed) continue;
 
@@ -29,16 +32,19 @@ void game::FallingObjectManager::FixedUpdate(const sf::Time deltaTime)
 		Rigidbody& rigidbody = _physicsManager.GetRigidbody(entity);
 		Transform& transform = rigidbody.Trans();
 		const float deltaFall = fallingObject.fallingSpeed * deltaTime.asSeconds();
-		transform.position = { transform.position.x, transform.position.y - deltaFall };
+		transform.position = {transform.position.x, transform.position.y - deltaFall};
 	}
 }
 
-game::FallingDoorManager::FallingDoorManager(core::EntityManager& entityManager, PlayerCharacterManager& playerCharacterManager, GameManager& gameManager, ScoreManager& scoreManager)
+game::FallingDoorManager::FallingDoorManager(core::EntityManager& entityManager,
+                                             PlayerCharacterManager& playerCharacterManager, GameManager& gameManager,
+                                             ScoreManager& scoreManager)
 	: ComponentManager(entityManager),
-	_playerCharacterManager(playerCharacterManager),
-	_gameManager(gameManager),
-	_scoreManager(scoreManager)
-{}
+	  _playerCharacterManager(playerCharacterManager),
+	  _gameManager(gameManager),
+	  _scoreManager(scoreManager)
+{
+}
 
 void game::FallingDoorManager::SetFallingDoor(const core::Entity entity, const FallingDoor fallingDoor)
 {
@@ -48,14 +54,14 @@ void game::FallingDoorManager::SetFallingDoor(const core::Entity entity, const F
 void game::FallingDoorManager::OnCollision(const core::Entity entity1, const core::Entity entity2)
 {
 	const bool oneIsDoor = _entityManager.HasComponent(entity1,
-		static_cast<core::EntityMask>(ComponentType::FallingDoor));
+	                                                   static_cast<core::EntityMask>(ComponentType::FallingDoor));
 	const bool twoIsPlayer = _entityManager.HasComponent(entity2,
-		static_cast<core::EntityMask>(ComponentType::PlayerCharacter));
+	                                                     static_cast<core::EntityMask>(ComponentType::PlayerCharacter));
 
 	const bool oneIsPlayer = _entityManager.HasComponent(entity1,
-		static_cast<core::EntityMask>(ComponentType::PlayerCharacter));
+	                                                     static_cast<core::EntityMask>(ComponentType::PlayerCharacter));
 	const bool twoIsDoor = _entityManager.HasComponent(entity2,
-		static_cast<core::EntityMask>(ComponentType::FallingDoor));
+	                                                   static_cast<core::EntityMask>(ComponentType::FallingDoor));
 
 	if (oneIsDoor && twoIsPlayer)
 	{
@@ -105,7 +111,8 @@ void game::FallingWallSpawnManager::SpawnWall()
 	_hasSpawned = true;
 	core::LogInfo(fmt::format("[{}] Spawning wall on frame {}", name, _gameManager.GetLastValidateFrame()));
 
-	_gameManager.SpawnFallingWall(_nextFallingWallSpawnInstructions.doorPosition, _nextFallingWallSpawnInstructions.requiresBall);
+	_gameManager.SpawnFallingWall(_nextFallingWallSpawnInstructions.doorPosition,
+	                              _nextFallingWallSpawnInstructions.requiresBall);
 }
 
 bool game::FallingWallSpawnManager::SetNextFallingWallSpawnInstructions(
@@ -113,7 +120,8 @@ bool game::FallingWallSpawnManager::SetNextFallingWallSpawnInstructions(
 {
 	if (!_hasSpawned)
 	{
-		core::LogWarning(fmt::format("[{}] Tried to set spawning wall instructions when the wall hasn't spawned yet", name));
+		core::LogWarning(fmt::format("[{}] Tried to set spawning wall instructions when the wall hasn't spawned yet",
+		                             name));
 		return false;
 	}
 

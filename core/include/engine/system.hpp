@@ -12,12 +12,12 @@ namespace core
 class SystemInterface
 {
 public:
-    virtual ~SystemInterface() = default;
-    virtual void Begin() = 0;
-    virtual void Update(sf::Time dt) = 0;
-    virtual void End() = 0;
+	virtual ~SystemInterface() = default;
+	virtual void Begin() = 0;
+	virtual void Update(sf::Time dt) = 0;
+	virtual void End() = 0;
 
-    bool hasFocus;
+	bool hasFocus;
 };
 
 /**
@@ -27,7 +27,7 @@ public:
 class OnEventInterface
 {
 public:
-    virtual ~OnEventInterface() = default;
-    virtual void OnEvent(const sf::Event& event) = 0;
+	virtual ~OnEventInterface() = default;
+	virtual void OnEvent(const sf::Event& event) = 0;
 };
 }

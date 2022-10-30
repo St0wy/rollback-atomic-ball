@@ -31,32 +31,32 @@ namespace core
  * \brief Action is an utility class loosely based on the observer pattern and close to C# Action class
  * \tparam Ts arguments types of the callback function
  */
-template<class ... Ts>
+template <class ... Ts>
 class Action
 {
 public:
-    /**
-     * \brief RegisterCallback is a method that registers a function that will be called when the Execute method is called.
-     * \param callback is a function to be called when calling Execute
-     */
-    void RegisterCallback(const std::function<void(Ts ...)>& callback)
-    {
-	    _callbacks.push_back(callback);
-    }
+	/**
+	 * \brief RegisterCallback is a method that registers a function that will be called when the Execute method is called.
+	 * \param callback is a function to be called when calling Execute
+	 */
+	void RegisterCallback(const std::function<void(Ts ...)>& callback)
+	{
+		_callbacks.push_back(callback);
+	}
 
-    /**
-     * \brief Execute is a method that calls the functions registered in the callbacks_.
-     * \param args are the arguments needed to call the registered functions.
-     */
-    void Execute(Ts ... args)
-    {
-	    for(auto& callback : _callbacks)
-	    {
-	        callback(args...);
-	    }
-    }
+	/**
+	 * \brief Execute is a method that calls the functions registered in the callbacks_.
+	 * \param args are the arguments needed to call the registered functions.
+	 */
+	void Execute(Ts ... args)
+	{
+		for (auto& callback : _callbacks)
+		{
+			callback(args...);
+		}
+	}
 
 private:
-	std::vector<std::function<void(Ts...)>> _callbacks;
+	std::vector<std::function<void(Ts ...)>> _callbacks;
 };
 }

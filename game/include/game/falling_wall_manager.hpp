@@ -44,7 +44,8 @@ class FallingDoorManager final :
 	public OnCollisionInterface
 {
 public:
-	FallingDoorManager(core::EntityManager& entityManager, PlayerCharacterManager& playerCharacterManager, GameManager& gameManager, ScoreManager& scoreManager);
+	FallingDoorManager(core::EntityManager& entityManager, PlayerCharacterManager& playerCharacterManager,
+	                   GameManager& gameManager, ScoreManager& scoreManager);
 	void SetFallingDoor(core::Entity entity, FallingDoor fallingDoor);
 	void OnCollision(core::Entity entity1, core::Entity entity2) override;
 
@@ -61,16 +62,20 @@ class FallingWallSpawnManager
 {
 public:
 	explicit FallingWallSpawnManager(RollbackManager& rollbackManager, GameManager& gameManager)
-		:_rollbackManager(rollbackManager), _gameManager(gameManager)
-	{}
+		: _rollbackManager(rollbackManager), _gameManager(gameManager)
+	{
+	}
 
 	void FixedUpdate();
 	void CopyAllComponents(const FallingWallSpawnManager& fallingWallSpawnManager);
 	void SpawnWall();
 
-	bool SetNextFallingWallSpawnInstructions(const FallingWallSpawnInstructions fallingWallSpawnInstructions);
+	bool SetNextFallingWallSpawnInstructions(FallingWallSpawnInstructions fallingWallSpawnInstructions);
 
-	[[nodiscard]] FallingWallSpawnInstructions GetNextFallingWallSpawnInstructions() const { return _nextFallingWallSpawnInstructions; }
+	[[nodiscard]] FallingWallSpawnInstructions GetNextFallingWallSpawnInstructions() const
+	{
+		return _nextFallingWallSpawnInstructions;
+	}
 
 	std::string name;
 

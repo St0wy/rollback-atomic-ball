@@ -16,7 +16,9 @@ class AssertException final : public std::exception
 public:
 	// ReSharper disable once CppNonExplicitConvertingConstructor
 	AssertException(const std::string_view msg)
-		: _msg(msg) {}
+		: _msg(msg)
+	{
+	}
 
 	[[nodiscard]] const char* what() const noexcept override { return _msg.c_str(); }
 private:
@@ -73,9 +75,9 @@ inline void gpr_warn(const bool expr, std::string_view msg)
 	if (!(expr))
 	{
 		core::LogWarning(fmt::format("Warning Assert failed:\t{}\nSource:\t\t{}, line {}",
-			msg,
-			__FILE__,
-			__LINE__));
+		                             msg,
+		                             __FILE__,
+		                             __LINE__));
 		throw core::AssertException(msg);
 	}
 }

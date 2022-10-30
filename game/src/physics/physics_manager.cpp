@@ -15,11 +15,11 @@ namespace game
 {
 PhysicsManager::PhysicsManager(core::EntityManager& entityManager)
 	: _entityManager(entityManager),
-	_rigidbodyManager(entityManager),
-	_aabbManager(entityManager),
-	_circleManager(entityManager), _impulseSolver(_entityManager, _rigidbodyManager),
-	_smoothPositionSolver(_entityManager, _rigidbodyManager),
-	_grid(-500, 500, -500, 500, 10, _entityManager, _rigidbodyManager, _aabbManager, _circleManager)
+	  _rigidbodyManager(entityManager),
+	  _aabbManager(entityManager),
+	  _circleManager(entityManager), _impulseSolver(_entityManager, _rigidbodyManager),
+	  _smoothPositionSolver(_entityManager, _rigidbodyManager),
+	  _grid(-500, 500, -500, 500, 10, _entityManager, _rigidbodyManager, _aabbManager, _circleManager)
 {
 	_layerCollisionMatrix.SetCollision(Layer::Ball, Layer::MiddleWall, false);
 	_layerCollisionMatrix.SetCollision(Layer::Wall, Layer::Wall, false);
@@ -29,13 +29,13 @@ PhysicsManager::PhysicsManager(core::EntityManager& entityManager)
 }
 
 std::optional<core::ComponentType> PhysicsManager::HasCollider(const core::EntityManager& entityManager,
-	const core::Entity entity)
+                                                               const core::Entity entity)
 {
 	const bool hasAabb = entityManager.HasComponent(entity,
-		static_cast<core::EntityMask>(core::ComponentType::AabbCollider));
+	                                                static_cast<core::EntityMask>(core::ComponentType::AabbCollider));
 	const bool hasCircle = entityManager.HasComponent(entity,
-		static_cast<core::EntityMask>(
-		core::ComponentType::CircleCollider));
+	                                                  static_cast<core::EntityMask>(
+		                                                  core::ComponentType::CircleCollider));
 
 	// It is possible that an entity has both an Aabb Collider and a circle collider
 	// but I don't want to handle this case, so Aabb has more priority than the circle
@@ -51,7 +51,8 @@ void PhysicsManager::MoveBodies(const sf::Time deltaTime)
 	for (core::Entity entity = 0; entity < _entityManager.GetEntitiesSize(); entity++)
 	{
 		const bool hasRigidbody = _entityManager.HasComponent(entity,
-			static_cast<core::EntityMask>(core::ComponentType::Rigidbody));
+		                                                      static_cast<core::EntityMask>(
+			                                                      core::ComponentType::Rigidbody));
 
 		if (!hasRigidbody) continue;
 
@@ -66,7 +67,7 @@ void PhysicsManager::MoveBodies(const sf::Time deltaTime)
 		core::Vec2f pos = rigidbody.Position() + rigidbody.Velocity() * deltaTime.asSeconds();
 		rigidbody.SetPosition(pos);
 
-		rigidbody.SetForce({ 0, 0 });
+		rigidbody.SetForce({0, 0});
 	}
 }
 
@@ -144,18 +145,18 @@ void PhysicsManager::RegisterTriggerListener(OnTriggerInterface& onTriggerInterf
 {
 	_onTriggerAction.RegisterCallback(
 		[&onTriggerInterface](const core::Entity entity1, const core::Entity entity2)
-	{
-		onTriggerInterface.OnTrigger(entity1, entity2);
-	});
+		{
+			onTriggerInterface.OnTrigger(entity1, entity2);
+		});
 }
 
 void PhysicsManager::RegisterCollisionListener(OnCollisionInterface& onCollisionInterface)
 {
 	_onCollisionAction.RegisterCallback(
 		[&onCollisionInterface](const core::Entity entity1, const core::Entity entity2)
-	{
-		onCollisionInterface.OnCollision(entity1, entity2);
-	});
+		{
+			onCollisionInterface.OnCollision(entity1, entity2);
+		});
 }
 
 void PhysicsManager::CopyAllComponents(const PhysicsManager& physicsManager)
@@ -170,16 +171,16 @@ void PhysicsManager::Draw(sf::RenderTarget& renderTarget)
 	for (core::Entity entity = 0; entity < _entityManager.GetEntitiesSize(); entity++)
 	{
 		const bool hasRigidbody = _entityManager.HasComponent(entity,
-			static_cast<core::EntityMask>(
-			core::ComponentType::Rigidbody));
+		                                                      static_cast<core::EntityMask>(
+			                                                      core::ComponentType::Rigidbody));
 		const bool isDestroyed = _entityManager.HasComponent(entity,
-			static_cast<core::EntityMask>(ComponentType::Destroyed));
+		                                                     static_cast<core::EntityMask>(ComponentType::Destroyed));
 		const bool hasAabbCollider = _entityManager.HasComponent(entity,
-			static_cast<core::EntityMask>(
-			core::ComponentType::AabbCollider));
+		                                                         static_cast<core::EntityMask>(
+			                                                         core::ComponentType::AabbCollider));
 		const bool hasCircleCollider = _entityManager.HasComponent(entity,
-			static_cast<core::EntityMask>(
-			core::ComponentType::CircleCollider));
+		                                                           static_cast<core::EntityMask>(
+			                                                           core::ComponentType::CircleCollider));
 		const bool hasCollider = hasAabbCollider || hasCircleCollider;
 
 		if (!hasRigidbody || isDestroyed || !hasCollider) continue;
@@ -198,14 +199,14 @@ void PhysicsManager::Draw(sf::RenderTarget& renderTarget)
 
 			rectShape.setOrigin({
 				aabbCollider.halfWidth * core::PIXEL_PER_METER, aabbCollider.halfHeight * core::PIXEL_PER_METER
-				});
+			});
 			rectShape.setPosition(
 				position.x * core::PIXEL_PER_METER + _center.x,
 				_windowSize.y - (position.y * core::PIXEL_PER_METER + _center.y));
 			rectShape.setSize({
 				aabbCollider.halfWidth * 2.0f * core::PIXEL_PER_METER,
 				aabbCollider.halfHeight * 2.0f * core::PIXEL_PER_METER
-				});
+			});
 
 			renderTarget.draw(rectShape);
 		}
@@ -220,7 +221,7 @@ void PhysicsManager::Draw(sf::RenderTarget& renderTarget)
 			circleShape.setScale(rigidbody.Trans().scale);
 			circleShape.setOrigin({
 				circleCollider.radius * core::PIXEL_PER_METER, circleCollider.radius * core::PIXEL_PER_METER
-				});
+			});
 			circleShape.setPosition(
 				position.x * core::PIXEL_PER_METER + _center.x,
 				_windowSize.y - (position.y * core::PIXEL_PER_METER + _center.y));
@@ -236,8 +237,8 @@ void PhysicsManager::ApplyGravity()
 	for (core::Entity entity = 0; entity < _entityManager.GetEntitiesSize(); entity++)
 	{
 		const bool hasRigidbody = _entityManager.HasComponent(entity,
-			static_cast<core::EntityMask>(
-			core::ComponentType::Rigidbody));
+		                                                      static_cast<core::EntityMask>(
+			                                                      core::ComponentType::Rigidbody));
 
 		if (!hasRigidbody) continue;
 
@@ -268,11 +269,11 @@ void PhysicsManager::ResolveCollisions(const sf::Time deltaTime)
 	for (auto& [firstEntity, secondEntity] : collisionPairs)
 	{
 		const bool firstHasRigidbody = _entityManager.HasComponent(firstEntity,
-			static_cast<core::EntityMask>(
-			core::ComponentType::Rigidbody));
+		                                                           static_cast<core::EntityMask>(
+			                                                           core::ComponentType::Rigidbody));
 		const bool secondHasRigidbody = _entityManager.HasComponent(secondEntity,
-			static_cast<core::EntityMask>(
-			core::ComponentType::Rigidbody));
+		                                                            static_cast<core::EntityMask>(
+			                                                            core::ComponentType::Rigidbody));
 
 		const Collider* firstCollider = GetCollider(firstEntity);
 		const Collider* secondCollider = GetCollider(secondEntity);
@@ -321,7 +322,7 @@ void PhysicsManager::SolveCollisions(const std::vector<Collision>& collisions, c
 }
 
 Collider* PhysicsManager::GetCollider(const core::EntityManager& entityManager, AabbColliderManager& aabbManager,
-	CircleColliderManager& circleManager, const core::Entity entity)
+                                      CircleColliderManager& circleManager, const core::Entity entity)
 {
 	const std::optional<core::ComponentType> colliderType = HasCollider(entityManager, entity);
 

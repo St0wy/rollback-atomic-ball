@@ -12,9 +12,11 @@ namespace game
 struct Collision
 {
 	Collision() = default;
+
 	Collision(const core::Entity bodyA, const core::Entity bodyB, const Manifold manifold)
 		: bodyA(bodyA), bodyB(bodyB), manifold(manifold)
-	{}
+	{
+	}
 
 	/**
 	 * \brief Body A of the collision.

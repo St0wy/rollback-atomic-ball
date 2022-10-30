@@ -11,8 +11,8 @@ namespace core
 class DrawInterface
 {
 public:
-    virtual ~DrawInterface() = default;
-    virtual void Draw(sf::RenderTarget& renderTarget) = 0;
+	virtual ~DrawInterface() = default;
+	virtual void Draw(sf::RenderTarget& renderTarget) = 0;
 };
 
 /**
@@ -22,7 +22,7 @@ public:
 class DrawImGuiInterface
 {
 public:
-    virtual ~DrawImGuiInterface() = default;
-    virtual void DrawImGui() = 0;
+	virtual ~DrawImGuiInterface() = default;
+	virtual void DrawImGui() = 0;
 };
 }

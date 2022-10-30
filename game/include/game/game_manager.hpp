@@ -71,8 +71,8 @@ protected:
  * \brief ClientGameManager is a class that inherits from GameManager by adding the visual part and specific implementations needed by the clients.
  */
 class ClientGameManager final : public GameManager,
-	public core::DrawInterface, public core::DrawImGuiInterface,
-	public core::SystemInterface
+                                public core::DrawInterface, public core::DrawImGuiInterface,
+                                public core::SystemInterface
 {
 public:
 	enum State : std::uint32_t

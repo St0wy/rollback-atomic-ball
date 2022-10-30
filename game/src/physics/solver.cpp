@@ -9,16 +9,19 @@ namespace game
 {
 Solver::Solver(core::EntityManager& entityManager, RigidbodyManager& rigidbodyManager)
 	: _entityManager(entityManager), _rigidbodyManager(rigidbodyManager)
-{}
+{
+}
 
 void ImpulseSolver::Solve(const std::vector<Collision>& collisions, float)
 {
 	for (const auto& [entityA, entityB, manifold] : collisions)
 	{
 		const bool isRigidbodyA = _entityManager.HasComponent(entityA,
-			static_cast<core::EntityMask>(core::ComponentType::Rigidbody));
+		                                                      static_cast<core::EntityMask>(
+			                                                      core::ComponentType::Rigidbody));
 		const bool isRigidbodyB = _entityManager.HasComponent(entityB,
-			static_cast<core::EntityMask>(core::ComponentType::Rigidbody));
+		                                                      static_cast<core::EntityMask>(
+			                                                      core::ComponentType::Rigidbody));
 
 		if (!isRigidbodyA || !isRigidbodyB) continue;
 
@@ -117,9 +120,11 @@ void SmoothPositionSolver::Solve(const std::vector<Collision>& collisions, float
 	for (const auto& [entityA, entityB, points] : collisions)
 	{
 		const bool isRigidbodyA = _entityManager.HasComponent(entityA,
-			static_cast<core::EntityMask>(core::ComponentType::Rigidbody));
+		                                                      static_cast<core::EntityMask>(
+			                                                      core::ComponentType::Rigidbody));
 		const bool isRigidbodyB = _entityManager.HasComponent(entityB,
-			static_cast<core::EntityMask>(core::ComponentType::Rigidbody));
+		                                                      static_cast<core::EntityMask>(
+			                                                      core::ComponentType::Rigidbody));
 
 		if (!isRigidbodyA || !isRigidbodyB) continue;
 

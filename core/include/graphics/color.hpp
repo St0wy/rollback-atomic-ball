@@ -18,8 +18,10 @@ struct Color
 	constexpr Color() = default;
 
 	constexpr Color(const std::uint8_t red, const std::uint8_t green, const std::uint8_t blue,
-					const std::uint8_t alpha = 255u)
-		: r(red), g(green), b(blue), a(alpha) {}
+	                const std::uint8_t alpha = 255u)
+		: r(red), g(green), b(blue), a(alpha)
+	{
+	}
 
 	// ReSharper disable once CppNonExplicitConversionOperator
 	operator sf::Color() const { return {r, g, b, a}; }

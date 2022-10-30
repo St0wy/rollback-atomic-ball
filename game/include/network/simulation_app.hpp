@@ -16,24 +16,24 @@ namespace game
 class SimulationApp final : public core::App
 {
 public:
-    SimulationApp();
+	SimulationApp();
 
-    void Begin() override;
+	void Begin() override;
 
-    void Update(sf::Time dt) override;
+	void Update(sf::Time dt) override;
 
-    void End() override;
+	void End() override;
 
-    void DrawImGui() override;
+	void DrawImGui() override;
 
-    void Draw(sf::RenderTarget& window) override;
+	void Draw(sf::RenderTarget& window) override;
 
-    void OnEvent(const sf::Event& event) override;
+	void OnEvent(const sf::Event& event) override;
 private:
-    std::array<std::unique_ptr<SimulationClient>, MAX_PLAYER_NMB> _clients;
-    std::array<sf::RenderTexture, MAX_PLAYER_NMB> _clientsFramebuffers;
-    SimulationServer _server;
-    sf::Sprite _screenQuad;
-    sf::Vector2u _windowSize;
+	std::array<std::unique_ptr<SimulationClient>, MAX_PLAYER_NMB> _clients;
+	std::array<sf::RenderTexture, MAX_PLAYER_NMB> _clientsFramebuffers;
+	SimulationServer _server;
+	sf::Sprite _screenQuad;
+	sf::Vector2u _windowSize;
 };
 }

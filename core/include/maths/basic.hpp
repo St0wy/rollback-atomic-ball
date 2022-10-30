@@ -78,9 +78,9 @@ inline bool RandomBool()
 template <typename T>
 T constexpr SqrtNewtonRaphson(T x, T current, T previous)
 {
-	return current == previous  // NOLINT(clang-diagnostic-float-equal)
-		? current
-		: SqrtNewtonRaphson<T>(x, (current + x / current) * T(0.5), current);
+	return current == previous // NOLINT(clang-diagnostic-float-equal)
+		       ? current
+		       : SqrtNewtonRaphson<T>(x, (current + x / current) * T(0.5), current);
 }
 
 /**
@@ -95,13 +95,13 @@ template <typename T>
 T constexpr Sqrt(T x)
 {
 	return x >= 0 && x < std::numeric_limits<T>::infinity()
-		? SqrtNewtonRaphson<T>(x, x, 0)
-		: std::numeric_limits<T>::quiet_NaN();
+		       ? SqrtNewtonRaphson<T>(x, x, 0)
+		       : std::numeric_limits<T>::quiet_NaN();
 }
 
 template <typename T>
 T constexpr Sign(T val)
 {
-	return static_cast<T>(T{ 0 } < val) - (val < T{ 0 });
+	return static_cast<T>(T{0} < val) - (val < T{0});
 }
 }

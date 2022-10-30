@@ -11,7 +11,9 @@ void ScaleManager::AddComponent(const Entity entity)
 TransformManager::TransformManager(EntityManager& entityManager)
 	: _positionManager(entityManager),
 	  _scaleManager(entityManager),
-	  _rotationManager(entityManager) {}
+	  _rotationManager(entityManager)
+{
+}
 
 Vec2f TransformManager::GetPosition(const Entity entity) const
 {

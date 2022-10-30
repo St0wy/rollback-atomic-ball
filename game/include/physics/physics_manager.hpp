@@ -33,7 +33,8 @@ class PhysicsManager final : public core::DrawInterface
 public:
 	explicit PhysicsManager(core::EntityManager& entityManager);
 
-	static std::optional<core::ComponentType> HasCollider(const core::EntityManager& entityManager, core::Entity entity);
+	static std::optional<core::ComponentType>
+	HasCollider(const core::EntityManager& entityManager, core::Entity entity);
 	[[nodiscard]] static Collider* GetCollider(
 		const core::EntityManager& entityManager,
 		AabbColliderManager& aabbManager,
@@ -76,7 +77,8 @@ public:
 	void SolveCollisions(const std::vector<Collision>& collisions, sf::Time deltaTime);
 
 private:
-	static void SendCollisionCallbacks(const std::vector<Collision>& collisions, core::Action<core::Entity, core::Entity>& action);
+	static void SendCollisionCallbacks(const std::vector<Collision>& collisions,
+	                                   core::Action<core::Entity, core::Entity>& action);
 
 	core::EntityManager& _entityManager;
 	RigidbodyManager _rigidbodyManager;
@@ -91,7 +93,7 @@ private:
 	SmoothPositionSolver _smoothPositionSolver;
 	BroadPhaseGrid _grid;
 
-	core::Vec2f _gravity = { 0, -9.81f };
+	core::Vec2f _gravity = {0, -9.81f};
 
 	LayerCollisionMatrix _layerCollisionMatrix;
 

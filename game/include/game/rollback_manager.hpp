@@ -81,8 +81,8 @@ public:
 	[[nodiscard]] const PlayerCharacterManager& GetPlayerCharacterManager() const { return _currentPlayerManager; }
 	[[nodiscard]] const ScoreManager& GetScoreManager() const { return _currentScoreManager; }
 	void SetupLevel(core::Entity wallLeftEntity, core::Entity wallRightEntity, core::Entity wallMiddleEntity,
-		core::Entity wallBottomEntity, core
-		::Entity wallTopEntity);
+	                core::Entity wallBottomEntity, core
+	                ::Entity wallTopEntity);
 	void SpawnFallingWall(core::Entity backgroundWall, core::Entity door, float doorPosition, bool requiresBall);
 	void CreateWall(core::Entity entity, core::Vec2f position, core::Vec2f size, Layer layer = Layer::Wall);
 	void SpawnPlayer(PlayerNumber playerNumber, core::Entity entity, core::Vec2f position, core::Degree rotation);
@@ -107,13 +107,18 @@ public:
 
 	bool SetNextFallingWallSpawnInstructions(const FallingWallSpawnInstructions fallingWallSpawnInstructions)
 	{
-		const bool currentResult = _currentFallingWallSpawnManager.SetNextFallingWallSpawnInstructions(fallingWallSpawnInstructions);
-		const bool lastValidateResult = _lastValidateFallingWallSpawnManager.SetNextFallingWallSpawnInstructions(fallingWallSpawnInstructions);
+		const bool currentResult = _currentFallingWallSpawnManager.SetNextFallingWallSpawnInstructions(
+			fallingWallSpawnInstructions);
+		const bool lastValidateResult = _lastValidateFallingWallSpawnManager.SetNextFallingWallSpawnInstructions(
+			fallingWallSpawnInstructions);
 
 		return lastValidateResult && currentResult;
 	}
 
-	[[nodiscard]] FallingWallSpawnInstructions GetNextFallingWallSpawnInstructions() const { return _currentFallingWallSpawnManager.GetNextFallingWallSpawnInstructions(); }
+	[[nodiscard]] FallingWallSpawnInstructions GetNextFallingWallSpawnInstructions() const
+	{
+		return _currentFallingWallSpawnManager.GetNextFallingWallSpawnInstructions();
+	}
 
 	void SetTextTEMP(const std::string_view name)
 	{

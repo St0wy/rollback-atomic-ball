@@ -22,7 +22,9 @@ class SpriteManager final :
 public:
 	SpriteManager(EntityManager& entityManager, TransformManager& transformManager)
 		: ComponentManager(entityManager),
-		  _transformManager(transformManager) { }
+		  _transformManager(transformManager)
+	{
+	}
 
 	void SetOrigin(Entity entity, sf::Vector2f origin);
 	void SetTexture(Entity entity, const sf::Texture& texture);

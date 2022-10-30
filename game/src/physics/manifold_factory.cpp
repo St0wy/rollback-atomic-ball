@@ -94,7 +94,7 @@ Manifold algo::FindAabbAabbManifold(
 			x = transformedCenterA.x - aScaledHWidth + xOverlap / 2.0f;
 		}
 
-		return { {x, aY}, {x, bY}, normal, yOverlap };
+		return {{x, aY}, {x, bY}, normal, yOverlap};
 	}
 
 	// Point towards B knowing that aToB points from A to B
@@ -124,7 +124,7 @@ Manifold algo::FindAabbAabbManifold(
 		aX = transformedCenterA.x - aScaledHWidth;
 		bX = transformedCenterB.x + bScaledHWidth;
 	}
-	return { {aX, y}, {bX, y}, normal, xOverlap };
+	return {{aX, y}, {bX, y}, normal, xOverlap};
 }
 
 Manifold algo::FindAabbCircleManifold(
@@ -161,7 +161,7 @@ Manifold algo::FindAabbCircleManifold(
 		const float distToPosHeight = std::abs(scaledHHeight - clampedPoint.y);
 		const float distToNegHeight = std::abs(-scaledHHeight - clampedPoint.y);
 
-		const float smallest = std::min({ distToPosWidth, distToNegWidth, distToPosHeight, distToNegHeight });
+		const float smallest = std::min({distToPosWidth, distToNegWidth, distToPosHeight, distToNegHeight});
 
 		if (smallest == distToPosWidth) // NOLINT(clang-diagnostic-float-equal)
 		{
@@ -202,11 +202,11 @@ Manifold algo::FindAabbCircleManifold(
 
 	const core::Vec2f diff = closestPointOnAabb - worldAroundCirclePoint;
 
-	return { worldAroundCirclePoint, closestPointOnAabb, diff.GetNormalized(), diff.GetMagnitude() };
+	return {worldAroundCirclePoint, closestPointOnAabb, diff.GetNormalized(), diff.GetMagnitude()};
 }
 
 Manifold algo::FindCircleAabbManifold(const CircleCollider* a, const Transform* ta, const AabbCollider* b,
-	const Transform* tb)
+                                      const Transform* tb)
 {
 	return FindAabbCircleManifold(b, tb, a, ta).Swaped();
 }
