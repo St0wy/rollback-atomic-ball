@@ -1,6 +1,9 @@
 #pragma once
 #include <cstdint>
 
+/**
+ * \brief Manages the score of the game.
+ */
 class ScoreManager
 {
 public:

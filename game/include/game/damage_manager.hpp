@@ -10,6 +10,9 @@ struct Damager
 	short damageAmount = 10;
 };
 
+/**
+ * \brief This is the manager for a component that damages the player on collision.
+ */
 class DamageManager final :
 	public core::ComponentManager<Damager, static_cast<core::EntityMask>(ComponentType::Damager)>,
 	public OnCollisionInterface
@@ -17,8 +20,7 @@ class DamageManager final :
 public:
 	explicit DamageManager(core::EntityManager& entityManager, PlayerCharacterManager& playerCharacterManager)
 		: ComponentManager(entityManager), _playerCharacterManager(playerCharacterManager)
-	{
-	}
+	{}
 
 	void OnCollision(core::Entity entity1, core::Entity entity2) override;
 

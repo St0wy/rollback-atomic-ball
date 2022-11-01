@@ -1,5 +1,8 @@
 #pragma once
 
+/**
+ * \brief A struct to hold the walls that are created when the game starts.
+ */
 struct Walls
 {
 	core::Entity left;
@@ -7,15 +10,4 @@ struct Walls
 	core::Entity middle;
 	core::Entity bottom;
 	core::Entity top;
-
-	constexpr std::array<core::Entity, 5> GetArray() const
-	{
-		return {
-			left,
-			right,
-			middle,
-			bottom,
-			top
-		};
-	}
 };

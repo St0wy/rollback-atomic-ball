@@ -9,6 +9,9 @@
 
 namespace game
 {
+/**
+ * \brief Contains the information on how and when a falling wall should spawn.
+ */
 struct FallingWallSpawnInstructions
 {
 	Frame spawnFrame;
@@ -16,11 +19,17 @@ struct FallingWallSpawnInstructions
 	bool requiresBall;
 };
 
+/**
+ * \brief Contains the information of a falling object.
+ */
 struct FallingObject
 {
 	float fallingSpeed = 1.0f;
 };
 
+/**
+ * \brief Makes falling objects fall.
+ */
 class FallingObjectManager final :
 	public core::ComponentManager<FallingObject, static_cast<core::EntityMask>(ComponentType::FallingObject)>
 {
@@ -33,12 +42,18 @@ private:
 	PhysicsManager& _physicsManager;
 };
 
+/**
+ * \brief Contains the information needed for a falling door on a falling wall to function.
+ */
 struct FallingDoor
 {
 	core::Entity backgroundWallEntity = core::INVALID_ENTITY;
 	bool requiresBall = false;
 };
 
+/**
+ * \brief Handles the behaviour of falling doors.
+ */
 class FallingDoorManager final :
 	public core::ComponentManager<FallingDoor, static_cast<core::EntityMask>(ComponentType::FallingDoor)>,
 	public OnCollisionInterface
@@ -58,16 +73,22 @@ private:
 
 class RollbackManager;
 
+/**
+ * \brief Handles the spawn of falling walls.
+ */
 class FallingWallSpawnManager
 {
 public:
 	explicit FallingWallSpawnManager(RollbackManager& rollbackManager, GameManager& gameManager)
 		: _rollbackManager(rollbackManager), _gameManager(gameManager)
-	{
-	}
+	{}
 
 	void FixedUpdate();
 	void CopyAllComponents(const FallingWallSpawnManager& fallingWallSpawnManager);
+
+	/**
+	 * \brief Spawns a wall using the the falling wall spawn instructions.
+	 */
 	void SpawnWall();
 
 	bool SetNextFallingWallSpawnInstructions(FallingWallSpawnInstructions fallingWallSpawnInstructions);
@@ -76,8 +97,6 @@ public:
 	{
 		return _nextFallingWallSpawnInstructions;
 	}
-
-	std::string name;
 
 private:
 	FallingWallSpawnInstructions _nextFallingWallSpawnInstructions{};

@@ -13,12 +13,26 @@ struct PlayerCharacter
 	PlayerInput input = 0u;
 	PlayerNumber playerNumber = INVALID_PLAYER;
 	bool isDead = false;
+	/**
+	 * \brief Tells if the player has the ball.
+	 */
 	bool hasBall = false;
+
+	/**
+	 * \brief Tells if the player had the ball during the last frame, used for sprite transition.
+	 */
 	bool hadBall = false;
 	core::Radian rotation = 0.0f;
 	core::Vec2f aimDirection{};
 
+	/**
+	 * \brief Updates the state of the player to catch the ball.
+	 */
 	void CatchBall();
+
+	/**
+	 * \brief Updates the state of the player to throw the ball.
+	 */
 	void ThrowBall();
 };
 

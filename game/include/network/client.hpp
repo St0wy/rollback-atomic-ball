@@ -17,8 +17,7 @@ class Client : public core::DrawInterface, public core::DrawImGuiInterface, publ
 public:
 	Client()
 		: _gameManager(*this)
-	{
-	}
+	{}
 
 	virtual void SetWindowSize(const sf::Vector2u windowSize)
 	{

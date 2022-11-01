@@ -6,7 +6,6 @@
 
 #include "graphics/color.hpp"
 
-#include "maths/angle.hpp"
 #include "maths/vec2.hpp"
 
 
@@ -39,7 +38,7 @@ using Frame = std::uint32_t;
  */
 constexpr std::uint32_t MAX_PLAYER_NMB = 2;
 constexpr float PLAYER_SPEED = 400.0f;
-constexpr float BULLET_SPEED = 2.0f;
+constexpr float BALL_SPEED = 2.0f;
 constexpr float BALL_SCALE = 0.3f;
 
 /**
@@ -86,9 +85,24 @@ enum class ComponentType : core::EntityMask
 	Asteroid = OTHER_TYPE << 2u,
 	PlayerInput = OTHER_TYPE << 3u,
 	Destroyed = OTHER_TYPE << 4u,
+	/**
+	 * \brief This is a wall that doesn't move.
+	 */
 	StaticWall = OTHER_TYPE << 5u,
+
+	/**
+	 * \brief This makes the object move down at a certain speed.
+	 */
 	FallingObject = OTHER_TYPE << 6u,
+
+	/**
+	 * \brief This is the door of a falling wall.
+	 */
 	FallingDoor = OTHER_TYPE << 7u,
+
+	/**
+	 * \brief Component for objects that should damage the player on collision.
+	 */
 	Damager = OTHER_TYPE << 8u,
 };
 
@@ -96,8 +110,17 @@ constexpr unsigned WINDOW_SCALE = 60;
 const sf::Vector2u DEBUG_WINDOW_SIZE{core::WINDOW_RATIO.x * 2 * WINDOW_SCALE, core::WINDOW_RATIO.y * WINDOW_SCALE};
 const sf::Vector2u DEBUG_FRAMEBUFFER_SIZE = core::WINDOW_RATIO * WINDOW_SCALE;
 
+/**
+ * \brief Color of the background wall of a falling wall.
+ */
 constexpr core::Color WALL_COLOR{255, 0, 243};
+/**
+ * \brief Color of the door if the player needs a ball to open it.
+ */
 constexpr core::Color BALL_DOOR_COLOR{6, 255, 0};
+/**
+ * \brief Color of the door if the player should not have the ball to open it.
+ */
 constexpr core::Color NO_BALL_DOOR_COLOR{0, 234, 251};
 
 constexpr core::Vec2f VERTICAL_WALLS_SIZE{1, 100};
@@ -110,9 +133,15 @@ constexpr core::Vec2f WALL_TOP_POS{0.0f, 4.9f};
 constexpr core::Vec2f WALL_MIDDLE_POS{0.0f, 0.0f};
 
 constexpr core::Vec2f FALLING_WALL_SIZE{100.0f, 0.3f};
+/**
+ * \brief Size of by how much the door should be bigger than the background wall.
+ */
 constexpr float FALLING_WALL_DOOR_COLLIDER_OFFSET = 0.2f;
 constexpr core::Vec2f FALLING_WALL_DOOR_SIZE{1.5f, FALLING_WALL_SIZE.y + FALLING_WALL_DOOR_COLLIDER_OFFSET};
 
+/**
+ * \brief By how much should the score increment when a falling wall is destroyed.
+ */
 constexpr std::uint32_t DESTROY_WALL_SCORE_INCREMENT = 100u;
 
 /**

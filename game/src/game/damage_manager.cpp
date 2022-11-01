@@ -2,6 +2,7 @@
 
 void game::DamageManager::OnCollision(const core::Entity entity1, const core::Entity entity2)
 {
+	// Check the order of the entities
 	const bool oneIsDamager = _entityManager.HasComponent(entity1,
 	                                                      static_cast<core::EntityMask>(ComponentType::Damager));
 	const bool twoIsPlayer = _entityManager.HasComponent(entity2,
@@ -24,7 +25,7 @@ void game::DamageManager::OnCollision(const core::Entity entity1, const core::En
 
 void game::DamageManager::HandleCollision(const core::Entity playerEntity) const
 {
+	// Kills the player
 	PlayerCharacter& playerCharacter = _playerCharacterManager.GetComponent(playerEntity);
-
 	playerCharacter.isDead = true;
 }

@@ -18,7 +18,7 @@ namespace game
 {
 GameManager::GameManager()
 	: _transformManager(_entityManager),
-	  _rollbackManager(*this, _entityManager)
+	_rollbackManager(*this, _entityManager)
 {
 	_playerEntityMap.fill(core::INVALID_ENTITY);
 }
@@ -48,7 +48,7 @@ Walls GameManager::SetupLevel()
 
 	_rollbackManager.SetupLevel(wallLeftEntity, wallRightEntity, wallMiddleEntity, wallBottomEntity, wallTopEntity);
 
-	return {wallLeftEntity, wallRightEntity, wallMiddleEntity, wallBottomEntity, wallTopEntity};
+	return { wallLeftEntity, wallRightEntity, wallMiddleEntity, wallBottomEntity, wallTopEntity };
 }
 
 void GameManager::SpawnPlayer(const PlayerNumber playerNumber, const core::Vec2f position, const core::Degree rotation)
@@ -72,7 +72,7 @@ core::Entity GameManager::GetEntityFromPlayerNumber(const PlayerNumber playerNum
 }
 
 void GameManager::SetPlayerInput(const PlayerNumber playerNumber, const PlayerInput playerInput,
-                                 const std::uint32_t inputFrame)
+	const std::uint32_t inputFrame)
 {
 	if (playerNumber == INVALID_PLAYER)
 		return;
@@ -155,11 +155,10 @@ void GameManager::LoseGame()
 
 ClientGameManager::ClientGameManager(PacketSenderInterface& packetSenderInterface)
 	: GameManager(),
-	  _packetSenderInterface(packetSenderInterface),
-	  _spriteManager(_entityManager, _transformManager),
-	  _rectangleShapeManager(_entityManager, _transformManager)
-{
-}
+	_packetSenderInterface(packetSenderInterface),
+	_spriteManager(_entityManager, _transformManager),
+	_rectangleShapeManager(_entityManager, _transformManager)
+{}
 
 void ClientGameManager::Begin()
 {
@@ -187,10 +186,8 @@ void ClientGameManager::Update(const sf::Time dt)
 		{
 			// ReSharper disable once CppTooWideScope
 			const bool isPlayerWithSprite = _entityManager.HasComponent(entity,
-			                                                            static_cast<core::EntityMask>(
-				                                                            ComponentType::PlayerCharacter) |
-			                                                            static_cast<core::EntityMask>(
-				                                                            core::ComponentType::Sprite));
+				static_cast<core::EntityMask>(ComponentType::PlayerCharacter) |
+				static_cast<core::EntityMask>(core::ComponentType::Sprite));
 
 			if (isPlayerWithSprite)
 			{
@@ -224,8 +221,7 @@ void ClientGameManager::Update(const sf::Time dt)
 }
 
 void ClientGameManager::End()
-{
-}
+{}
 
 void ClientGameManager::SetWindowSize(const sf::Vector2u)
 {
@@ -236,7 +232,7 @@ void ClientGameManager::SetWindowSize(const sf::Vector2u)
 	const sf::FloatRect visibleArea(0.0f, 0.0f, width, height);
 	_cameraView = sf::View(visibleArea);
 
-	const sf::Vector2f windowSize{width, height};
+	const sf::Vector2f windowSize{ width, height };
 	const sf::Vector2f center = windowSize / 2.0f;
 	_spriteManager.SetWindowSize(windowSize);
 	_spriteManager.SetCenter(center);
@@ -276,7 +272,7 @@ void ClientGameManager::Draw(sf::RenderTarget& target)
 			_textRenderer.setCharacterSize(32);
 			const auto textBounds = _textRenderer.getLocalBounds();
 			_textRenderer.setPosition(static_cast<float>(_windowSize.x) / 2.0f - textBounds.width / 2.0f,
-			                          static_cast<float>(_windowSize.y) / 2.0f - textBounds.height / 2.0f);
+				static_cast<float>(_windowSize.y) / 2.0f - textBounds.height / 2.0f);
 			target.draw(_textRenderer);
 		}
 		else
@@ -287,7 +283,7 @@ void ClientGameManager::Draw(sf::RenderTarget& target)
 			_textRenderer.setCharacterSize(32);
 			const auto textBounds = _textRenderer.getLocalBounds();
 			_textRenderer.setPosition(static_cast<float>(_windowSize.x) / 2.0f - textBounds.width / 2.0f,
-			                          static_cast<float>(_windowSize.y) / 2.0f - textBounds.height / 2.0f);
+				static_cast<float>(_windowSize.y) / 2.0f - textBounds.height / 2.0f);
 			target.draw(_textRenderer);
 		}
 	}
@@ -299,7 +295,7 @@ void ClientGameManager::Draw(sf::RenderTarget& target)
 			using namespace std::chrono;
 			const unsigned long long ms = duration_cast<milliseconds>(
 				system_clock::now().time_since_epoch()
-			).count();
+				).count();
 			if (ms < _startingTime)
 			{
 				const std::string countDownText = fmt::format("Starts in {}", ((_startingTime - ms) / 1000 + 1));
@@ -308,7 +304,7 @@ void ClientGameManager::Draw(sf::RenderTarget& target)
 				_textRenderer.setCharacterSize(32);
 				const auto textBounds = _textRenderer.getLocalBounds();
 				_textRenderer.setPosition(static_cast<float>(_windowSize.x) / 2.0f - textBounds.width / 2.0f,
-				                          static_cast<float>(_windowSize.y) / 2.0f - textBounds.height / 2.0f);
+					static_cast<float>(_windowSize.y) / 2.0f - textBounds.height / 2.0f);
 				target.draw(_textRenderer);
 			}
 		}
@@ -430,7 +426,7 @@ void ClientGameManager::FixedUpdate()
 			using namespace std::chrono;
 			const auto ms = duration_cast<duration<unsigned long long, std::milli>>(
 				system_clock::now().time_since_epoch()
-			).count();
+				).count();
 			if (ms > _startingTime)
 			{
 				_state = _state | Started;
@@ -475,7 +471,7 @@ void ClientGameManager::FixedUpdate()
 }
 
 void ClientGameManager::SetPlayerInput(const PlayerNumber playerNumber, const PlayerInput playerInput,
-                                       const std::uint32_t inputFrame)
+	const std::uint32_t inputFrame)
 {
 	if (playerNumber == INVALID_PLAYER)
 		return;
@@ -497,7 +493,7 @@ void ClientGameManager::DrawImGui()
 		using namespace std::chrono;
 		const unsigned long long ms = duration_cast<milliseconds>(
 			system_clock::now().time_since_epoch()
-		).count();
+			).count();
 		ImGui::Text("Current Time: %llu", ms);
 	}
 
@@ -505,7 +501,7 @@ void ClientGameManager::DrawImGui()
 }
 
 void ClientGameManager::ConfirmValidateFrame(Frame newValidateFrame,
-                                             const std::array<PhysicsState, MAX_PLAYER_NMB>& physicsStates)
+	const std::array<PhysicsState, MAX_PLAYER_NMB>& physicsStates)
 {
 	if (newValidateFrame < _rollbackManager.GetLastValidateFrame())
 	{

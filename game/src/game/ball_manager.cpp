@@ -10,6 +10,5 @@ namespace game
 {
 BallManager::BallManager(core::EntityManager& entityManager) :
 	ComponentManager(entityManager)
-{
-}
+{}
 }

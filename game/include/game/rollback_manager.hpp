@@ -120,12 +120,6 @@ public:
 		return _currentFallingWallSpawnManager.GetNextFallingWallSpawnInstructions();
 	}
 
-	void SetTextTEMP(const std::string_view name)
-	{
-		_currentFallingWallSpawnManager.name = fmt::format("Current {}", name);
-		_lastValidateFallingWallSpawnManager.name = fmt::format("LastValidate {}", name);
-	}
-
 private:
 	[[nodiscard]] PlayerInput GetInputAtFrame(PlayerNumber playerNumber, Frame frame) const;
 

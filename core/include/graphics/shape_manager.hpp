@@ -12,6 +12,9 @@ namespace core
 {
 class TransformManager;
 
+/**
+ * \brief This is a manager to be able to have entities that are drawn using sf::RectangleShape.
+ */
 class RectangleShapeManager final :
 	public ComponentManager<sf::RectangleShape, static_cast<Component>(ComponentType::RectangleShape)>,
 	public DrawInterface
@@ -19,9 +22,8 @@ class RectangleShapeManager final :
 public:
 	RectangleShapeManager(EntityManager& entityManager, TransformManager& transformManager)
 		: ComponentManager(entityManager),
-		  _transformManager(transformManager)
-	{
-	}
+		_transformManager(transformManager)
+	{}
 
 	void SetOrigin(Entity entity, sf::Vector2f origin);
 	void SetCenter(const sf::Vector2f center) { _center = center; }
