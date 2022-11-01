@@ -95,11 +95,11 @@ inline void gpr_warn(bool Expr, std::string_view Msg)
 #  endif
 # endif
 #else
-inline void gpr_assert(bool Expr, std::string_view Msg)
+inline void gpr_assert(bool , std::string_view )
 {
     
 }
-inline void gpr_warn(bool Expr, std::string_view Msg)
+inline void gpr_warn(bool , std::string_view )
 {
 }
 #endif
