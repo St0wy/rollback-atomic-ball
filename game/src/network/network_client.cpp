@@ -25,8 +25,6 @@ void NetworkClient::Begin()
 		                  std::numeric_limits<std::underlying_type_t<ClientId>>::max())
 	};
 
-	_gameManager.GetRollbackManager().SetTextTEMP("NetworkClient");
-
 	//JOIN packet
 	_gameManager.Begin();
 	_tcpSocket.setBlocking(false);

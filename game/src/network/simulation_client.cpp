@@ -16,7 +16,6 @@ namespace game
 SimulationClient::SimulationClient(SimulationServer& server)
 	: _server(server)
 {
-	_gameManager.GetRollbackManager().SetTextTEMP("SimulationClient");
 }
 
 void SimulationClient::Begin()
@@ -26,8 +25,8 @@ void SimulationClient::Begin()
 	#endif
 	_clientId = ClientId{
 		core::RandomRange(std::numeric_limits<std::underlying_type_t<ClientId>>::lowest(),
-		                  std::numeric_limits<std::underlying_type_t<ClientId>>::max())
-	};
+						  std::numeric_limits<std::underlying_type_t<ClientId>>::max())
+};
 	#ifdef ENABLE_SQLITE
 	debugDb_.Open(fmt::format("Client_{}.db", static_cast<unsigned>(clientId_)));
 	#endif

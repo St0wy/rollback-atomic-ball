@@ -17,7 +17,6 @@ namespace game
 SimulationServer::SimulationServer(std::array<std::unique_ptr<SimulationClient>, 2>& clients)
 	: _clients(clients)
 {
-	_gameManager.GetRollbackManager().SetTextTEMP("SimulationServer");
 }
 
 void SimulationServer::Begin()
