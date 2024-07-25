@@ -1,6 +1,8 @@
 #pragma once
 #include <optional>
 
+#include <cstdint>
+
 namespace game
 {
 enum class Layer : std::int8_t

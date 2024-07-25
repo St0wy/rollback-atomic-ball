@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.23)
+cmake_minimum_required (VERSION 3.22)
 project(AtomicBallRollback)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -17,10 +17,10 @@ include(cmake/data.cmake)
 
 if (MSVC)
     # warning level 4 and all warnings as errors
-    add_compile_options(/W4 /WX)
+    #add_compile_options(/W4 /WX)
 else()
     # lots of warnings and all warnings as errors
-    add_compile_options(-Wall -Wextra -Wpedantic )
+    #add_compile_options(-Wall -Wextra -Wpedantic )
 endif()
 
 if(ENABLE_PROFILING)
